@@ -1,9 +1,58 @@
+/*
+ * Course catalogue and rule snapshot
+ * ----------------------------------
+ * This file is DATA, not the matching engine. `matcher-core.js` interprets the
+ * `rule` objects below; `app.js` renders the results.
+ *
+ * Support rule: never change an encoded requirement from memory or assumption.
+ * Verify the current published source, distinguish mandatory wording from
+ * advisory/human-only conditions, update the checked date, and add/update a
+ * regression test.
+ *
+ * Current supported rule primitives (see ARCHITECTURE.md for full detail):
+ *
+ *   minTotal:    { count: 5, grade: 4 }
+ *     At least N evidenced qualifications at the threshold.
+ *
+ *   subjects:    [{ subject: 'Mathematics', grade: 5 }]
+ *     Every listed subject requirement must be met.
+ *
+ *   anySubjects: [{ subjects: ['Physics', 'Combined Science'], grade: 4 }]
+ *     At least one subject in the alternative group must meet the threshold.
+ *
+ *   noFormalGrades: true
+ *     No formal GCSE rule is encoded; human/non-grade checks can still apply.
+ *
+ *   manualOnly: true
+ *     The published condition cannot safely be represented by the current
+ *     numeric rule model, so the matcher deliberately returns an amber/check.
+ *
+ * `warnings` are intentionally NOT treated as passed requirements. They hold
+ * interviews, references, DBS, portfolio, placement, suitability and similar
+ * conditions that need a person or another authorised process.
+ *
+ * `interests` and `keywords` influence relevance/ranking only. They must never
+ * bypass the hard grade checks.
+ */
+
+/** Published subject areas exposed for student interest selection/exploration. */
 export const SUBJECTS = [
   'A Levels','Air & Space Institute (ASI)','Animal Care','Automotive Engineering','Beauty','Business','Care College','Catering','Childcare','Computing','Construction','Creative Arts','Engineering','ESOL','Events Management','Hair - Lee Stafford Academy','Health and Social Care','Media','Music','Performing Arts & Dance','Policing College','Sport','Supported Education','Teaching','T Levels','Theatre Production','Uniformed Public Services'
 ];
 
+/** Date on which the encoded rules in this snapshot were checked against sources. */
 const checked = '2026-08-24';
 
+/**
+ * Machine-readable course snapshot.
+ *
+ * Each item should contain enough provenance for a supporter to answer:
+ * - what course is this?
+ * - what exact hard grade rule have we encoded?
+ * - what source did we use?
+ * - when was it checked?
+ * - what important conditions remain human-only?
+ */
 export const COURSES = [
   {
     id:'a-level-programme', title:'Level 3 A Level Programme', subject:'A Levels', level:3, campus:'Lincoln Campus',
@@ -154,6 +203,12 @@ export const COURSES = [
   }
 ];
 
+/**
+ * Official subject-area navigation used when a course has not been encoded.
+ *
+ * The fallback slug is a convenience for known subject labels. Explicit entries
+ * override cases where the public URL does not follow the generic slug pattern.
+ */
 export const SUBJECT_LINKS = Object.fromEntries(SUBJECTS.map(subject => {
   const slugs = {
     'A Levels':'https://www.lincolncollege.ac.uk/school-leavers/a-levels',

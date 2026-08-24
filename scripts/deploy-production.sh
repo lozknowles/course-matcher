@@ -8,6 +8,7 @@ DEPLOY_DIR="${DEPLOY_DIR:-$DEPLOY_ROOT/lincoln-course-match}"
 PUBLIC_URL="${PUBLIC_URL:-https://lozknowles.com/lincoln-course-match/}"
 REMOTE_BACKUP_DIR="${REMOTE_BACKUP_DIR:-/home/loz/deploy-backups/lozknowles.com}"
 STAMP="$(date +%Y%m%dT%H%M%S)"
+REMOTE_STAGE="/home/loz/course-matcher-deploy-$STAMP"
 
 cd "$(dirname "$0")/.."
 
@@ -32,15 +33,29 @@ for f in vendor/tesseract/tesseract.min.js vendor/tesseract/worker.min.js vendor
   test -s "$f"
 done
 
-ssh -p "$DEPLOY_PORT" "$DEPLOY_HOST" \
-  "mkdir -p '$REMOTE_BACKUP_DIR'; if [ -d '$DEPLOY_DIR' ]; then tar -C '$DEPLOY_ROOT' -czf '$REMOTE_BACKUP_DIR/lincoln-course-match-$STAMP.tgz' lincoln-course-match; fi; mkdir -p '$DEPLOY_DIR'"
-
+# Upload to a directory owned by the SSH user first. The Apache document root
+# is intentionally not made writable by the deployment account.
+ssh -p "$DEPLOY_PORT" "$DEPLOY_HOST" "rm -rf '$REMOTE_STAGE'; mkdir -p '$REMOTE_STAGE' '$REMOTE_BACKUP_DIR'"
 rsync -av --delete-after \
   -e "ssh -p $DEPLOY_PORT" \
   index.html styles.css app.js matcher-core.js courses.js vendor \
-  "$DEPLOY_HOST:$DEPLOY_DIR/"
+  "$DEPLOY_HOST:$REMOTE_STAGE/"
+
+# Use sudo only for the final web-root operation. -tt permits an interactive
+# sudo password prompt when cottageserver is not configured for passwordless sudo.
+ssh -tt -p "$DEPLOY_PORT" "$DEPLOY_HOST" "set -e; \
+  if sudo test -d '$DEPLOY_DIR'; then \
+    sudo tar -C '$DEPLOY_ROOT' -czf - lincoln-course-match > '$REMOTE_BACKUP_DIR/lincoln-course-match-$STAMP.tgz'; \
+  fi; \
+  sudo mkdir -p '$DEPLOY_DIR'; \
+  sudo rsync -a --delete '$REMOTE_STAGE/' '$DEPLOY_DIR/'; \
+  sudo chmod -R a+rX '$DEPLOY_DIR'; \
+  rm -rf '$REMOTE_STAGE'; \
+  echo 'Production files installed.'"
 
 curl -fsS "$PUBLIC_URL?release=1.0.0-$STAMP" | grep -q 'Turn your results into useful course conversations'
 curl -fsS "$PUBLIC_URL?release=1.0.0-$STAMP" | grep -q 'What are you interested in?'
+curl -fsS "$PUBLIC_URL/vendor/pdfjs/pdf.mjs?release=1.0.0-$STAMP" >/dev/null
+curl -fsS "$PUBLIC_URL/vendor/tesseract/tesseract.min.js?release=1.0.0-$STAMP" >/dev/null
 
 echo "Course Match 1.0.0 deployed and verified at $PUBLIC_URL"

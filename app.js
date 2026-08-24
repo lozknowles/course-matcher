@@ -21,7 +21,7 @@
  */
 
 import { COURSES, SUBJECTS, SUBJECT_LINKS } from './courses.js';
-import { normaliseGrades, parseResultsText, rankCourses, matchCourse } from './matcher-core.js';
+import { normaliseGrades, parseResultsText, rankCourses, matchCourse, validateGrades } from './matcher-core.js';
 
 // Small DOM helpers used throughout this framework-free application.
 const $ = (sel, root=document) => root.querySelector(sel);
@@ -156,7 +156,14 @@ function renderVerify(){
   const tr=document.createElement('tr');tr.innerHTML='<td colspan="3"><button class="secondary" id="verify-add">+ Add missing subject</button></td>';tbody.appendChild(tr);$('#verify-add').addEventListener('click',()=>{state.grades.push({subject:'',grade:''});renderVerify()});
 }
 function readVerify(){state.grades=$$('#verify-body tr').slice(0,-1).map(tr=>({subject:$('select',tr)?.value||'',grade:$('input',tr)?.value||''})).filter(x=>x.subject&&x.grade)}
-$('#confirm-grades').addEventListener('click',()=>{readVerify();if(!state.grades.length)return;showStudentPanel('interest-panel',3)});
+function verifiedGradesAreValid(){
+  const { issues }=validateGrades(state.grades);
+  if(!issues.length){$('#verify-status').textContent='';return true}
+  const labels={'duplicate-subject':'duplicate subject','unknown-subject':'unsupported subject','invalid-grade':'invalid grade'};
+  $('#verify-status').textContent=`Resolve ${[...new Set(issues.map(issue=>labels[issue.type]))].join(', ')} entries before matching.`;
+  return false;
+}
+$('#confirm-grades').addEventListener('click',()=>{readVerify();if(!state.grades.length||!verifiedGradesAreValid())return;showStudentPanel('interest-panel',3)});
 $$('[data-back]').forEach(b=>b.addEventListener('click',()=>showStudentPanel(b.dataset.back,b.dataset.back==='results-entry'?1:2)));
 
 // ---------------------------------------------------------------------------
@@ -164,7 +171,7 @@ $$('[data-back]').forEach(b=>b.addEventListener('click',()=>showStudentPanel(b.d
 // ---------------------------------------------------------------------------
 SUBJECTS.forEach(subject=>{const b=document.createElement('button');b.className='chip';b.type='button';b.textContent=subject;b.setAttribute('aria-pressed','false');b.addEventListener('click',()=>{const on=b.getAttribute('aria-pressed')==='true';b.setAttribute('aria-pressed',String(!on));if(on)state.interests.delete(subject);else state.interests.add(subject)});$('#interest-chips').appendChild(b)});
 
-$('#run-match').addEventListener('click',()=>{readVerify();renderMatches();showStudentPanel('matches-panel',4)});
+$('#run-match').addEventListener('click',()=>{readVerify();if(!verifiedGradesAreValid()){showStudentPanel('verify-panel',2);return}renderMatches();showStudentPanel('matches-panel',4)});
 $('#edit-results').addEventListener('click',()=>showStudentPanel('verify-panel',2));
 
 /** Render the explainable course results produced by matcher-core.js. */
@@ -214,6 +221,6 @@ $('#cohort-file').addEventListener('change',async e=>{const f=e.target.files[0];
 // Lightweight CSV parsing for the demonstration. For a production integration,
 // prefer an approved structured data contract rather than arbitrary CSV upload.
 function parseCsvLine(line){const out=[];let cur='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){if(q&&line[i+1]==='"'){cur+='"';i++}else q=!q}else if(ch===','&&!q){out.push(cur.trim());cur=''}else cur+=ch}out.push(cur.trim());return out}
-function parseCohortCsv(text){const lines=text.split(/\r?\n/).filter(Boolean);if(lines.length<2)return[];const h=parseCsvLine(lines[0]);const idI=h.findIndex(x=>/^id$/i.test(x)),intI=h.findIndex(x=>/^interest$/i.test(x));return lines.slice(1).map(line=>{const vals=parseCsvLine(line);const grades=h.map((name,i)=>({subject:name,grade:vals[i]})).filter((_,i)=>i!==idI&&i!==intI&&vals[i]);return{id:vals[idI]||`row-${Math.random().toString(36).slice(2,6)}`,interest:vals[intI]||'',grades}})}
+function parseCohortCsv(text){const lines=text.split(/\r?\n/).filter(Boolean);if(lines.length<2)return[];const h=parseCsvLine(lines[0]);const idI=h.findIndex(x=>/^id$/i.test(x)),intI=h.findIndex(x=>/^interest$/i.test(x));return lines.slice(1).map((line,rowIndex)=>{const vals=parseCsvLine(line);const grades=h.map((name,i)=>({subject:name,grade:vals[i]})).filter((_,i)=>i!==idI&&i!==intI&&vals[i]);return{id:vals[idI]||`row-${rowIndex+2}`,interest:vals[intI]||'',grades}})}
 
 renderCourseRule();

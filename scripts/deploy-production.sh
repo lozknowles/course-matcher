@@ -22,7 +22,7 @@ if [ -n "$(git status --porcelain)" ]; then
   exit 1
 fi
 
-npm install --package-lock=false
+npm ci
 npm test
 npm run vendor
 

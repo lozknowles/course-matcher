@@ -32,6 +32,15 @@ export const SUBJECT_ALIASES = {
   'business': 'Business', 'sport': 'Sport', 'pe': 'Sport'
 };
 
+// Subjects the prototype can safely treat as GCSE evidence. Unknown CSV
+// columns are retained for review but must never make up a GCSE total.
+export const RECOGNISED_GCSE_SUBJECTS = new Set([
+  'Mathematics', 'English Language', 'English Literature', 'Combined Science',
+  'Biology', 'Chemistry', 'Physics', 'Geography', 'History', 'Art & Design',
+  'Computing', 'Business', 'Sport', 'French', 'German', 'Spanish',
+  'Religious Studies', 'Sociology', 'Psychology', 'Economics', 'Drama', 'Music'
+]);
+
 /**
  * Return a canonical subject label where a known alias exists.
  * Unknown labels are retained (title-cased) rather than discarded so that
@@ -99,6 +108,40 @@ export function normaliseGrades(rows = []) {
       grade: parseGrade(row.grade),
       rawGrade: String(row.grade).trim()
     }));
+}
+
+/**
+ * Validate input before it is used as qualification evidence.
+ *
+ * A duplicate subject is ambiguous rather than two GCSEs. This is especially
+ * important for adviser CSV files, whose headers are user-controlled.
+ */
+export function validateGrades(rows = []) {
+  const normalised = Array.isArray(rows) && rows[0]?.grade?.type
+    ? rows
+    : normaliseGrades(rows);
+  const issues = [];
+  const seen = new Set();
+  const grades = [];
+
+  for (const row of normalised) {
+    if (!RECOGNISED_GCSE_SUBJECTS.has(row.subject)) {
+      issues.push({ type: 'unknown-subject', subject: row.subject });
+      continue;
+    }
+    if (numericGrade(row.grade) === null) {
+      issues.push({ type: 'invalid-grade', subject: row.subject });
+      continue;
+    }
+    if (seen.has(row.subject)) {
+      issues.push({ type: 'duplicate-subject', subject: row.subject });
+      continue;
+    }
+    seen.add(row.subject);
+    grades.push(row);
+  }
+
+  return { grades, issues };
 }
 
 /**
@@ -219,12 +262,13 @@ function evaluateRule(grades, rule) {
  * model must leave to a person (interview, reference, DBS, portfolio, etc.).
  */
 export function matchCourse(gradesInput, course) {
-  const grades = Array.isArray(gradesInput) && gradesInput[0]?.grade?.type
-    ? gradesInput
-    : normaliseGrades(gradesInput);
+  const { grades, issues: inputIssues } = validateGrades(gradesInput);
 
   const evaluation = evaluateRule(grades, course.rule || {});
   const warnings = [...(course.warnings || [])];
+  if (inputIssues.length) {
+    warnings.push('Some results need correction before this can be treated as a grade match. Check for duplicate subjects, unsupported subjects or invalid grades.');
+  }
 
   // A single Combined Science grade may under-count a double award. Warn rather
   // than guessing: the verification step is where a user can correct it to 5-5.
@@ -241,6 +285,7 @@ export function matchCourse(gradesInput, course) {
   let status = 'green';
   if (evaluation.hardFailures > 0) status = evaluation.gaps <= 2 ? 'amber' : 'red';
   if (course.rule?.manualOnly) status = 'amber';
+  if (inputIssues.length) status = 'amber';
 
   // Internal ordering only. Do not expose this as an acceptance likelihood.
   const score = status === 'green'
@@ -249,7 +294,7 @@ export function matchCourse(gradesInput, course) {
       ? 65 - evaluation.gaps * 4
       : Math.max(10, 35 - evaluation.gaps * 4);
 
-  return { course, ...evaluation, warnings, status, score };
+  return { course, ...evaluation, warnings, inputIssues, status, score };
 }
 
 /**

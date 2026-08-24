@@ -73,6 +73,7 @@ The design rule is simple: **assist the conversation; never pretend to make the 
 - Image/screenshot OCR using Tesseract.js in the browser.
 - PDF text extraction using PDF.js; image-only PDF pages can fall back to local OCR.
 - Mandatory human verification of extracted grades before matching.
+- Verification blocks matching until duplicate subjects, unsupported subjects and invalid grades are resolved.
 - Combined Science double-award support, e.g. `5-5`.
 - Interest and career-text filtering/ranking.
 - Green / amber / red indicative bands with the individual checks shown.
@@ -185,7 +186,7 @@ Clone and prepare:
 ```bash
 git clone https://github.com/lozknowles/course-matcher.git
 cd course-matcher
-npm install
+npm ci
 npm run vendor
 ```
 
@@ -252,6 +253,8 @@ S-102,Sport,3,3,3-3,4
 
 Use anonymised identifiers in demonstrations.
 
+Only recognised GCSE subject columns are used as grade evidence. Duplicate subject columns and invalid grades are flagged for correction and cannot make a student appear to meet a GCSE total. CSV import is deliberately a demonstration feature; replace it with an approved structured data contract before production use.
+
 ## Generated OCR/PDF dependencies
 
 The repository pins:
@@ -264,7 +267,7 @@ The repository pins:
 Run:
 
 ```bash
-npm install
+npm ci
 npm run vendor
 ```
 
@@ -306,7 +309,7 @@ CIS should treat that script as an example deployment implementation, not as a r
 
 | Symptom | Likely cause | First check |
 |---|---|---|
-| Manual matching works but image OCR fails | `vendor/` missing/incomplete | Run `npm install && npm run vendor` |
+| Manual matching works but image OCR fails | `vendor/` missing/incomplete | Run `npm ci && npm run vendor` |
 | PDF upload fails | PDF.js vendor files missing | Check `vendor/pdfjs/pdf.mjs` and worker |
 | OCR text is wrong | OCR quality/input image | Correct in mandatory verification step |
 | Too few GCSEs counted | Combined Science entered as one grade | Use `5-5` when a double award is evidenced |

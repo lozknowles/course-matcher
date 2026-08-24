@@ -10,6 +10,14 @@ The project currently follows a lightweight semantic-versioning approach:
 
 ## Unreleased — CIS handover/supportability
 
+### Correctness and safety
+
+- Prevented duplicate and unrecognised adviser CSV subject columns from being counted as GCSE evidence.
+- Added validation that blocks student matching until duplicate subjects, unsupported subjects and invalid grades are resolved.
+- Added deterministic fallback cohort row IDs, replacing random IDs in imported CSV data.
+- Added regression coverage proving that duplicate or arbitrary columns cannot fabricate a green GCSE-total match.
+- Fixed the local vendor build on Windows by converting the module URL to a filesystem path correctly.
+
 ### Documentation
 
 - Reworked `README.md` as a first-line onboarding and support guide for engineers with no prior project context.

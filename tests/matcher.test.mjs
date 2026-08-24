@@ -10,7 +10,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { COURSES } from '../courses.js';
-import { parseResultsText, matchCourse, rankCourses, countQualificationsAtOrAbove, normaliseGrades } from '../matcher-core.js';
+import { parseResultsText, matchCourse, rankCourses, countQualificationsAtOrAbove, normaliseGrades, validateGrades } from '../matcher-core.js';
 
 // Canonical synthetic profile used by the UI and documentation.
 const GOLDEN=[
@@ -27,6 +27,18 @@ test('parses common OCR-style result lines',()=>{
 test('combined science pair counts as two qualifications',()=>{
  const grades=normaliseGrades([{subject:'Combined Science',grade:'5-5'},{subject:'Mathematics',grade:'5'}]);
  assert.equal(countQualificationsAtOrAbove(grades,4),3);
+});
+
+test('duplicate and unrecognised CSV subjects cannot fabricate a GCSE total',()=>{
+ const course={rule:{minTotal:{count:5,grade:4}}};
+ const duplicateMaths=Array.from({length:5},()=>({subject:'Mathematics',grade:'5'}));
+ const unknownColumns=['Notes','Attendance','Predicted grade','Comment','Other'].map(subject=>({subject,grade:'9'}));
+ for(const grades of [duplicateMaths,unknownColumns]){
+   const result=matchCourse(grades,course);
+   assert.notEqual(result.status,'green');
+   assert.ok(result.inputIssues.length);
+ }
+ assert.equal(validateGrades(unknownColumns).grades.length,0);
 });
 
 test('golden student qualifies for Level 2 Computing & Electronics Technician',()=>{

@@ -1,8 +1,18 @@
+/*
+ * Matching-engine regression tests.
+ *
+ * These tests are executable examples of business behaviour, not just unit
+ * coverage. When changing a course rule or matcher primitive, add/adjust a test
+ * that demonstrates the intended outcome so future supporters can see why the
+ * rule exists and detect accidental regressions.
+ */
+
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { COURSES } from '../courses.js';
 import { parseResultsText, matchCourse, rankCourses, countQualificationsAtOrAbove, normaliseGrades } from '../matcher-core.js';
 
+// Canonical synthetic profile used by the UI and documentation.
 const GOLDEN=[
  {subject:'Mathematics',grade:'5'},{subject:'English Language',grade:'4'},{subject:'English Literature',grade:'3'},
  {subject:'Geography',grade:'3'},{subject:'Physics',grade:'2'},{subject:'Combined Science',grade:'5'}

@@ -40,3 +40,16 @@ test('interest filter prioritises only selected subject family',()=>{
  assert.ok(ranked.length>=2);
  assert.ok(ranked.every(r=>r.course.subject==='Computing'));
 });
+
+test('education and childcare foundation requires both English and Maths at grade 3+',()=>{
+ const missingMaths=[['English Language','4'],['Geography','3'],['History','3'],['Combined Science','3-3']].map(([subject,grade])=>({subject,grade}));
+ const r=matchCourse(missingMaths,course('education-childcare-foundation-l2'));
+ assert.notEqual(r.status,'green');
+ assert.ok(r.checks.some(c=>/Mathematics grade 3/.test(c.label)&&!c.pass));
+});
+
+test('engineering interest includes cross-listed electronic computing pathway',()=>{
+ const ranked=rankCourses(GOLDEN,COURSES,['Engineering'],'');
+ assert.ok(ranked.some(r=>r.course.id==='electronic-computing-l3'));
+ assert.ok(ranked.some(r=>r.course.id==='asi-space-engineering-l2'));
+});

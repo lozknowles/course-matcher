@@ -4,6 +4,7 @@ import { normaliseGrades, parseResultsText, rankCourses, matchCourse } from './m
 const $ = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
 const state = { grades: [], interests: new Set(), cohort: [] };
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 
 const COMMON_SUBJECTS = ['Mathematics','English Language','English Literature','Combined Science','Biology','Chemistry','Physics','Geography','History','Business','Computing','Art & Design','Sport','French','German','Spanish','Psychology','Sociology','Economics','Music'];
 
@@ -95,7 +96,7 @@ $('#to-verify').addEventListener('click',()=>{
 });
 function renderVerify(){
   const tbody=$('#verify-body'); tbody.innerHTML='';
-  state.grades.forEach((g,i)=>{const tr=document.createElement('tr');tr.innerHTML=`<td><select class="text-input">${subjectOptions(g.subject)}</select></td><td><input class="text-input" value="${g.grade}" maxlength="5"></td><td><button class="remove-row" aria-label="Remove result">×</button></td>`;$('.remove-row',tr).addEventListener('click',()=>{state.grades.splice(i,1);renderVerify()});tbody.appendChild(tr)});
+  state.grades.forEach((g,i)=>{const tr=document.createElement('tr');tr.innerHTML=`<td><select class="text-input">${subjectOptions(g.subject)}</select></td><td><input class="text-input" value="${escapeHtml(g.grade)}" maxlength="5"></td><td><button class="remove-row" aria-label="Remove result">×</button></td>`;$('.remove-row',tr).addEventListener('click',()=>{state.grades.splice(i,1);renderVerify()});tbody.appendChild(tr)});
   const tr=document.createElement('tr');tr.innerHTML='<td colspan="3"><button class="secondary" id="verify-add">+ Add missing subject</button></td>';tbody.appendChild(tr);$('#verify-add').addEventListener('click',()=>{state.grades.push({subject:'',grade:''});renderVerify()});
 }
 function readVerify(){state.grades=$$('#verify-body tr').slice(0,-1).map(tr=>({subject:$('select',tr)?.value||'',grade:$('input',tr)?.value||''})).filter(x=>x.subject&&x.grade)}
@@ -139,7 +140,7 @@ function selectedCourse(){return COURSES.find(c=>c.id===$('#adviser-course').val
 function renderCourseRule(){const c=selectedCourse();$('#course-rule-card').innerHTML=`<strong>${c.title}</strong><br>${c.summary}<br><a href="${c.url}" target="_blank" rel="noreferrer">Official source ↗</a>`;renderCohort()}
 $('#adviser-course').addEventListener('change',renderCourseRule);
 $('#load-cohort').addEventListener('click',()=>{state.cohort=structuredClone(SYNTHETIC);renderCohort()});
-function renderCohort(){const body=$('#cohort-results');body.innerHTML='';const c=selectedCourse();state.cohort.map(person=>({person,result:matchCourse(person.grades,c)})).sort((a,b)=>b.result.score-a.result.score).forEach(({person,result})=>{const tr=document.createElement('tr');tr.innerHTML=`<td><strong>${person.id}</strong></td><td>${person.interest||'—'}</td><td><span class="badge ${result.status}">${result.status==='green'?'Likely':result.status==='amber'?'Check':'No'}</span></td><td>${result.checks.map(x=>`${x.pass?'✓':'!'} ${x.label}`).join('<br>')}</td>`;body.appendChild(tr)});if(!state.cohort.length)body.innerHTML='<tr><td colspan="4">Load the synthetic cohort or import a CSV to begin.</td></tr>'}
+function renderCohort(){const body=$('#cohort-results');body.innerHTML='';const c=selectedCourse();state.cohort.map(person=>({person,result:matchCourse(person.grades,c)})).sort((a,b)=>b.result.score-a.result.score).forEach(({person,result})=>{const tr=document.createElement('tr');tr.innerHTML=`<td><strong>${escapeHtml(person.id)}</strong></td><td>${escapeHtml(person.interest||'—')}</td><td><span class="badge ${result.status}">${result.status==='green'?'Likely':result.status==='amber'?'Check':'No'}</span></td><td>${result.checks.map(x=>`${x.pass?'✓':'!'} ${x.label}`).join('<br>')}</td>`;body.appendChild(tr)});if(!state.cohort.length)body.innerHTML='<tr><td colspan="4">Load the synthetic cohort or import a CSV to begin.</td></tr>'}
 $('#cohort-file').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;state.cohort=parseCohortCsv(await f.text());renderCohort()});
 function parseCsvLine(line){const out=[];let cur='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){if(q&&line[i+1]==='"'){cur+='"';i++}else q=!q}else if(ch===','&&!q){out.push(cur.trim());cur=''}else cur+=ch}out.push(cur.trim());return out}
 function parseCohortCsv(text){const lines=text.split(/\r?\n/).filter(Boolean);if(lines.length<2)return[];const h=parseCsvLine(lines[0]);const idI=h.findIndex(x=>/^id$/i.test(x)),intI=h.findIndex(x=>/^interest$/i.test(x));return lines.slice(1).map(line=>{const vals=parseCsvLine(line);const grades=h.map((name,i)=>({subject:name,grade:vals[i]})).filter((_,i)=>i!==idI&&i!==intI&&vals[i]);return{id:vals[idI]||`row-${Math.random().toString(36).slice(2,6)}`,interest:vals[intI]||'',grades}})}

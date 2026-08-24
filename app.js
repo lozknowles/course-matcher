@@ -1,13 +1,43 @@
+/*
+ * Course Match browser application/controller
+ * ------------------------------------------
+ * This module owns browser interaction only. It intentionally delegates:
+ *   - course data/provenance to courses.js
+ *   - qualification parsing/matching to matcher-core.js
+ *
+ * Runtime privacy model:
+ * uploaded documents, OCR text, grades and adviser cohort data remain in
+ * browser memory in the current prototype. There is no application upload API
+ * in this repository.
+ *
+ * Support invariants:
+ *   1. OCR is assistance, never authority: users must pass through the grade
+ *      verification screen before matching.
+ *   2. A failed OCR/PDF path must leave manual entry usable.
+ *   3. Student and adviser views use the same matcher-core.js rules.
+ *   4. User-controlled values rendered through innerHTML must be escaped.
+ *
+ * See ARCHITECTURE.md for detailed data-flow and trust-boundary documentation.
+ */
+
 import { COURSES, SUBJECTS, SUBJECT_LINKS } from './courses.js';
 import { normaliseGrades, parseResultsText, rankCourses, matchCourse } from './matcher-core.js';
 
+// Small DOM helpers used throughout this framework-free application.
 const $ = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
+
+// Transient browser state only: refreshing/closing the page clears it.
 const state = { grades: [], interests: new Set(), cohort: [] };
+
+// Escape user-controlled values before placing them inside an innerHTML string.
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 
 const COMMON_SUBJECTS = ['Mathematics','English Language','English Literature','Combined Science','Biology','Chemistry','Physics','Geography','History','Business','Computing','Art & Design','Sport','French','German','Spanish','Psychology','Sociology','Economics','Music'];
 
+// ---------------------------------------------------------------------------
+// Top-level mode and student-step navigation
+// ---------------------------------------------------------------------------
 function setMode(mode){
   $$('.mode-panel').forEach(p => p.classList.toggle('active', p.id === `${mode}-mode`));
   $$('.tab').forEach(t => { const active=t.dataset.mode===mode; t.classList.toggle('active',active); t.setAttribute('aria-selected',active); });
@@ -17,6 +47,9 @@ $$('.tab').forEach(t=>t.addEventListener('click',()=>setMode(t.dataset.mode)));
 function setStep(n){ $$('.step').forEach(s=>s.classList.toggle('active',Number(s.dataset.step)===n)); }
 function showStudentPanel(id, step){ ['results-entry','verify-panel','interest-panel','matches-panel'].forEach(x=>$('#'+x).classList.toggle('hidden',x!==id)); setStep(step); $('#'+id).scrollIntoView({behavior:'smooth',block:'start'}); }
 
+// ---------------------------------------------------------------------------
+// Manual grade entry
+// ---------------------------------------------------------------------------
 function subjectOptions(selected=''){ return ['','...'].concat(COMMON_SUBJECTS).map(s=>s==='...'?'':`<option value="${s}" ${s===selected?'selected':''}>${s||'Select subject'}</option>`).join(''); }
 function addManualRow(subject='',grade=''){
   const row=document.createElement('div'); row.className='manual-row';
@@ -27,12 +60,15 @@ function readManualRows(root='#manual-rows'){ return $$('.manual-row',$(root)).m
 function seedManual(rows){ $('#manual-rows').innerHTML=''; rows.forEach(r=>addManualRow(r.subject,r.grade)); if(!rows.length) for(let i=0;i<4;i++) addManualRow(); }
 seedManual([]); $('#add-row').addEventListener('click',()=>addManualRow());
 
+// Repeatable synthetic profile used by demonstrations and regression tests.
 const GOLDEN = [
   {subject:'Mathematics',grade:'5'},{subject:'English Language',grade:'4'},{subject:'English Literature',grade:'3'},
   {subject:'Geography',grade:'3'},{subject:'Physics',grade:'2'},{subject:'Combined Science',grade:'5'}
 ];
 $('#load-golden').addEventListener('click',()=>{ seedManual(GOLDEN); $('#ocr-text').value='Mathematics 5\nEnglish Language 4\nEnglish Literature 3\nGeography 3\nPhysics 2\nCombined Science 5'; $('#ocr-status').textContent='Synthetic demo student loaded.'; });
 
+// Convert OCR/copied text into editable manual rows. Parsing is deliberately
+// conservative; the next stage is always a human verification table.
 function parseTextIntoRows(){
   const parsed=parseResultsText($('#ocr-text').value);
   if(parsed.length){ seedManual(parsed); $('#ocr-status').textContent=`Parsed ${parsed.length} grade${parsed.length===1?'':'s'} from extracted text. Please verify them.`; }
@@ -40,6 +76,9 @@ function parseTextIntoRows(){
 }
 $('#parse-text').addEventListener('click',parseTextIntoRows);
 
+// ---------------------------------------------------------------------------
+// Results document handling (text/CSV, PDF.js and local Tesseract.js OCR)
+// ---------------------------------------------------------------------------
 $('#choose-file').addEventListener('click',()=>$('#result-file').click());
 const drop=$('#drop-zone');
 ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag')}));
@@ -47,6 +86,11 @@ const drop=$('#drop-zone');
 drop.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f) processFile(f)});
 $('#result-file').addEventListener('change',e=>{if(e.target.files[0])processFile(e.target.files[0])});
 
+/**
+ * Route a browser File object to the appropriate local extraction path.
+ * Failure is intentionally non-fatal: the user can always fall back to manual
+ * entry rather than being blocked by OCR/PDF tooling.
+ */
 async function processFile(file){
   $('#ocr-status').textContent=`Reading ${file.name}…`;
   try{
@@ -65,16 +109,25 @@ async function processFile(file){
   }
 }
 
+/** Lazily load the locally vendored Tesseract browser bundle. */
 async function ensureTesseract(){
   if(window.Tesseract) return window.Tesseract;
   await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='./vendor/tesseract/tesseract.min.js';s.onload=resolve;s.onerror=()=>reject(new Error('local OCR vendor bundle is not installed'));document.head.appendChild(s)});
   return window.Tesseract;
 }
+
+/** OCR an image/canvas locally in the browser and always terminate the worker. */
 async function ocrImage(source){
   const T=await ensureTesseract(); $('#ocr-status').textContent='Running OCR locally in this browser…';
   const worker=await T.createWorker('eng',1,{workerPath:'./vendor/tesseract/worker.min.js',corePath:'./vendor/tesseract-core',langPath:'./vendor/tessdata',logger:m=>{if(m.status)$('#ocr-status').textContent=`OCR: ${m.status}${m.progress?` ${Math.round(m.progress*100)}%`:''}`}});
   try{const {data}=await worker.recognize(source);return data.text||''}finally{await worker.terminate()}
 }
+
+/**
+ * Extract up to five PDF pages locally. Prefer the embedded text layer; when a
+ * page has little/no text, render it to canvas and OCR that image instead.
+ * The five-page cap is a prototype guardrail rather than a College policy.
+ */
 async function extractPdf(file){
   let pdfjs;
   try{pdfjs=await import('./vendor/pdfjs/pdf.mjs')}catch{throw new Error('local PDF vendor bundle is not installed')}
@@ -90,6 +143,9 @@ async function extractPdf(file){
   return text;
 }
 
+// ---------------------------------------------------------------------------
+// Mandatory human verification gate
+// ---------------------------------------------------------------------------
 $('#to-verify').addEventListener('click',()=>{
   const rows=readManualRows(); if(!rows.length){$('#ocr-status').textContent='Add at least one subject and grade first.';return}
   state.grades=rows; renderVerify(); showStudentPanel('verify-panel',2);
@@ -103,10 +159,15 @@ function readVerify(){state.grades=$$('#verify-body tr').slice(0,-1).map(tr=>({s
 $('#confirm-grades').addEventListener('click',()=>{readVerify();if(!state.grades.length)return;showStudentPanel('interest-panel',3)});
 $$('[data-back]').forEach(b=>b.addEventListener('click',()=>showStudentPanel(b.dataset.back,b.dataset.back==='results-entry'?1:2)));
 
+// ---------------------------------------------------------------------------
+// Student interests and course matching
+// ---------------------------------------------------------------------------
 SUBJECTS.forEach(subject=>{const b=document.createElement('button');b.className='chip';b.type='button';b.textContent=subject;b.setAttribute('aria-pressed','false');b.addEventListener('click',()=>{const on=b.getAttribute('aria-pressed')==='true';b.setAttribute('aria-pressed',String(!on));if(on)state.interests.delete(subject);else state.interests.add(subject)});$('#interest-chips').appendChild(b)});
 
 $('#run-match').addEventListener('click',()=>{readVerify();renderMatches();showStudentPanel('matches-panel',4)});
 $('#edit-results').addEventListener('click',()=>showStudentPanel('verify-panel',2));
+
+/** Render the explainable course results produced by matcher-core.js. */
 function renderMatches(){
   const ranked=rankCourses(state.grades,COURSES,[...state.interests],$('#career-text').value);
   const greens=ranked.filter(x=>x.status==='green').length; const ambers=ranked.filter(x=>x.status==='amber').length;
@@ -120,9 +181,16 @@ function renderMatches(){
   });
   if(!ranked.length) list.innerHTML='<div class="panel"><h3>No encoded courses matched those interests</h3><p>Try broadening the interests or use the official subject links below. This prototype deliberately does not invent eligibility rules for courses it has not encoded.</p></div>';
 }
+
+// Always provide an official navigation path for subjects that are not encoded
+// strongly enough to receive a machine eligibility result.
 Object.entries(SUBJECT_LINKS).forEach(([s,u])=>{const a=document.createElement('a');a.href=u;a.target='_blank';a.rel='noreferrer';a.textContent=s;$('#subject-links').appendChild(a)});
 
-// Adviser mode
+// ---------------------------------------------------------------------------
+// Adviser / reverse-matching mode
+// ---------------------------------------------------------------------------
+// This mode deliberately reuses matchCourse() so student and staff views cannot
+// drift into separate hidden eligibility implementations.
 COURSES.forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.title;$('#adviser-course').appendChild(o)});
 const SYNTHETIC=[
  {id:'S-001',interest:'Computing',grades:GOLDEN},
@@ -142,6 +210,10 @@ $('#adviser-course').addEventListener('change',renderCourseRule);
 $('#load-cohort').addEventListener('click',()=>{state.cohort=structuredClone(SYNTHETIC);renderCohort()});
 function renderCohort(){const body=$('#cohort-results');body.innerHTML='';const c=selectedCourse();state.cohort.map(person=>({person,result:matchCourse(person.grades,c)})).sort((a,b)=>b.result.score-a.result.score).forEach(({person,result})=>{const tr=document.createElement('tr');tr.innerHTML=`<td><strong>${escapeHtml(person.id)}</strong></td><td>${escapeHtml(person.interest||'—')}</td><td><span class="badge ${result.status}">${result.status==='green'?'Likely':result.status==='amber'?'Check':'No'}</span></td><td>${result.checks.map(x=>`${x.pass?'✓':'!'} ${x.label}`).join('<br>')}</td>`;body.appendChild(tr)});if(!state.cohort.length)body.innerHTML='<tr><td colspan="4">Load the synthetic cohort or import a CSV to begin.</td></tr>'}
 $('#cohort-file').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;state.cohort=parseCohortCsv(await f.text());renderCohort()});
+
+// Lightweight CSV parsing for the demonstration. For a production integration,
+// prefer an approved structured data contract rather than arbitrary CSV upload.
 function parseCsvLine(line){const out=[];let cur='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){if(q&&line[i+1]==='"'){cur+='"';i++}else q=!q}else if(ch===','&&!q){out.push(cur.trim());cur=''}else cur+=ch}out.push(cur.trim());return out}
 function parseCohortCsv(text){const lines=text.split(/\r?\n/).filter(Boolean);if(lines.length<2)return[];const h=parseCsvLine(lines[0]);const idI=h.findIndex(x=>/^id$/i.test(x)),intI=h.findIndex(x=>/^interest$/i.test(x));return lines.slice(1).map(line=>{const vals=parseCsvLine(line);const grades=h.map((name,i)=>({subject:name,grade:vals[i]})).filter((_,i)=>i!==idI&&i!==intI&&vals[i]);return{id:vals[idI]||`row-${Math.random().toString(36).slice(2,6)}`,interest:vals[intI]||'',grades}})}
+
 renderCourseRule();

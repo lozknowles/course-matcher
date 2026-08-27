@@ -3,23 +3,41 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#112f35">
+  <meta name="theme-color" content="#063956">
   <title>Course Match | Lincoln College demonstration</title>
   <meta name="description" content="Unofficial Lincoln College course matching demonstration for students and advisers.">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header">
-    <div class="brand-wrap">
-      <div class="brand-mark" aria-hidden="true">LC</div>
-      <div>
-        <p class="eyebrow">UNOFFICIAL DEMONSTRATION</p>
-        <h1>Course Match</h1>
-        <p class="subtitle">A results-day prototype inspired by Lincoln College</p>
+  <header class="college-header">
+    <div class="header-shell">
+      <div class="header-top">
+        <a class="college-wordmark" href="#main" aria-label="Lincoln College Course Match home">
+          <strong>LINCOLN<br>COLLEGE</strong>
+          <span>LINCOLN &amp; NEWARK</span>
+        </a>
+        <nav class="utility-nav" aria-label="Lincoln College links">
+          <a href="https://www.lincolncollege.ac.uk/open-days" target="_blank" rel="noreferrer">Open Days/Events</a>
+          <a href="https://www.lincolncollege.ac.uk/support" target="_blank" rel="noreferrer">Support</a>
+          <a href="https://www.lincolncollege.ac.uk/news" target="_blank" rel="noreferrer">News</a>
+          <a href="https://www.lincolncollege.ac.uk/contact-us" target="_blank" rel="noreferrer">Contact Us</a>
+          <a href="https://www.lincolncollege.ac.uk/students" target="_blank" rel="noreferrer">Students</a>
+          <a href="https://www.lincolncollege.ac.uk/staff" target="_blank" rel="noreferrer">Staff</a>
+        </nav>
+      </div>
+      <div class="header-main">
+        <nav class="primary-nav" aria-label="Lincoln College primary links">
+          <a href="https://www.lincolncollege.ac.uk/the-college" target="_blank" rel="noreferrer">The College</a>
+          <a href="https://www.lincolncollege.ac.uk/school-leavers" target="_blank" rel="noreferrer">School Leavers</a>
+          <a href="https://www.lincolncollege.ac.uk/lincoln-college-university-centre" target="_blank" rel="noreferrer">University Centre</a>
+          <a href="https://www.lincolncollege.ac.uk/apprenticeships" target="_blank" rel="noreferrer">Apprenticeships</a>
+          <a href="https://www.lincolncollege.ac.uk/adult" target="_blank" rel="noreferrer">Adult Learning</a>
+        </nav>
+        <a class="courses-button" href="https://www.lincolncollege.ac.uk/courses" target="_blank" rel="noreferrer">Courses</a>
       </div>
     </div>
-    <div class="header-note">Indicative matching only · always verify current course information</div>
+    <div class="prototype-banner">Unofficial demonstration prototype · prepared for discussion with Lincoln College</div>
   </header>
 
   <nav class="mode-tabs" aria-label="Course Match mode">
@@ -27,6 +45,17 @@
     <button class="tab" data-mode="adviser" aria-selected="false">Tutor / adviser view</button>
     <button class="tab" data-mode="about" aria-selected="false">About this demo</button>
   </nav>
+
+  <section class="college-hero" aria-labelledby="course-match-title">
+    <span class="hero-shape hero-shape-left" aria-hidden="true"></span>
+    <span class="hero-shape hero-shape-right" aria-hidden="true"></span>
+    <div class="hero-inner">
+      <p class="hero-kicker">Results day course finder</p>
+      <h1 id="course-match-title">Course Match</h1>
+      <p class="hero-lead">Turn achieved grades into useful Lincoln College course conversations.</p>
+      <p class="hero-evidence"><span aria-hidden="true"></span> Course evidence snapshot checked 24 August 2026</p>
+    </div>
+  </section>
 
   <main id="main">
     <section id="student-mode" class="mode-panel active" aria-labelledby="student-heading">
@@ -121,7 +150,7 @@
     </section>
   </main>
 
-  <footer><p><strong>Course Match demonstration</strong> · Independent prototype · Not affiliated with or endorsed by Lincoln College.</p><p>Official course information: <a href="https://www.lincolncollege.ac.uk/school-leavers/course-subjects" target="_blank" rel="noreferrer">Lincoln College course subjects ↗</a></p></footer>
+  <footer class="site-footer"><p><strong>Course Match demonstration</strong> · Prepared for discussion · Not yet an official Lincoln College service.</p><p>Official course information: <a href="https://www.lincolncollege.ac.uk/school-leavers/course-subjects" target="_blank" rel="noreferrer">Lincoln College course subjects ↗</a></p></footer>
 
   <script type="module" src="app.js"></script>
 </body>

@@ -53,11 +53,11 @@ ssh -tt -p "$DEPLOY_PORT" "$DEPLOY_HOST" "set -e; \
   rm -rf '$REMOTE_STAGE'; \
   echo 'Production files installed.'"
 
-curl -fsS "$PUBLIC_URL?release=1.0.0-$STAMP" | grep -q 'Turn your results into useful course conversations'
-curl -fsS "$PUBLIC_URL?release=1.0.0-$STAMP" | grep -q 'What are you interested in?'
-curl -fsS "$PUBLIC_URL?release=1.0.0-$STAMP" | grep -q 'Take photo'
-curl -fsS "$PUBLIC_URL/vendor/pdfjs/pdf.mjs?release=1.0.0-$STAMP" >/dev/null
-curl -fsS "$PUBLIC_URL/vendor/tesseract/tesseract.min.js?release=1.0.0-$STAMP" >/dev/null
-curl -fsS "$PUBLIC_URL/document-core.js?release=1.0.0-$STAMP" | grep -q 'readAllPdfPages'
+curl -fsS "$PUBLIC_URL" | grep -q 'Turn your results into useful course conversations'
+curl -fsS "$PUBLIC_URL" | grep -q 'What are you interested in?'
+curl -fsS "$PUBLIC_URL" | grep -q 'Take photo'
+curl -fsS "$PUBLIC_URL/vendor/pdfjs/pdf.mjs" >/dev/null
+curl -fsS "$PUBLIC_URL/vendor/tesseract/tesseract.min.js" >/dev/null
+curl -fsS "$PUBLIC_URL/document-core.js" | grep -q 'readAllPdfPages'
 
 echo "Course Match 1.0.0 deployed and verified at $PUBLIC_URL"

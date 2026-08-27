@@ -23,22 +23,28 @@
  */
 export const SUBJECT_ALIASES = {
   'maths': 'Mathematics', 'math': 'Mathematics', 'mathematics': 'Mathematics',
+  'further maths': 'Further Mathematics', 'further mathematics': 'Further Mathematics',
   'english': 'English Language', 'english language': 'English Language', 'eng lang': 'English Language',
   'english literature': 'English Literature', 'eng lit': 'English Literature',
   'combined science': 'Combined Science', 'science': 'Combined Science',
   'physics': 'Physics', 'chemistry': 'Chemistry', 'biology': 'Biology',
   'geography': 'Geography', 'history': 'History', 'art': 'Art & Design', 'art and design': 'Art & Design',
   'ict': 'Computing', 'computer science': 'Computing', 'computing': 'Computing',
-  'business': 'Business', 'sport': 'Sport', 'pe': 'Sport'
+  'business': 'Business', 'business studies': 'Business',
+  'sport': 'Sport', 'pe': 'Sport', 'physical education': 'Sport',
+  'religious education': 'Religious Studies', 'religious studies': 'Religious Studies', 're': 'Religious Studies',
+  'design and technology': 'Design & Technology', 'design technology': 'Design & Technology', 'dt': 'Design & Technology',
+  'food preparation and nutrition': 'Food Preparation & Nutrition', 'food technology': 'Food Preparation & Nutrition'
 };
 
 // Subjects the prototype can safely treat as GCSE evidence. Unknown CSV
 // columns are retained for review but must never make up a GCSE total.
 export const RECOGNISED_GCSE_SUBJECTS = new Set([
-  'Mathematics', 'English Language', 'English Literature', 'Combined Science',
+  'Mathematics', 'Further Mathematics', 'English Language', 'English Literature', 'Combined Science',
   'Biology', 'Chemistry', 'Physics', 'Geography', 'History', 'Art & Design',
   'Computing', 'Business', 'Sport', 'French', 'German', 'Spanish',
-  'Religious Studies', 'Sociology', 'Psychology', 'Economics', 'Drama', 'Music'
+  'Religious Studies', 'Sociology', 'Psychology', 'Economics', 'Drama', 'Music',
+  'Design & Technology', 'Food Preparation & Nutrition'
 ]);
 
 /**
@@ -76,7 +82,7 @@ export function parseGrade(value) {
   // Legacy letter-grade mapping is intentionally approximate. If this becomes
   // material to a College-owned production service, validate the policy with
   // the appropriate curriculum/admissions owner rather than extending it ad hoc.
-  const legacy = { A: 7, B: 6, C: 4, D: 3, E: 2, F: 1, G: 1 };
+  const legacy = { 'A*': 8, A: 7, B: 6, C: 4, D: 3, E: 2, F: 1, G: 1 };
   if (legacy[raw]) return { type: 'single', value: legacy[raw], raw, converted: true };
 
   return { type: 'text', raw };
@@ -339,38 +345,66 @@ export function rankCourses(gradesInput, courses, interests = [], careerText = '
  * before matching.
  */
 export function parseResultsText(text = '') {
-  const cleaned = String(text).replace(/\r/g, '\n');
-  const lines = cleaned.split(/\n+/).map(x => x.trim()).filter(Boolean);
+  const cleaned = String(text)
+    .replace(/\r/g, '\n')
+    .replace(/[|•·]/g, ' ')
+    .replace(/[–—]/g, '-');
+  const lines = cleaned.split(/\n+/).map(x => x.replace(/\s+/g, ' ').trim()).filter(Boolean);
   const subjects = [
-    'English Language', 'English Literature', 'Mathematics', 'Maths',
-    'Combined Science', 'Biology', 'Chemistry', 'Physics', 'Geography',
-    'History', 'Business', 'Computer Science', 'Computing', 'Art and Design',
-    'Art', 'Sport', 'Physical Education', 'PE', 'French', 'German', 'Spanish',
-    'Religious Studies', 'Sociology', 'Psychology', 'Economics', 'Drama', 'Music'
-  ];
+    'Food Preparation and Nutrition', 'English Language', 'English Literature',
+    'Further Mathematics', 'Further Maths', 'Combined Science', 'Computer Science',
+    'Physical Education', 'Religious Education', 'Religious Studies',
+    'Design and Technology', 'Design Technology', 'Business Studies',
+    'Mathematics', 'Maths', 'Biology', 'Chemistry', 'Physics', 'Geography',
+    'History', 'Business', 'Computing', 'Art and Design', 'Art', 'Sport', 'PE',
+    'French', 'German', 'Spanish', 'Sociology', 'Psychology', 'Economics',
+    'Drama', 'Music'
+  ].sort((a, b) => b.length - a.length);
+  const subjectPatterns = subjects.map(subject => ({
+    subject,
+    pattern: new RegExp(`\\b${subject.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'ig')
+  }));
 
   const results = [];
   const seen = new Set();
 
-  for (const line of lines) {
-    for (const subject of subjects) {
-      const escaped = subject.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const re = new RegExp(
-        `\\b${escaped}\\b\\s*(?:[:\\-–]\\s*)?(?:(?:grade|result|gcse)\\s*)?([1-9](?:\\s*[-/]\\s*[1-9])?|[A-G])\\b`,
-        'i'
-      );
-      const match = line.match(re);
+  // Include a two-line window only when the following line contains nothing
+  // except a grade. PDF page numbers and unrelated numeric text must never be
+  // mistaken for the preceding subject's result.
+  const gradeOnly = /^(?:(?:grade|result)\s*)?(?:[1-9](?:\s*[-/]\s*[1-9])?|A\*?|[B-G])(?:\s+(?:[1-9]|A\*?|[B-G]))?$/i;
+  const windows = lines.map((line,index)=>gradeOnly.test(lines[index+1]||'')?`${line} ${lines[index+1]}`:line);
+  for (const windowText of windows) {
+    const mentions = [];
+    for (const { subject, pattern } of subjectPatterns) {
+      pattern.lastIndex = 0;
+      for (const match of windowText.matchAll(pattern)) {
+        mentions.push({ subject, index: match.index, end: match.index + match[0].length });
+      }
+    }
+    mentions.sort((a, b) => a.index - b.index || b.end - a.end);
 
-      if (match) {
-        const normal = normaliseSubject(subject);
-        const key = normal.toLowerCase();
+    for (let index = 0; index < mentions.length; index++) {
+      const mention = mentions[index];
+      // Ignore a shorter alias nested inside a longer subject at the same place.
+      if (index && mentions[index - 1].index === mention.index && mentions[index - 1].end >= mention.end) continue;
+      const next = mentions.find(other => other.index >= mention.end);
+      const afterSubject = windowText.slice(mention.end, next?.index ?? windowText.length).slice(0, 80);
+      const gradeMatches = [...afterSubject.matchAll(/(?:^|[^A-Z0-9])([1-9](?:\s*[-/]\s*[1-9])?|A\*?|[B-G])(?=$|[^A-Z0-9])/gi)];
+      if (!gradeMatches.length) continue;
 
-        // Keep the first recognised occurrence of each subject. Human review can
-        // correct duplicates/ambiguity before the record reaches the matcher.
-        if (!seen.has(key)) {
-          seen.add(key);
-          results.push({ subject: normal, grade: match[1].replace(/\s+/g, '') });
-        }
+      let grade = gradeMatches.at(-1)[1].replace(/\s+/g, '').toUpperCase();
+      const normal = normaliseSubject(mention.subject);
+      if (normal === 'Combined Science' && gradeMatches.length >= 2) {
+        const pair = gradeMatches.slice(-2).map(match => match[1].trim());
+        if (pair.every(value => /^[1-9]$/.test(value))) grade = pair.join('-');
+      }
+      const key = `${normal.toLowerCase()}\u0000${grade}`;
+
+      // Remove exact repeats created by overlapping two-line windows, while
+      // retaining conflicting duplicates for the mandatory human review step.
+      if (!seen.has(key)) {
+        seen.add(key);
+        results.push({ subject: normal, grade });
       }
     }
   }

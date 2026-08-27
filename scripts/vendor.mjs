@@ -10,10 +10,12 @@
  * reproducible source of truth is package.json + this script.
  */
 
-import { cp, mkdir, rm, readdir, copyFile } from 'node:fs/promises';
+import { cp, mkdir, rm, readdir, copyFile, readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { gunzip } from 'node:zlib';
+import { promisify } from 'node:util';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const vendor = path.join(root, 'vendor');
@@ -60,6 +62,17 @@ async function findTrained(dir) {
 
 const trained = await findTrained(engRoot);
 if (!trained) throw new Error('Could not find English traineddata');
+const trainedBytes = await readFile(trained);
+if (trained.endsWith('.gz')) {
+  try {
+    const uncompressed = await promisify(gunzip)(trainedBytes);
+    if (uncompressed.length < 1_000_000) throw new Error('English traineddata is unexpectedly small');
+  } catch (error) {
+    throw new Error(`English traineddata is corrupt: ${error.message}`);
+  }
+} else if (trainedBytes.length < 1_000_000) {
+  throw new Error('English traineddata is unexpectedly small');
+}
 await copyFile(trained, path.join(vendor, 'tessdata', path.basename(trained)));
 
 // PDF.js is loaded as an ES module; its worker must be served beside it.

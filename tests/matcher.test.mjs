@@ -29,6 +29,32 @@ test('combined science pair counts as two qualifications',()=>{
  assert.equal(countQualificationsAtOrAbove(grades,4),3);
 });
 
+test('parses PDF-table spacing, adjacent-line grades and conflicting duplicates for review',()=>{
+ const parsed=parseResultsText([
+   'GCSE Mathematics (1MA1) Grade 5     English Language (1EN0) 4',
+   'Combined Science',
+   '5 5',
+   'Physical Education Result 6',
+   'Mathematics 4'
+ ].join('\n'));
+ assert.deepEqual(parsed,[
+   {subject:'Mathematics',grade:'5'},
+   {subject:'English Language',grade:'4'},
+   {subject:'Combined Science',grade:'5-5'},
+   {subject:'Sport',grade:'6'},
+   {subject:'Mathematics',grade:'4'}
+ ]);
+ assert.ok(validateGrades(parsed).issues.some(issue=>issue.type==='duplicate-subject'));
+});
+
+test('does not treat PDF page numbers as qualification grades',()=>{
+ const parsed=parseResultsText('--- PDF page 1 ---\nMathematics 5\n--- PDF page 2 ---\nEnglish Language 4');
+ assert.deepEqual(parsed,[
+   {subject:'Mathematics',grade:'5'},
+   {subject:'English Language',grade:'4'}
+ ]);
+});
+
 test('duplicate and unrecognised CSV subjects cannot fabricate a GCSE total',()=>{
  const course={rule:{minTotal:{count:5,grade:4}}};
  const duplicateMaths=Array.from({length:5},()=>({subject:'Mathematics',grade:'5'}));

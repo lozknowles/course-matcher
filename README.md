@@ -18,8 +18,9 @@ If you are a Lincoln College CIS engineer inheriting this repository, read these
 3. [`CHANGELOG.md`](CHANGELOG.md) — what changed and why.
 4. `courses.js` — the dated course/rule snapshot.
 5. `matcher-core.js` — pure matching and parsing logic.
-6. `app.js` — browser UI orchestration, OCR/PDF handling and adviser workflow.
-7. `tests/matcher.test.mjs` — executable examples of expected behaviour.
+6. `document-core.js` — PDF row reconstruction and all-page traversal.
+7. `app.js` — browser UI orchestration, OCR/PDF handling and adviser workflow.
+8. `tests/` — executable examples of expected behaviour.
 
 The application deliberately has **no application server or database**. It is plain HTML/CSS/JavaScript served as static files.
 
@@ -70,8 +71,9 @@ The design rule is simple: **assist the conversation; never pretend to make the 
 - Static HTML/CSS/JavaScript; no application framework.
 - No backend API and no student-results database.
 - Manual GCSE grade entry.
-- Image/screenshot OCR using Tesseract.js in the browser.
-- PDF text extraction using PDF.js; image-only PDF pages can fall back to local OCR.
+- Image/screenshot OCR using Tesseract.js in the browser, with a dedicated mobile camera control.
+- All-page PDF text extraction using PDF.js; image-only or unresolved PDF pages fall back to local OCR.
+- Successful document extraction opens the editable grade-verification screen automatically.
 - Mandatory human verification of extracted grades before matching.
 - Verification blocks matching until duplicate subjects, unsupported subjects and invalid grades are resolved.
 - Combined Science double-award support, e.g. `5-5`.
@@ -158,6 +160,7 @@ Do not automate scraping directly into admissions logic without an approval/revi
 ├── index.html                 Static application shell
 ├── styles.css                 Responsive presentation
 ├── app.js                     Browser UI/controller and file-processing flows
+├── document-core.js           PDF row reconstruction + all-page traversal
 ├── matcher-core.js            Pure qualification parsing + matching engine
 ├── courses.js                 Course catalogue, rules, warnings and source links
 ├── tests/
@@ -215,6 +218,8 @@ npm test
 The regression suite currently covers:
 
 - OCR-style subject/grade parsing;
+- PDF-table row reconstruction and all-page traversal;
+- multi-line OCR/PDF layouts and conflicting duplicate results;
 - Combined Science double-award counting;
 - the golden synthetic student;
 - representative Level 2 and Level 3 outcomes;
@@ -273,6 +278,8 @@ npm run vendor
 
 `scripts/vendor.mjs` rebuilds `vendor/` from those installed dependencies. The generated assets are intentionally ignored by Git because `package.json` + the vendor script are the reproducible source of truth.
 
+The vendor build decompresses and validates the English Tesseract language model before copying it. A truncated/corrupt language file therefore fails the build rather than leaving browser OCR stuck during initialisation.
+
 If image/PDF upload reports that the local vendor bundle is missing, this is the first thing to check.
 
 ## Static deployment
@@ -283,6 +290,7 @@ A generic deployment needs only:
 index.html
 styles.css
 app.js
+document-core.js
 matcher-core.js
 courses.js
 vendor/
@@ -311,7 +319,9 @@ CIS should treat that script as an example deployment implementation, not as a r
 |---|---|---|
 | Manual matching works but image OCR fails | `vendor/` missing/incomplete | Run `npm ci && npm run vendor` |
 | PDF upload fails | PDF.js vendor files missing | Check `vendor/pdfjs/pdf.mjs` and worker |
-| OCR text is wrong | OCR quality/input image | Correct in mandatory verification step |
+| OCR remains on language loading | Truncated/corrupt local language model | Run `npm ci && npm run vendor`; the vendor build now validates the model |
+| OCR text is wrong or incomplete | OCR quality/input image | Correct in the mandatory verification step; check every result against the original |
+| Multi-page PDF misses a page | Old deployed `app.js`/missing `document-core.js` | Confirm the current release scans all pages and deploys `document-core.js` |
 | Too few GCSEs counted | Combined Science entered as one grade | Use `5-5` when a double award is evidenced |
 | Course appears amber unexpectedly | One or more hard rules not evidenced | Read the displayed checks and rule in `courses.js` |
 | Course requirement has changed | Dated catalogue is stale | Verify official source, update rule/date/test |
@@ -325,6 +335,7 @@ Before merging a change:
 ```bash
 npm test
 node --check app.js
+node --check document-core.js
 node --check matcher-core.js
 node --check courses.js
 node --check scripts/vendor.mjs

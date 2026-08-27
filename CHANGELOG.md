@@ -12,6 +12,14 @@ The project currently follows a lightweight semantic-versioning approach:
 
 ### Correctness and safety
 
+- Fixed uploaded images and PDFs so successfully extracted qualifications are passed directly into the editable verification UX.
+- Removed the five-page PDF cap: every page is now read, with visual PDF table rows reconstructed before parsing.
+- Added OCR fallback for unresolved/mixed PDF pages and reuse of one OCR worker across the document.
+- Added a dedicated mobile camera input and accessible upload/progress state.
+- Expanded conservative GCSE subject aliases and parsing for table spacing, adjacent-line grades, Combined Science pairs and legacy `A*`.
+- Retained conflicting duplicate results for human review while deduplicating exact OCR/PDF repeats.
+- Made the vendor build reject truncated or corrupt Tesseract English language data.
+- Added regression and live-browser coverage for a seven-page PDF, photographed results, verification and match submission.
 - Prevented duplicate and unrecognised adviser CSV subject columns from being counted as GCSE evidence.
 - Added validation that blocks student matching until duplicate subjects, unsupported subjects and invalid grades are resolved.
 - Added deterministic fallback cohort row IDs, replacing random IDs in imported CSV data.

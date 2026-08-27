@@ -21,7 +21,8 @@
  */
 
 import { COURSES, SUBJECTS, SUBJECT_LINKS } from './courses.js';
-import { normaliseGrades, parseResultsText, rankCourses, matchCourse, validateGrades } from './matcher-core.js';
+import { normaliseGrades, parseResultsText, rankCourses, matchCourse, validateGrades, RECOGNISED_GCSE_SUBJECTS } from './matcher-core.js';
+import { pdfTextItemsToLines, readAllPdfPages } from './document-core.js';
 
 // Small DOM helpers used throughout this framework-free application.
 const $ = (sel, root=document) => root.querySelector(sel);
@@ -33,7 +34,7 @@ const state = { grades: [], interests: new Set(), cohort: [] };
 // Escape user-controlled values before placing them inside an innerHTML string.
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 
-const COMMON_SUBJECTS = ['Mathematics','English Language','English Literature','Combined Science','Biology','Chemistry','Physics','Geography','History','Business','Computing','Art & Design','Sport','French','German','Spanish','Psychology','Sociology','Economics','Music'];
+const COMMON_SUBJECTS = [...RECOGNISED_GCSE_SUBJECTS];
 
 // ---------------------------------------------------------------------------
 // Top-level mode and student-step navigation
@@ -69,10 +70,21 @@ $('#load-golden').addEventListener('click',()=>{ seedManual(GOLDEN); $('#ocr-tex
 
 // Convert OCR/copied text into editable manual rows. Parsing is deliberately
 // conservative; the next stage is always a human verification table.
-function parseTextIntoRows(){
+function parseTextIntoRows({ advanceToVerify=false, summary='' }={}){
   const parsed=parseResultsText($('#ocr-text').value);
-  if(parsed.length){ seedManual(parsed); $('#ocr-status').textContent=`Parsed ${parsed.length} grade${parsed.length===1?'':'s'} from extracted text. Please verify them.`; }
-  else $('#ocr-status').textContent='No recognisable subject/grade pairs found. Use manual entry and verify against the source document.';
+  if(parsed.length){
+    seedManual(parsed);
+    $('#ocr-status').textContent=summary||`Found ${parsed.length} qualification${parsed.length===1?'':'s'}. Please verify them.`;
+    if(advanceToVerify){
+      state.grades=parsed;
+      renderVerify();
+      $('#extraction-summary').textContent=$('#ocr-status').textContent;
+      showStudentPanel('verify-panel',2);
+    }
+  } else {
+    $('#ocr-status').textContent='No recognisable subject/grade pairs found. The extracted text is available below; enter or correct the grades manually.';
+  }
+  return parsed;
 }
 $('#parse-text').addEventListener('click',parseTextIntoRows);
 
@@ -80,11 +92,21 @@ $('#parse-text').addEventListener('click',parseTextIntoRows);
 // Results document handling (text/CSV, PDF.js and local Tesseract.js OCR)
 // ---------------------------------------------------------------------------
 $('#choose-file').addEventListener('click',()=>$('#result-file').click());
+$('#take-photo').addEventListener('click',()=>$('#camera-file').click());
 const drop=$('#drop-zone');
 ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag')}));
 ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag')}));
 drop.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f) processFile(f)});
 $('#result-file').addEventListener('change',e=>{if(e.target.files[0])processFile(e.target.files[0])});
+$('#camera-file').addEventListener('change',e=>{if(e.target.files[0])processFile(e.target.files[0])});
+
+function setUploadBusy(busy){
+  $('#choose-file').disabled=busy;
+  $('#take-photo').disabled=busy;
+  $('#result-file').disabled=busy;
+  $('#camera-file').disabled=busy;
+  $('#drop-zone').setAttribute('aria-busy',String(busy));
+}
 
 /**
  * Route a browser File object to the appropriate local extraction path.
@@ -92,20 +114,36 @@ $('#result-file').addEventListener('change',e=>{if(e.target.files[0])processFile
  * entry rather than being blocked by OCR/PDF tooling.
  */
 async function processFile(file){
+  setUploadBusy(true);
   $('#ocr-status').textContent=`Reading ${file.name}…`;
   try{
     if(/text|csv/.test(file.type)||/\.(txt|csv)$/i.test(file.name)){
-      $('#ocr-text').value=await file.text(); parseTextIntoRows(); return;
+      $('#ocr-text').value=await file.text();
+      const count=parseTextIntoRows({advanceToVerify:true}).length;
+      if(count) $('#extraction-summary').textContent=`Read ${file.name} and found ${count} qualification${count===1?'':'s'}. Check every item against the document.`;
+      return;
     }
     if(file.type==='application/pdf'||/\.pdf$/i.test(file.name)){
-      const text=await extractPdf(file); $('#ocr-text').value=text; parseTextIntoRows(); return;
+      const extracted=await extractPdf(file);
+      $('#ocr-text').value=extracted.text;
+      const parsed=parseResultsText(extracted.text);
+      const warning=extracted.warnings.length?` ${extracted.warnings.length} page${extracted.warnings.length===1?'':'s'} could not be OCR-scanned; check the original carefully.`:'';
+      parseTextIntoRows({advanceToVerify:true,summary:`Scanned all ${extracted.totalPages} PDF page${extracted.totalPages===1?'':'s'} and found ${parsed.length} qualification${parsed.length===1?'':'s'}.${warning}`});
+      return;
     }
     if(file.type.startsWith('image/')){
-      const text=await ocrImage(file); $('#ocr-text').value=text; parseTextIntoRows(); return;
+      const text=await ocrImage(file); $('#ocr-text').value=text;
+      const count=parseTextIntoRows({advanceToVerify:true}).length;
+      if(count) $('#extraction-summary').textContent=`Scanned ${file.name} and found ${count} qualification${count===1?'':'s'}. Check every item against the photograph.`;
+      return;
     }
     throw new Error('Unsupported file type');
   }catch(err){
     console.error(err); $('#ocr-status').textContent=`Could not automatically read this file: ${err.message}. You can still enter the grades manually.`;
+  }finally{
+    setUploadBusy(false);
+    $('#result-file').value='';
+    $('#camera-file').value='';
   }
 }
 
@@ -116,31 +154,85 @@ async function ensureTesseract(){
   return window.Tesseract;
 }
 
+let ocrProgressLabel='OCR';
+async function createOcrWorker(){
+  const T=await ensureTesseract();
+  return T.createWorker('eng',1,{workerPath:'./vendor/tesseract/worker.min.js',corePath:'./vendor/tesseract-core',langPath:'./vendor/tessdata',logger:m=>{if(m.status)$('#ocr-status').textContent=`${ocrProgressLabel}: ${m.status}${m.progress?` ${Math.round(m.progress*100)}%`:''}`}});
+}
+function withTimeout(promise, milliseconds, message){
+  let timer;
+  return Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error(message)),milliseconds)})]).finally(()=>clearTimeout(timer));
+}
+async function recogniseWithWorker(worker,source,label='OCR'){
+  ocrProgressLabel=label;
+  const {data}=await withTimeout(worker.recognize(source),120000,`${label} timed out`);
+  return data.text||'';
+}
+
 /** OCR an image/canvas locally in the browser and always terminate the worker. */
 async function ocrImage(source){
-  const T=await ensureTesseract(); $('#ocr-status').textContent='Running OCR locally in this browser…';
-  const worker=await T.createWorker('eng',1,{workerPath:'./vendor/tesseract/worker.min.js',corePath:'./vendor/tesseract-core',langPath:'./vendor/tessdata',logger:m=>{if(m.status)$('#ocr-status').textContent=`OCR: ${m.status}${m.progress?` ${Math.round(m.progress*100)}%`:''}`}});
-  try{const {data}=await worker.recognize(source);return data.text||''}finally{await worker.terminate()}
+  $('#ocr-status').textContent='Preparing local OCR…';
+  const worker=await createOcrWorker();
+  try{return await recogniseWithWorker(worker,source,'OCR')}finally{await worker.terminate()}
 }
 
 /**
- * Extract up to five PDF pages locally. Prefer the embedded text layer; when a
- * page has little/no text, render it to canvas and OCR that image instead.
- * The five-page cap is a prototype guardrail rather than a College policy.
+ * Extract every PDF page locally. PDF text items are reconstructed into visual
+ * rows. Pages with no usable qualification rows (or sparse rows plus embedded
+ * imagery) are rendered and OCR-scanned. One worker is reused for the PDF.
  */
 async function extractPdf(file){
   let pdfjs;
   try{pdfjs=await import('./vendor/pdfjs/pdf.mjs')}catch{throw new Error('local PDF vendor bundle is not installed')}
   pdfjs.GlobalWorkerOptions.workerSrc='./vendor/pdfjs/pdf.worker.mjs';
-  const data=new Uint8Array(await file.arrayBuffer()); const pdf=await pdfjs.getDocument({data}).promise; let text='';
-  const max=Math.min(pdf.numPages,5);
-  for(let i=1;i<=max;i++){
-    $('#ocr-status').textContent=`Reading PDF page ${i} of ${max}…`;
-    const page=await pdf.getPage(i); const content=await page.getTextContent(); const pageText=content.items.map(x=>x.str).join(' ');
-    if(pageText.trim().length>30){text+=pageText+'\n';continue}
-    const viewport=page.getViewport({scale:1.7});const canvas=document.createElement('canvas');canvas.width=viewport.width;canvas.height=viewport.height;await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;text+=await ocrImage(canvas)+'\n';
+  const data=new Uint8Array(await file.arrayBuffer());
+  const pdf=await pdfjs.getDocument({data}).promise;
+  const totalPages=pdf.numPages;
+  const pages=[];
+  const warnings=[];
+  let worker=null;
+  try{
+    const extractedPages=await readAllPdfPages(pdf,async(page,i)=>{
+      try{
+        const content=await page.getTextContent();
+        const pageText=pdfTextItemsToLines(content.items);
+        const parsedText=parseResultsText(pageText);
+        const operations=await page.getOperatorList();
+        const imageOps=new Set([pdfjs.OPS.paintImageXObject,pdfjs.OPS.paintInlineImageXObject,pdfjs.OPS.paintImageMaskXObject]);
+        const containsImage=operations.fnArray.some(operation=>imageOps.has(operation));
+        const needsOcr=parsedText.length===0||(containsImage&&parsedText.length<3);
+        let ocrText='';
+
+        if(needsOcr){
+          try{
+            if(!worker) worker=await createOcrWorker();
+            const base=page.getViewport({scale:1});
+            const scale=Math.min(2,Math.sqrt(6000000/Math.max(1,base.width*base.height)));
+            const viewport=page.getViewport({scale});
+            const canvas=document.createElement('canvas');
+            canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
+            await page.render({canvasContext:canvas.getContext('2d',{alpha:false}),viewport}).promise;
+            ocrText=await recogniseWithWorker(worker,canvas,`PDF page ${i} of ${totalPages}`);
+            canvas.width=0;canvas.height=0;
+          }catch(error){
+            console.error(`PDF page ${i} OCR failed`,error);
+            warnings.push({page:i,message:error.message});
+          }
+        }
+        return `--- PDF page ${i} ---\n${pageText}\n${ocrText}`.trim();
+      }catch(error){
+        console.error(`PDF page ${i} could not be read`,error);
+        warnings.push({page:i,message:error.message});
+        return `--- PDF page ${i}: extraction failed ---`;
+      }
+      },(i,total)=>{$('#ocr-status').textContent=`Reading PDF page ${i} of ${total}…`});
+    pages.push(...extractedPages);
+  }finally{
+    if(worker) await worker.terminate();
+    if(typeof pdf.destroy==='function') await pdf.destroy();
+    else if(typeof pdf.cleanup==='function') await pdf.cleanup();
   }
-  return text;
+  return {text:pages.join('\n'),totalPages,warnings};
 }
 
 // ---------------------------------------------------------------------------
@@ -148,7 +240,7 @@ async function extractPdf(file){
 // ---------------------------------------------------------------------------
 $('#to-verify').addEventListener('click',()=>{
   const rows=readManualRows(); if(!rows.length){$('#ocr-status').textContent='Add at least one subject and grade first.';return}
-  state.grades=rows; renderVerify(); showStudentPanel('verify-panel',2);
+  state.grades=rows; renderVerify(); $('#extraction-summary').textContent='Check every manually entered result before matching.'; showStudentPanel('verify-panel',2);
 });
 function renderVerify(){
   const tbody=$('#verify-body'); tbody.innerHTML='';

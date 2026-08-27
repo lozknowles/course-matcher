@@ -3,7 +3,7 @@ set -euo pipefail
 
 DEPLOY_HOST="${DEPLOY_HOST:-cottageserver}"
 DEPLOY_PORT="${DEPLOY_PORT:-2222}"
-DEPLOY_ROOT="${DEPLOY_ROOT:-/var/www/lozknowles.com}"
+DEPLOY_ROOT="${DEPLOY_ROOT:-/var/www/lozknowles.com/public_html/dist}"
 DEPLOY_DIR="${DEPLOY_DIR:-$DEPLOY_ROOT/lincoln-course-match}"
 PUBLIC_URL="${PUBLIC_URL:-https://lozknowles.com/lincoln-course-match/}"
 REMOTE_BACKUP_DIR="${REMOTE_BACKUP_DIR:-/home/loz/deploy-backups/lozknowles.com}"
@@ -26,7 +26,7 @@ npm ci
 npm test
 npm run vendor
 
-for f in index.html styles.css app.js document-core.js matcher-core.js courses.js; do
+for f in .htaccess index.html styles.css app.js document-core.js matcher-core.js courses.js; do
   test -s "$f"
 done
 for f in vendor/tesseract/tesseract.min.js vendor/tesseract/worker.min.js vendor/pdfjs/pdf.mjs vendor/pdfjs/pdf.worker.mjs; do
@@ -38,7 +38,7 @@ done
 ssh -p "$DEPLOY_PORT" "$DEPLOY_HOST" "rm -rf '$REMOTE_STAGE'; mkdir -p '$REMOTE_STAGE' '$REMOTE_BACKUP_DIR'"
 rsync -av --delete-after \
   -e "ssh -p $DEPLOY_PORT" \
-  index.html styles.css app.js document-core.js matcher-core.js courses.js vendor \
+  .htaccess index.html styles.css app.js document-core.js matcher-core.js courses.js vendor \
   "$DEPLOY_HOST:$REMOTE_STAGE/"
 
 # Use sudo only for the final web-root operation. -tt permits an interactive
@@ -55,6 +55,7 @@ ssh -tt -p "$DEPLOY_PORT" "$DEPLOY_HOST" "set -e; \
 
 curl -fsS "$PUBLIC_URL?release=1.0.0-$STAMP" | grep -q 'Turn your results into useful course conversations'
 curl -fsS "$PUBLIC_URL?release=1.0.0-$STAMP" | grep -q 'What are you interested in?'
+curl -fsS "$PUBLIC_URL?release=1.0.0-$STAMP" | grep -q 'Take photo'
 curl -fsS "$PUBLIC_URL/vendor/pdfjs/pdf.mjs?release=1.0.0-$STAMP" >/dev/null
 curl -fsS "$PUBLIC_URL/vendor/tesseract/tesseract.min.js?release=1.0.0-$STAMP" >/dev/null
 curl -fsS "$PUBLIC_URL/document-core.js?release=1.0.0-$STAMP" | grep -q 'readAllPdfPages'

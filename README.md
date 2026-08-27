@@ -287,6 +287,7 @@ If image/PDF upload reports that the local vendor bundle is missing, this is the
 A generic deployment needs only:
 
 ```text
+.htaccess
 index.html
 styles.css
 app.js
@@ -310,6 +311,8 @@ No backend route is required.
 6. backs up the previous demo;
 7. uses `sudo` only for the final Apache document-root replacement;
 8. verifies the public HTML and OCR/PDF assets.
+
+The current demonstration document root is `/var/www/lozknowles.com/public_html/dist/lincoln-course-match`. The route-level `.htaccess` keeps the locally vendored OCR/PDF runtime within a restrictive content-security policy and marks the unofficial demonstration as unindexed.
 
 CIS should treat that script as an example deployment implementation, not as a required College hosting architecture.
 

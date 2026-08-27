@@ -40,6 +40,8 @@ The project currently follows a lightweight semantic-versioning approach:
 
 ### Deployment hardening
 
+- Corrected the demonstration deployment root to Apache's active `/var/www/lozknowles.com/public_html/dist` tree.
+- Added route-scoped security, privacy and `noindex` headers compatible with local PDF.js/Tesseract workers and WebAssembly.
 - Deployment now stages files in a directory writable by the SSH user before using `sudo` for the final Apache web-root install.
 - Added backup-before-replace behaviour for the existing live demo.
 - Added live verification of the application HTML plus PDF.js and Tesseract runtime files.

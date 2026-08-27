@@ -9,7 +9,7 @@ It has two user journeys:
 
 > **Status:** independent demonstration/prototype. This is not an official Lincoln College service, is not endorsed by Lincoln College, and must not be treated as an admissions decision engine.
 
-The presentation deliberately uses a Lincoln College-styled navy, pink and yellow demonstration shell so College stakeholders can assess the experience in context. The persistent prototype banner and footer distinguish that visual demonstration from a College-approved service.
+The presentation deliberately uses the preserved Lincoln College logo and a College-styled navy, pink and yellow demonstration shell so College stakeholders can assess the experience in context. The persistent prototype banner and footer distinguish that visual demonstration from a College-approved service.
 
 ## Start here if you are supporting this for the first time
 

@@ -12,7 +12,7 @@ The project currently follows a lightweight semantic-versioning approach:
 
 ### Presentation
 
-- Restored the Lincoln College-styled demonstration shell, including institutional navigation, the navy/pink/yellow presentation, a results-day hero and an explicit unofficial-prototype banner.
+- Restored the preserved Lincoln College logo and College-styled demonstration shell, including institutional navigation, the navy/pink/yellow presentation, a results-day hero and an explicit unofficial-prototype banner.
 - Preserved the local photo OCR, all-page PDF review and course-matching workflow inside the restored presentation.
 
 ### Correctness and safety

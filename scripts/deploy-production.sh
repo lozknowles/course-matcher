@@ -56,6 +56,8 @@ ssh -tt -p "$DEPLOY_PORT" "$DEPLOY_HOST" "set -e; \
 curl -fsS "$PUBLIC_URL" | grep -q 'Turn your results into useful course conversations'
 curl -fsS "$PUBLIC_URL" | grep -q 'What are you interested in?'
 curl -fsS "$PUBLIC_URL" | grep -q 'Take photo'
+curl -fsS "$PUBLIC_URL" | grep -q 'prepared for discussion with Lincoln College'
+curl -fsS "$PUBLIC_URL" | grep -q 'LINCOLN &amp; NEWARK'
 curl -fsS "$PUBLIC_URL/vendor/pdfjs/pdf.mjs" >/dev/null
 curl -fsS "$PUBLIC_URL/vendor/tesseract/tesseract.min.js" >/dev/null
 curl -fsS "$PUBLIC_URL/document-core.js" | grep -q 'readAllPdfPages'

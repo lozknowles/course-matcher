@@ -4,7 +4,7 @@ Course Match is a small, static web application that demonstrates how GCSE resul
 
 It has two user journeys:
 
-1. **Student view** — enter or upload results, verify every extracted grade, select interests, and see transparent course matches.
+1. **Student view** — enter or upload results, verify every extracted grade, then choose either Quick Match (only courses whose encoded hard grade rules pass) or Guided Match (interest-filtered likely and near matches).
 2. **Tutor / adviser view** — select a course and triage an anonymised cohort to identify students who may be worth a human conversation.
 
 > **Status:** independent demonstration/prototype. This is not an official Lincoln College service, is not endorsed by Lincoln College, and must not be treated as an admissions decision engine.
@@ -78,6 +78,8 @@ The design rule is simple: **assist the conversation; never pretend to make the 
 - Successful document extraction opens the editable grade-verification screen automatically.
 - Mandatory human verification of extracted grades before matching.
 - Verification blocks matching until duplicate subjects, unsupported subjects and invalid grades are resolved.
+- A prominent **Quick Match** student route that shows only green courses whose encoded hard grade requirements are met, without requiring interest selection.
+- A separate **Guided Match** route for interest-aware exploration of likely matches, near matches and progression conversations.
 - Combined Science double-award support, e.g. `5-5`.
 - Interest and career-text filtering/ranking.
 - Green / amber / red indicative bands with the individual checks shown.

@@ -10,7 +10,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { COURSES } from '../courses.js';
-import { parseResultsText, matchCourse, rankCourses, countQualificationsAtOrAbove, normaliseGrades, validateGrades } from '../matcher-core.js';
+import { parseResultsText, matchCourse, rankCourses, quickMatchCourses, countQualificationsAtOrAbove, normaliseGrades, validateGrades } from '../matcher-core.js';
 
 // Canonical synthetic profile used by the UI and documentation.
 const GOLDEN=[
@@ -87,6 +87,14 @@ test('interest filter prioritises only selected subject family',()=>{
  const ranked=rankCourses(GOLDEN,COURSES,['Computing'],'');
  assert.ok(ranked.length>=2);
  assert.ok(ranked.every(r=>r.course.subject==='Computing'));
+});
+
+test('quick match returns only courses whose encoded grade checks pass',()=>{
+ const ranked=quickMatchCourses(GOLDEN,COURSES);
+ assert.ok(ranked.length>0);
+ assert.ok(ranked.every(result=>result.status==='green'));
+ assert.ok(ranked.some(result=>result.course.id==='computing-electronics-l2'));
+ assert.ok(!ranked.some(result=>result.course.id==='business-l3'));
 });
 
 test('education and childcare foundation requires both English and Maths at grade 3+',()=>{

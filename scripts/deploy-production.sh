@@ -58,6 +58,8 @@ curl -fsS "$PUBLIC_URL" | grep -q 'What are you interested in?'
 curl -fsS "$PUBLIC_URL" | grep -q 'Take photo'
 curl -fsS "$PUBLIC_URL" | grep -q 'prepared for discussion with Lincoln College'
 curl -fsS "$PUBLIC_URL" | grep -q 'Lincoln College, Lincoln and Newark'
+curl -fsS "$PUBLIC_URL" | grep -q 'Show courses I could apply for'
+curl -fsS "$PUBLIC_URL/matcher-core.js" | grep -q 'quickMatchCourses'
 curl -fsS "$PUBLIC_URL/vendor/pdfjs/pdf.mjs" >/dev/null
 curl -fsS "$PUBLIC_URL/vendor/tesseract/tesseract.min.js" >/dev/null
 curl -fsS "$PUBLIC_URL/document-core.js" | grep -q 'readAllPdfPages'

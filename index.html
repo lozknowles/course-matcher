@@ -73,7 +73,7 @@
       <div class="steps" aria-label="Student matching steps">
         <div class="step active" data-step="1"><span>1</span> Results</div>
         <div class="step" data-step="2"><span>2</span> Check grades</div>
-        <div class="step" data-step="3"><span>3</span> Interests</div>
+        <div class="step" data-step="3"><span>3</span> Match route</div>
         <div class="step" data-step="4"><span>4</span> Matches</div>
       </div>
 
@@ -109,18 +109,39 @@
         <div class="actions split"><button class="secondary" data-back="results-entry">← Back</button><button class="primary" id="confirm-grades">I’ve checked these grades →</button></div>
       </section>
 
+      <section class="panel hidden" id="match-options-panel">
+        <p class="step-kicker">STEP 3</p><h3>Choose how to match</h3>
+        <p>Both routes use the grades you have checked. Quick Match shows only encoded courses whose grade rules are met; Guided Match lets you narrow the wider results by interests.</p>
+        <div class="match-route-grid">
+          <button class="match-route-card quick" id="quick-match" type="button">
+            <span class="route-label">Fastest option</span>
+            <strong>Quick Match</strong>
+            <span>Show the courses where my verified grades meet every encoded hard grade requirement.</span>
+            <span class="route-action">Show courses I could apply for →</span>
+          </button>
+          <button class="match-route-card guided" id="guided-match" type="button">
+            <span class="route-label">Explore options</span>
+            <strong>Guided Match</strong>
+            <span>Add interests or a career idea and also see courses that need closer checking.</span>
+            <span class="route-action">Choose my interests →</span>
+          </button>
+        </div>
+        <div class="callout info"><strong>Important:</strong> Quick Match checks the encoded grade rules only. Course availability and other requirements still need confirmation with Lincoln College.</div>
+        <div class="actions split"><button class="secondary" data-back="verify-panel">← Back</button></div>
+      </section>
+
       <section class="panel hidden" id="interest-panel">
-        <p class="step-kicker">STEP 3</p><h3>What are you interested in?</h3>
+        <p class="step-kicker">GUIDED MATCH</p><h3>What are you interested in?</h3>
         <p>Pick any areas you’d genuinely consider. Leave everything unticked to see a broad grade-based list.</p>
         <div id="interest-chips" class="chips"></div>
         <label class="field-label" for="career-text">Career or topic (optional)</label>
         <input id="career-text" class="text-input" placeholder="e.g. cyber security, nursing, engineering, photography">
-        <div class="actions split"><button class="secondary" data-back="verify-panel">← Back</button><button class="primary" id="run-match">Show my matches →</button></div>
+        <div class="actions split"><button class="secondary" data-back="match-options-panel">← Match options</button><button class="primary" id="run-match">Show my matches →</button></div>
       </section>
 
       <section class="hidden" id="matches-panel">
-        <div class="results-heading"><div><p class="step-kicker">STEP 4</p><h3>Your indicative matches</h3><p id="match-summary"></p></div><button class="secondary" id="edit-results">Edit results</button></div>
-        <div class="legend"><span class="badge green">Likely meets encoded grades</span><span class="badge amber">Near match / needs checking</span><span class="badge red">Does not meet encoded grades</span></div>
+        <div class="results-heading"><div><p class="step-kicker">STEP 4</p><h3 id="matches-heading">Your indicative matches</h3><p id="match-summary"></p></div><div class="result-actions"><button class="secondary" id="change-match-route">Change match route</button><button class="secondary" id="edit-results">Edit results</button></div></div>
+        <div class="legend" id="match-legend"><span class="badge green">Likely meets encoded grades</span><span class="badge amber">Near match / needs checking</span><span class="badge red">Does not meet encoded grades</span></div>
         <div id="match-list" class="match-list"></div>
         <section class="explore-panel"><h3>Explore every published subject area</h3><p>Not every Lincoln College course has been converted into a machine-readable rule in this demonstration. These links let you continue on the official subject pages without Course Match pretending it has assessed criteria it has not encoded.</p><div id="subject-links" class="subject-links"></div></section>
       </section>

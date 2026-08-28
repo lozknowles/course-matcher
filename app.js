@@ -21,7 +21,7 @@
  */
 
 import { COURSES, SUBJECTS, SUBJECT_LINKS } from './courses.js';
-import { normaliseGrades, parseResultsText, rankCourses, matchCourse, validateGrades, RECOGNISED_GCSE_SUBJECTS } from './matcher-core.js';
+import { normaliseGrades, parseResultsText, rankCourses, quickMatchCourses, matchCourse, validateGrades, RECOGNISED_GCSE_SUBJECTS } from './matcher-core.js';
 import { pdfTextItemsToLines, readAllPdfPages } from './document-core.js';
 
 // Small DOM helpers used throughout this framework-free application.
@@ -46,7 +46,7 @@ function setMode(mode){
 $$('.tab').forEach(t=>t.addEventListener('click',()=>setMode(t.dataset.mode)));
 
 function setStep(n){ $$('.step').forEach(s=>s.classList.toggle('active',Number(s.dataset.step)===n)); }
-function showStudentPanel(id, step){ ['results-entry','verify-panel','interest-panel','matches-panel'].forEach(x=>$('#'+x).classList.toggle('hidden',x!==id)); setStep(step); $('#'+id).scrollIntoView({behavior:'smooth',block:'start'}); }
+function showStudentPanel(id, step){ ['results-entry','verify-panel','match-options-panel','interest-panel','matches-panel'].forEach(x=>$('#'+x).classList.toggle('hidden',x!==id)); setStep(step); $('#'+id).scrollIntoView({behavior:'smooth',block:'start'}); }
 
 // ---------------------------------------------------------------------------
 // Manual grade entry
@@ -255,22 +255,33 @@ function verifiedGradesAreValid(){
   $('#verify-status').textContent=`Resolve ${[...new Set(issues.map(issue=>labels[issue.type]))].join(', ')} entries before matching.`;
   return false;
 }
-$('#confirm-grades').addEventListener('click',()=>{readVerify();if(!state.grades.length||!verifiedGradesAreValid())return;showStudentPanel('interest-panel',3)});
-$$('[data-back]').forEach(b=>b.addEventListener('click',()=>showStudentPanel(b.dataset.back,b.dataset.back==='results-entry'?1:2)));
+$('#confirm-grades').addEventListener('click',()=>{readVerify();if(!state.grades.length||!verifiedGradesAreValid())return;showStudentPanel('match-options-panel',3)});
+const studentPanelSteps={ 'results-entry':1, 'verify-panel':2, 'match-options-panel':3, 'interest-panel':3, 'matches-panel':4 };
+$$('[data-back]').forEach(b=>b.addEventListener('click',()=>showStudentPanel(b.dataset.back,studentPanelSteps[b.dataset.back])));
 
 // ---------------------------------------------------------------------------
 // Student interests and course matching
 // ---------------------------------------------------------------------------
 SUBJECTS.forEach(subject=>{const b=document.createElement('button');b.className='chip';b.type='button';b.textContent=subject;b.setAttribute('aria-pressed','false');b.addEventListener('click',()=>{const on=b.getAttribute('aria-pressed')==='true';b.setAttribute('aria-pressed',String(!on));if(on)state.interests.delete(subject);else state.interests.add(subject)});$('#interest-chips').appendChild(b)});
 
-$('#run-match').addEventListener('click',()=>{readVerify();if(!verifiedGradesAreValid()){showStudentPanel('verify-panel',2);return}renderMatches();showStudentPanel('matches-panel',4)});
+$('#quick-match').addEventListener('click',()=>{readVerify();if(!verifiedGradesAreValid()){showStudentPanel('verify-panel',2);return}renderMatches('quick');showStudentPanel('matches-panel',4)});
+$('#guided-match').addEventListener('click',()=>showStudentPanel('interest-panel',3));
+$('#run-match').addEventListener('click',()=>{readVerify();if(!verifiedGradesAreValid()){showStudentPanel('verify-panel',2);return}renderMatches('guided');showStudentPanel('matches-panel',4)});
 $('#edit-results').addEventListener('click',()=>showStudentPanel('verify-panel',2));
+$('#change-match-route').addEventListener('click',()=>showStudentPanel('match-options-panel',3));
 
 /** Render the explainable course results produced by matcher-core.js. */
-function renderMatches(){
-  const ranked=rankCourses(state.grades,COURSES,[...state.interests],$('#career-text').value);
+function renderMatches(mode='guided'){
+  const quick=mode==='quick';
+  const ranked=quick?quickMatchCourses(state.grades,COURSES):rankCourses(state.grades,COURSES,[...state.interests],$('#career-text').value);
   const greens=ranked.filter(x=>x.status==='green').length; const ambers=ranked.filter(x=>x.status==='amber').length;
-  $('#match-summary').textContent=`${ranked.length} encoded course${ranked.length===1?'':'s'} shown · ${greens} likely grade match${greens===1?'':'es'} · ${ambers} need closer checking.`;
+  $('#matches-heading').textContent=quick?'Your Quick Match courses':'Your indicative matches';
+  $('#match-summary').textContent=quick
+    ? `${ranked.length} encoded course${ranked.length===1?'':'s'} where the verified grades meet every encoded hard grade requirement.`
+    : `${ranked.length} encoded course${ranked.length===1?'':'s'} shown · ${greens} likely grade match${greens===1?'':'es'} · ${ambers} need closer checking.`;
+  $('#match-legend').innerHTML=quick
+    ? '<span class="badge green">Meets encoded grade requirements</span><span class="micro">Other entry conditions and current availability still need College confirmation.</span>'
+    : '<span class="badge green">Likely meets encoded grades</span><span class="badge amber">Near match / needs checking</span><span class="badge red">Does not meet encoded grades</span>';
   const list=$('#match-list');list.innerHTML='';
   ranked.forEach(result=>{
     const c=result.course; const card=document.createElement('article');card.className=`match-card ${result.status}`;
@@ -278,7 +289,9 @@ function renderMatches(){
     card.innerHTML=`<div class="match-top"><div><span class="badge ${result.status}">${statusText}</span><h3>${c.title}</h3><p class="course-meta">${c.subject} · Level ${c.level||'Entry'} · ${c.campus}</p></div><div class="course-meta">Criteria checked ${c.checked}</div></div><p>${c.summary}</p><div class="checks">${result.checks.map(x=>`<div class="check ${x.pass?'pass':'fail'}"><strong>${x.label}</strong> — ${x.detail}</div>`).join('')}</div>${result.warnings.length?`<div class="warning-list"><strong>Still needs a human check</strong><ul>${result.warnings.map(w=>`<li>${w}</li>`).join('')}</ul></div>`:''}<p><a class="course-link" href="${c.url}" target="_blank" rel="noreferrer">Verify on official Lincoln College page ↗</a></p>`;
     list.appendChild(card);
   });
-  if(!ranked.length) list.innerHTML='<div class="panel"><h3>No encoded courses matched those interests</h3><p>Try broadening the interests or use the official subject links below. This prototype deliberately does not invent eligibility rules for courses it has not encoded.</p></div>';
+  if(!ranked.length) list.innerHTML=quick
+    ? '<div class="panel"><h3>No definite Quick Match yet</h3><p>No encoded course passed every hard grade check for these results. Use Guided Match to see near matches and progression routes, or speak with Lincoln College about other options.</p></div>'
+    : '<div class="panel"><h3>No encoded courses matched those interests</h3><p>Try broadening the interests or use the official subject links below. This prototype deliberately does not invent eligibility rules for courses it has not encoded.</p></div>';
 }
 
 // Always provide an official navigation path for subjects that are not encoded

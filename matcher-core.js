@@ -337,6 +337,17 @@ export function rankCourses(gradesInput, courses, interests = [], careerText = '
 }
 
 /**
+ * Return only courses whose encoded hard grade checks pass.
+ *
+ * This powers the student Quick Match route. A green result means the supplied
+ * grades meet the rule encoded in this snapshot; it does not bypass interviews,
+ * references, portfolios, DBS checks or confirmation against the live course.
+ */
+export function quickMatchCourses(gradesInput, courses) {
+  return rankCourses(gradesInput, courses).filter(result => result.status === 'green');
+}
+
+/**
  * Extract simple subject/grade pairs from OCR or copied results text.
  *
  * This is intentionally a conservative parser, not a general document AI

@@ -42,8 +42,18 @@ const COMMON_SUBJECTS = [...RECOGNISED_GCSE_SUBJECTS];
 function setMode(mode){
   $$('.mode-panel').forEach(p => p.classList.toggle('active', p.id === `${mode}-mode`));
   $$('.tab').forEach(t => { const active=t.dataset.mode===mode; t.classList.toggle('active',active); t.setAttribute('aria-selected',active); });
+  document.body.classList.toggle('retention-active',mode==='retention');
+  const heroCopy={
+    launch:['Lincoln College demonstration suite','Student success','Three connected demonstrations for course discovery, staff conversations and early retention support.'],
+    student:['Results day course finder','Course Match','Turn achieved grades into useful Lincoln College course conversations.'],
+    adviser:['Tutor and adviser demonstration','Course conversations','Start with a course and find learners worth a transparent, human-led conversation.'],
+    about:['About this prototype','Course Match','Understand the evidence, safety boundaries and purpose of this unofficial demonstration.']
+  }[mode];
+  if(heroCopy){$('.hero-kicker').textContent=heroCopy[0];$('#course-match-title').textContent=heroCopy[1];$('.hero-lead').textContent=heroCopy[2]}
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 $$('.tab').forEach(t=>t.addEventListener('click',()=>setMode(t.dataset.mode)));
+$$('[data-launch-mode]').forEach(button=>button.addEventListener('click',()=>setMode(button.dataset.launchMode)));
 
 function setStep(n){ $$('.step').forEach(s=>s.classList.toggle('active',Number(s.dataset.step)===n)); }
 function showStudentPanel(id, step){ ['results-entry','verify-panel','match-options-panel','interest-panel','matches-panel'].forEach(x=>$('#'+x).classList.toggle('hidden',x!==id)); setStep(step); $('#'+id).scrollIntoView({behavior:'smooth',block:'start'}); }
@@ -329,3 +339,70 @@ function parseCsvLine(line){const out=[];let cur='',q=false;for(let i=0;i<line.l
 function parseCohortCsv(text){const lines=text.split(/\r?\n/).filter(Boolean);if(lines.length<2)return[];const h=parseCsvLine(lines[0]);const idI=h.findIndex(x=>/^id$/i.test(x)),intI=h.findIndex(x=>/^interest$/i.test(x));return lines.slice(1).map((line,rowIndex)=>{const vals=parseCsvLine(line);const grades=h.map((name,i)=>({subject:name,grade:vals[i]})).filter((_,i)=>i!==idI&&i!==intI&&vals[i]);return{id:vals[idI]||`row-${rowIndex+2}`,interest:vals[intI]||'',grades}})}
 
 renderCourseRule();
+
+// ---------------------------------------------------------------------------
+// 42-day student fit and retention management prototype
+// ---------------------------------------------------------------------------
+// All records below are deliberately synthetic and cannot be written back to
+// a college system. Recommendations expose their evidence and remain subject
+// to a human conversation and the normal admissions process.
+const RETENTION_LEARNERS=[
+  {id:'SYN-1042',name:'Maya Thompson',day:23,period:42,risk:'High',fit:'Fair',programme:'Level 3 Health & Social Care',campus:'Lincoln',area:'Health & care',attendance:68,skills:['Empathy','Communication','Organisation'],interests:['Caring for people','Mental health','Community support'],reason:'Attendance is below the synthetic early-engagement benchmark and assessment confidence is incomplete.',alternatives:[['T Level Health (Adult Nursing)','Good','6 spaces'],['BTEC Applied Psychology','Good','4 spaces'],['BTEC Early Years Educator','Fair','5 spaces']],close:'A Level Psychology — mathematics grade is one below the mandatory criterion.',reciprocal:['Taylor Green','Level 3 Business','Level 3 Health & Social Care'],history:['19 Aug · Tutor concern recorded','22 Aug · Attendance pattern reviewed','27 Aug · Student interests reconfirmed']},
+  {id:'SYN-1088',name:'Alex Nguyen',day:18,period:42,risk:'High',fit:'Poor',programme:'Level 3 Engineering',campus:'Lincoln',area:'Engineering',attendance:61,skills:['Problem solving','CAD','Numeracy'],interests:['Designing products','Technology','Practical projects'],reason:'Low workshop participation and a sustained preference for software-led design suggest a fit conversation.',alternatives:[['T Level Digital Production','Good','7 spaces'],['Level 3 Computing','Good','3 spaces'],['Level 3 Design & Development','Fair','2 spaces']],close:'A Level Computer Science — GCSE English evidence is incomplete.',reciprocal:['Omar Ali','Level 3 Digital','Level 3 Engineering'],history:['16 Aug · Workshop engagement flagged','21 Aug · Careers preference updated','28 Aug · Tutor review requested']},
+  {id:'SYN-1116',name:'Jordan Clarke',day:17,period:42,risk:'Medium',fit:'Fair',programme:'A Level Biology',campus:'Lincoln',area:'Health & care',attendance:76,skills:['Scientific method','Analysis','Teamwork'],interests:['Laboratory work','Health science','Practical learning'],reason:'Academic potential is evident, but the learner reports a strong preference for applied and practical assessment.',alternatives:[['BTEC Applied Science','Good','5 spaces'],['T Level Laboratory Science','Good','4 spaces'],['Level 3 Health & Social Care','Fair','5 spaces']],close:'T Level Health (Adult Nursing) — placement suitability still needs confirmation.',reciprocal:null,history:['18 Aug · Learning preference captured','24 Aug · Assessment pattern reviewed','29 Aug · Curriculum comparison prepared']},
+  {id:'SYN-1171',name:'Riya Shah',day:16,period:42,risk:'Monitor',fit:'Good',programme:'T Level Digital Production',campus:'Newark',area:'Digital',attendance:91,skills:['Coding','Collaboration','UX thinking'],interests:['Web products','Data','User experience'],reason:'Positive engagement and attendance. No transfer is recommended; retain and monitor.',alternatives:[['Remain on current programme','Good','Recommended'],['Level 3 Computing','Good','4 spaces'],['Level 3 Business','Fair','6 spaces']],close:'No blocked close match.',reciprocal:null,history:['15 Aug · Strong induction engagement','23 Aug · Positive tutor note','29 Aug · Remain-and-monitor recommendation']},
+  {id:'SYN-1210',name:'Ethan Williams',day:15,period:42,risk:'Medium',fit:'Fair',programme:'Level 3 Sport',campus:'Lincoln',area:'Sport',attendance:74,skills:['Coaching','Leadership','Communication'],interests:['Fitness','Working with young people','Community sport'],reason:'Attendance is variable and career intent aligns more strongly with coaching and education.',alternatives:[['Sport Coaching & Development','Good','8 spaces'],['Public Services','Fair','6 spaces'],['Early Years Educator','Fair','5 spaces']],close:'T Level Education — English criterion needs checking.',reciprocal:['Mia Thompson','T Level Education','Level 3 Sport'],history:['17 Aug · Career intent added','25 Aug · Attendance discussion','30 Aug · Alternatives prepared']}
+];
+
+const retentionState={selected:RETENTION_LEARNERS[0],evidenceTab:'evidence',topology:'skills',optimised:false};
+
+function renderRetentionQueue(){
+  const query=$('#learner-search').value.trim().toLowerCase();
+  const risk=$('#risk-filter').value;
+  const area=$('#area-filter').value;
+  const campus=$('#campus-filter').value;
+  const learners=RETENTION_LEARNERS.filter(l=>(!query||`${l.name} ${l.id}`.toLowerCase().includes(query))&&(risk==='All risk levels'||l.risk===risk)&&(area==='All areas'||l.area===area)&&(campus==='All campuses'||l.campus===campus));
+  $('#queue-count').textContent=`${learners.length} learner${learners.length===1?'':'s'}`;
+  $('#learner-queue').innerHTML=learners.map((l,index)=>`<button type="button" class="learner-row ${l.id===retentionState.selected.id?'active':''}" data-learner="${l.id}" role="option" aria-selected="${l.id===retentionState.selected.id}"><span class="priority">${index+1}</span><span><strong>${escapeHtml(l.name)}</strong><small>${l.id} · Day ${l.day}</small></span><span><small>${escapeHtml(l.programme)}</small><b class="risk ${l.risk.toLowerCase()}">${l.risk}</b></span></button>`).join('')||'<p class="empty-state">No synthetic learners match these filters.</p>';
+  $$('[data-learner]').forEach(button=>button.addEventListener('click',()=>{retentionState.selected=RETENTION_LEARNERS.find(l=>l.id===button.dataset.learner);retentionState.optimised=false;renderRetention()}));
+}
+
+function renderTopology(){
+  const l=retentionState.selected;
+  const middle=retentionState.topology==='skills'?l.skills:l.interests;
+  $('#topology').innerHTML=`<div class="topology-course current-course"><small>Current programme</small><strong>${escapeHtml(l.programme)}</strong><span>Fit: ${l.fit}</span></div><div class="topology-bridge"><small>${retentionState.topology==='skills'?'Transferable evidence':'Learner intent'}</small>${middle.map(item=>`<span>${escapeHtml(item)}</span>`).join('')}</div><div class="topology-destinations">${l.alternatives.map((a,i)=>`<div class="topology-course ${i<2?'warm-course':'close-course'}"><small>${i<2?'Warm alternative':'Alternative'}</small><strong>${escapeHtml(a[0])}</strong><span>Fit: ${a[1]} · ${a[2]}</span></div>`).join('')}</div>`;
+}
+
+function renderEvidence(){
+  const l=retentionState.selected;
+  $('#selected-name').textContent=l.name;$('#selected-day').textContent=`Day ${l.day} of ${$('#qualifying-period').value}`;$('#selected-programme').textContent=l.programme;
+  if(retentionState.evidenceTab==='alternatives'){
+    $('#evidence-content').innerHTML=`<div class="warm-list">${l.alternatives.map((a,i)=>`<article><span>${i+1}</span><div><strong>${escapeHtml(a[0])}</strong><small>Fit: ${a[1]} · Capacity: ${a[2]}</small></div></article>`).join('')}</div><div class="close-match"><strong>Close match—not currently eligible</strong><p>${escapeHtml(l.close)}</p></div>`;
+  }else if(retentionState.evidenceTab==='history'){
+    $('#evidence-content').innerHTML=`<ol class="evidence-history">${l.history.map(item=>`<li>${escapeHtml(item)}</li>`).join('')}</ol><p class="method-note">Synthetic events shown for workflow testing. Every recommendation change would be retained in an audit trail.</p>`;
+  }else{
+    $('#evidence-content').innerHTML=`<div class="fit-summary"><span>Current fit <strong>${l.fit}</strong></span><span>Risk <strong>${l.risk}</strong></span><span>Attendance <strong>${l.attendance}%</strong></span></div><h4>Why this is surfaced</h4><p>${escapeHtml(l.reason)}</p><h4>Evidence used</h4><ul>${l.skills.map(s=>`<li>${escapeHtml(s)}</li>`).join('')}</ul><p class="method-note">No protected characteristic is used to rank alternatives.</p>`;
+  }
+  $$('.evidence-tabs button').forEach(b=>b.classList.toggle('active',b.dataset.evidenceTab===retentionState.evidenceTab));
+}
+
+function renderReciprocal(){
+  const l=retentionState.selected;
+  const content=$('#reciprocal-content');
+  if(!l.reciprocal){content.innerHTML=`<div class="no-reciprocal"><strong>No safe reciprocal move suggested</strong><p>${l.risk==='Monitor'?'The evidence supports remaining on the current programme.':'A suitable learner-to-capacity chain has not been identified; continue with the learner-fit conversation only.'}</p></div>`;$('#funding-value').textContent='Not modelled';return}
+  const [other,otherCurrent,otherProposed]=l.reciprocal;
+  content.innerHTML=`<article><small>Current</small><strong>${escapeHtml(l.name)}</strong><span>${escapeHtml(l.programme)}</span><b>${retentionState.optimised?'18 / 24':'19 / 24'} places</b></article><span class="swap-label">Potential reciprocal move</span><article><small>Proposed, subject to approval</small><strong>${escapeHtml(l.name)}</strong><span>${escapeHtml(l.alternatives[0][0])}</span><b>${retentionState.optimised?'6':'5'} spaces remain</b></article><article><small>Possible backfill learner</small><strong>${escapeHtml(other)}</strong><span>${escapeHtml(otherCurrent)} → ${escapeHtml(otherProposed)}</span><b>Eligibility check required</b></article>`;
+  $('#funding-value').textContent=retentionState.optimised?'£0 net modelled change':'£0 change';
+}
+
+function renderRetention(){renderRetentionQueue();renderTopology();renderEvidence();renderReciprocal()}
+
+['learner-search','risk-filter','area-filter','campus-filter'].forEach(id=>$('#'+id).addEventListener(id==='learner-search'?'input':'change',renderRetentionQueue));
+$('#qualifying-period').addEventListener('change',()=>{RETENTION_LEARNERS.forEach(l=>l.period=Number($('#qualifying-period').value));renderEvidence()});
+$$('[data-topology]').forEach(b=>b.addEventListener('click',()=>{retentionState.topology=b.dataset.topology;$$('[data-topology]').forEach(x=>x.classList.toggle('active',x===b));renderTopology()}));
+$$('[data-evidence-tab]').forEach(b=>b.addEventListener('click',()=>{retentionState.evidenceTab=b.dataset.evidenceTab;renderEvidence()}));
+$$('.retention-nav').forEach(b=>b.addEventListener('click',()=>{$$('.retention-nav').forEach(x=>x.classList.toggle('active',x===b));const targets={learners:'.attention-panel',reciprocal:'.reciprocal-panel',simulation:'.reciprocal-panel',programmes:'.topology-panel',overview:'.retention-kpis'};document.querySelector(targets[b.dataset.dashboardView])?.scrollIntoView({behavior:'smooth',block:'center'})}));
+$('#optimise-scenario').addEventListener('click',()=>{retentionState.optimised=true;renderReciprocal();$('#optimise-scenario').textContent='Safe moves modelled';});
+$('#monitor-learner').addEventListener('click',()=>{$('#monitor-learner').textContent='Marked for monitoring';});
+$('#start-conversation').addEventListener('click',()=>{$('#start-conversation').textContent='Conversation added to plan';});
+renderRetention();

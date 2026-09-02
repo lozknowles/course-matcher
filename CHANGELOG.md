@@ -12,12 +12,18 @@ The project currently follows a lightweight semantic-versioning approach:
 
 ### Presentation
 
+- Added a dedicated Lincoln-branded demonstration home screen that launches the student Course Match, tutor/adviser reverse match and 42-day retention journeys from one place.
+- Added a Lincoln-branded management dashboard for the 42-day student fit and retention concept while preserving the student Course Match and Quick Match journeys.
+- Added a calm cohort-flow workspace with prioritised learner triage, transferable-skills topology, evidence tabs and reciprocal-capacity scenarios.
 - Restored the preserved Lincoln College logo and College-styled demonstration shell, including institutional navigation, the navy/pink/yellow presentation, a results-day hero and an explicit unofficial-prototype banner.
 - Preserved the local photo OCR, all-page PDF review and course-matching workflow inside the restored presentation.
 - Added an explicit student match-route choice after grade verification: Quick Match shows only courses whose encoded hard grade rules pass, while Guided Match retains interest-aware likely and near matches.
 
 ### Correctness and safety
 
+- Limited the new retention workflow to named synthetic records and explicit scenario modelling; it has no ProSolution connection or write-back path.
+- Added configurable 28, 42 and 56-day qualifying-period views without implying that funding cash arrives at the end of the selected period.
+- Kept education suitability ahead of indicative funding equivalence and retained human approval for every proposed conversation or transfer.
 - Fixed uploaded images and PDFs so successfully extracted qualifications are passed directly into the editable verification UX.
 - Removed the five-page PDF cap: every page is now read, with visual PDF table rows reconstructed before parsing.
 - Added OCR fallback for unresolved/mixed PDF pages and reuse of one OCR worker across the document.

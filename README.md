@@ -2,10 +2,13 @@
 
 Course Match is a small, static web application that demonstrates how GCSE results could be turned into clearer course conversations on results/enrolment days.
 
-It has two user journeys:
+It has three user journeys:
 
 1. **Student view** — enter or upload results, verify every extracted grade, then choose either Quick Match (only courses whose encoded hard grade rules pass) or Guided Match (interest-filtered likely and near matches).
 2. **Tutor / adviser view** — select a course and triage an anonymised cohort to identify students who may be worth a human conversation.
+3. **42-day fit & retention view** — use synthetic learner signals to explore warm alternatives, transferable skills, reciprocal capacity and human-approved intervention scenarios during a configurable qualifying window.
+
+All three journeys start from one Lincoln College-branded demonstration home screen. The persistent navigation lets presenters move between the kickoff screen and each journey without leaving the application.
 
 > **Status:** independent demonstration/prototype. This is not an official Lincoln College service, is not endorsed by Lincoln College, and must not be treated as an admissions decision engine.
 
@@ -78,6 +81,10 @@ The design rule is simple: **assist the conversation; never pretend to make the 
 - Successful document extraction opens the editable grade-verification screen automatically.
 - Mandatory human verification of extracted grades before matching.
 - Verification blocks matching until duplicate subjects, unsupported subjects and invalid grades are resolved.
+- A management-facing 42-day fit and retention dashboard with a prioritised learner queue, three warm alternatives, skills/course topology, reciprocal backfill modelling and pilot measures.
+- A shared Lincoln-branded kickoff screen with clear entry points for the student, tutor/adviser and management demonstrations.
+- Configurable 28, 42 and 56-day views for scenario exploration; no claim is made that funding is paid on day 42.
+- Synthetic management data only, with no ProSolution connection, automated transfer or write-back.
 - A prominent **Quick Match** student route that shows only green courses whose encoded hard grade requirements are met, without requiring interest selection.
 - A separate **Guided Match** route for interest-aware exploration of likely matches, near matches and progression conversations.
 - Combined Science double-award support, e.g. `5-5`.

@@ -40,8 +40,10 @@
   </header>
 
   <nav class="mode-tabs" aria-label="Course Match mode">
-    <button class="tab active" data-mode="student" aria-selected="true">Student view</button>
+    <button class="tab active" data-mode="launch" aria-selected="true">Demo home</button>
+    <button class="tab" data-mode="student" aria-selected="false">Student view</button>
     <button class="tab" data-mode="adviser" aria-selected="false">Tutor / adviser view</button>
+    <button class="tab" data-mode="retention" aria-selected="false">42-day fit &amp; retention</button>
     <button class="tab" data-mode="about" aria-selected="false">About this demo</button>
   </nav>
 
@@ -49,15 +51,25 @@
     <span class="hero-shape hero-shape-left" aria-hidden="true"></span>
     <span class="hero-shape hero-shape-right" aria-hidden="true"></span>
     <div class="hero-inner">
-      <p class="hero-kicker">Results day course finder</p>
-      <h1 id="course-match-title">Course Match</h1>
-      <p class="hero-lead">Turn achieved grades into useful Lincoln College course conversations.</p>
+      <p class="hero-kicker">Lincoln College demonstration suite</p>
+      <h1 id="course-match-title">Student success</h1>
+      <p class="hero-lead">Three connected demonstrations for course discovery, staff conversations and early retention support.</p>
       <p class="hero-evidence"><span aria-hidden="true"></span> Course evidence snapshot checked 24 August 2026</p>
     </div>
   </section>
 
   <main id="main">
-    <section id="student-mode" class="mode-panel active" aria-labelledby="student-heading">
+    <section id="launch-mode" class="mode-panel active launch-mode" aria-labelledby="launch-heading">
+      <div class="launch-intro"><p class="step-kicker">CHOOSE A DEMONSTRATION</p><h2 id="launch-heading">One starting point. Three student-success journeys.</h2><p>Choose the perspective you want to demonstrate. Each journey stays within this Lincoln College-branded prototype and you can return here at any time.</p></div>
+      <div class="launch-grid">
+        <button class="launch-card student-launch" type="button" data-launch-mode="student"><span class="launch-number">01</span><span class="launch-audience">For prospective students</span><strong>Course Match</strong><span>Upload or photograph results, verify every qualification, then use Quick Match or Guided Match to find useful course conversations.</span><b>Start the student journey →</b></button>
+        <button class="launch-card adviser-launch" type="button" data-launch-mode="adviser"><span class="launch-number">02</span><span class="launch-audience">For tutors and advisers</span><strong>Course-first matching</strong><span>Select a course and use a synthetic cohort to identify learners worth a transparent, human-led conversation.</span><b>Open the adviser demo →</b></button>
+        <button class="launch-card retention-launch" type="button" data-launch-mode="retention"><span class="launch-number">03</span><span class="launch-audience">For managers and support teams</span><strong>42-day fit &amp; retention</strong><span>Explore warm alternatives, skills alignment and reciprocal capacity before a learner disengages.</span><b>Open the retention demo →</b></button>
+      </div>
+      <div class="launch-safety"><strong>Unofficial, synthetic demonstration.</strong><span>No admissions decisions, live learner data, ProSolution connection or automated transfers.</span></div>
+    </section>
+
+    <section id="student-mode" class="mode-panel" aria-labelledby="student-heading">
       <div class="hero-grid">
         <div>
           <p class="step-kicker">STUDENT VIEW</p>
@@ -145,6 +157,74 @@
         <div id="match-list" class="match-list"></div>
         <section class="explore-panel"><h3>Explore every published subject area</h3><p>Not every Lincoln College course has been converted into a machine-readable rule in this demonstration. These links let you continue on the official subject pages without Course Match pretending it has assessed criteria it has not encoded.</p><div id="subject-links" class="subject-links"></div></section>
       </section>
+    </section>
+
+    <section id="retention-mode" class="mode-panel retention-app" aria-labelledby="retention-heading">
+      <div class="retention-shell">
+        <aside class="retention-sidebar" aria-label="Retention dashboard sections">
+          <p class="retention-product">42-day student fit<br><strong>&amp; retention</strong></p>
+          <nav>
+            <button class="retention-nav active" type="button" data-dashboard-view="overview">Overview</button>
+            <button class="retention-nav" type="button" data-dashboard-view="learners">At-risk learners <span>126</span></button>
+            <button class="retention-nav" type="button" data-dashboard-view="reciprocal">Reciprocal opportunities <span>32</span></button>
+            <button class="retention-nav" type="button" data-dashboard-view="programmes">Programmes</button>
+            <button class="retention-nav" type="button" data-dashboard-view="simulation">Scenario simulator</button>
+          </nav>
+          <div class="retention-safety"><strong>Synthetic pilot</strong><p>No live learner records. No ProSolution connection or writes.</p></div>
+        </aside>
+
+        <div class="retention-workspace">
+          <header class="retention-titlebar">
+            <div><p class="step-kicker">MANAGEMENT PROTOTYPE</p><h2 id="retention-heading">Student fit &amp; retention</h2><p>Find a strong alternative destination before a learner leaves—and reveal safe reciprocal capacity.</p></div>
+            <div class="period-control"><label for="qualifying-period">Qualifying period</label><select id="qualifying-period"><option value="42">42 days</option><option value="28">28 days</option><option value="56">56 days</option></select><span id="data-date">Data as at 30 Aug 2026</span></div>
+          </header>
+
+          <div class="prototype-guard" role="note"><strong>Decision support, not automation.</strong> Education suitability comes before funding. Every transfer requires discussion, normal admissions checks and explicit human approval.</div>
+
+          <section class="retention-kpis" aria-label="Pilot overview">
+            <article><span>Inside window</span><strong>1,248</strong><small>of 1,612 enrolled · 77%</small></article>
+            <article><span>Needs attention</span><strong>126</strong><small>10% of learners in window</small></article>
+            <article><span>Strong alternatives</span><strong>84</strong><small>Three warm options prepared</small></article>
+            <article><span>Reciprocal / backfill</span><strong>32</strong><small>Balanced opportunities</small></article>
+            <article><span>Conversations started</span><strong>61</strong><small>48% of attention cohort</small></article>
+          </section>
+
+          <section class="retention-toolbar" aria-label="Dashboard filters">
+            <label>Campus<select id="campus-filter"><option>All campuses</option><option>Lincoln</option><option>Newark</option></select></label>
+            <label>Curriculum area<select id="area-filter"><option>All areas</option><option>Health &amp; care</option><option>Engineering</option><option>Digital</option><option>Creative</option></select></label>
+            <label>Risk level<select id="risk-filter"><option>All risk levels</option><option>High</option><option>Medium</option><option>Monitor</option></select></label>
+            <label class="retention-search">Find learner<input id="learner-search" type="search" placeholder="Name or learner ID"></label>
+          </section>
+
+          <div class="retention-grid">
+            <section class="attention-panel" aria-labelledby="attention-heading">
+              <div class="section-heading"><div><p class="step-kicker">PRIORITISED, EXPLAINABLE</p><h3 id="attention-heading">Attention queue</h3></div><span class="queue-count" id="queue-count">5 learners</span></div>
+              <div id="learner-queue" class="learner-queue" role="listbox" aria-label="Synthetic learners"></div>
+            </section>
+
+            <section class="topology-panel" aria-labelledby="topology-heading">
+              <div class="section-heading"><div><p class="step-kicker">SKILLS TOPOLOGY</p><h3 id="topology-heading">Where could this learner thrive?</h3></div><div class="topology-toggle" role="group" aria-label="Topology view"><button class="active" type="button" data-topology="skills">Skills</button><button type="button" data-topology="courses">Courses</button></div></div>
+              <div id="topology" class="topology" aria-live="polite"></div>
+              <div class="topology-legend"><span><i class="dot current"></i> Current programme</span><span><i class="dot warm"></i> Warm alternative</span><span><i class="dot close"></i> Close match</span></div>
+            </section>
+
+            <aside class="evidence-panel" aria-labelledby="evidence-heading">
+              <div class="selected-learner"><p class="step-kicker">SELECTED LEARNER</p><h3 id="evidence-heading"><span id="selected-name">Maya Thompson</span> <small id="selected-day">Day 23 of 42</small></h3><p id="selected-programme">Level 3 Health &amp; Social Care</p></div>
+              <div class="evidence-tabs" role="tablist"><button class="active" type="button" data-evidence-tab="evidence">Evidence</button><button type="button" data-evidence-tab="alternatives">Alternatives</button><button type="button" data-evidence-tab="history">History</button></div>
+              <div id="evidence-content"></div>
+              <div class="decision-actions"><button class="secondary" type="button" id="monitor-learner">Remain &amp; monitor</button><button class="primary" type="button" id="start-conversation">Start conversation</button></div>
+            </aside>
+          </div>
+
+          <section class="reciprocal-panel" aria-labelledby="reciprocal-heading">
+            <div class="section-heading"><div><p class="step-kicker">SCENARIO MODELLING</p><h3 id="reciprocal-heading">Reciprocal opportunity</h3></div><button class="secondary" id="optimise-scenario" type="button">Optimise safe moves</button></div>
+            <div id="reciprocal-content" class="reciprocal-content"></div>
+            <div class="funding-note"><strong>Indicative funding-equivalent: <span id="funding-value">£0 change</span></strong><span>Planning comparison only. This does not mean cash arrives on day 42.</span></div>
+          </section>
+
+          <section class="pilot-kpis" aria-labelledby="pilot-heading"><h3 id="pilot-heading">Pilot measures</h3><div><span><strong>66.7%</strong> retained after intervention</span><span><strong>2.4 days</strong> median to first conversation</span><span><strong>71%</strong> accepted a suitable alternative</span><span><strong>100%</strong> recommendations with evidence trail</span></div></section>
+        </div>
+      </div>
     </section>
 
     <section id="adviser-mode" class="mode-panel" aria-labelledby="adviser-heading">

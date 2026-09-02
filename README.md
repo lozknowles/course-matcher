@@ -1,12 +1,12 @@
-# Course Match — Lincoln College demonstration
+# Lincoln College student-success demonstrations
 
-Course Match is a small, static web application that demonstrates how GCSE results could be turned into clearer course conversations on results/enrolment days.
+This small static application contains Course Match and a wider 42-day learner-intervention demonstration. Course matching is one capability in the suite, not the whole proposition.
 
 It has three user journeys:
 
 1. **Student view** — enter or upload results, verify every extracted grade, then choose either Quick Match (only courses whose encoded hard grade rules pass) or Guided Match (interest-filtered likely and near matches).
 2. **Tutor / adviser view** — select a course and triage an anonymised cohort to identify students who may be worth a human conversation.
-3. **42-day fit & retention view** — use synthetic learner signals to explore warm alternatives, transferable skills, reciprocal capacity and human-approved intervention scenarios during a configurable qualifying window.
+3. **42-Day Student Fit & Retention - Swap Not Drop Decision Support** — complement the College's established 2026/27 “Swap not drop - first 42 days” process by starting with why a learner is struggling, selecting the right intervention, monitoring progress and showing course alternatives only when transfer is appropriate.
 
 All three journeys start from one Lincoln College-branded demonstration home screen. The persistent navigation lets presenters move between the kickoff screen and each journey without leaving the application.
 
@@ -24,8 +24,9 @@ If you are a Lincoln College CIS engineer inheriting this repository, read these
 4. `courses.js` — the dated course/rule snapshot.
 5. `matcher-core.js` — pure matching and parsing logic.
 6. `document-core.js` — PDF row reconstruction and all-page traversal.
-7. `app.js` — browser UI orchestration, OCR/PDF handling and adviser workflow.
-8. `tests/` — executable examples of expected behaviour.
+7. `retention-core.js` — pure intervention, warm-start, handoff, outcome and capacity-order safeguards.
+8. `app.js` — browser UI orchestration, OCR/PDF handling, adviser workflow and synthetic 42-day view.
+9. `tests/` — executable examples of expected behaviour.
 
 The application deliberately has **no application server or database**. It is plain HTML/CSS/JavaScript served as static files.
 
@@ -71,6 +72,23 @@ human course conversation
 
 The design rule is simple: **assist the conversation; never pretend to make the admissions decision.**
 
+### 42-Day Student Fit & Retention - Swap Not Drop Decision Support
+
+The 42-day view does not invent or replace the College's process. It demonstrates an intelligence layer around the existing learner-led workflow:
+
+```text
+concern
+  -> supportive conversation
+  -> diagnose why
+  -> choose an appropriate intervention
+  -> monitor / review
+  -> human-decided outcome
+```
+
+The pathway distinguishes course fit from academic difficulty, unmet support need, belonging, transport/access, unclear career direction, known alternative-course preference, behaviour/conduct and a broader concern that the College environment may not be suitable. Course alternatives remain dormant unless diagnosis indicates that transfer is appropriate.
+
+The four product principles are **learner-led, staff-supported, data-informed and human-decided**. A successful outcome can be continued success on the original programme, internal transfer, Careers Guidance, academic/pastoral/support intervention, an informed move to another provider, or a Student Recruitment Group-reviewed withdrawal. Retention and financial performance are institutional measures, not reasons for steering an individual learner.
+
 ## Key features
 
 - Static HTML/CSS/JavaScript; no application framework.
@@ -81,9 +99,15 @@ The design rule is simple: **assist the conversation; never pretend to make the 
 - Successful document extraction opens the editable grade-verification screen automatically.
 - Mandatory human verification of extracted grades before matching.
 - Verification blocks matching until duplicate subjects, unsupported subjects and invalid grades are resolved.
-- A management-facing 42-day fit and retention dashboard with a prioritised learner queue, three warm alternatives, skills/course topology, reciprocal backfill modelling and pilot measures.
+- A management-facing 42-day intervention dashboard that begins with “Why is this learner at risk of disengaging?” and routes to support, academic, Careers, conduct, access or course-fit pathways.
+- Warm-start course alternatives retained as dormant contingency options and displayed only when transfer is an appropriate intervention.
+- A human-reviewed “Transfer handoff ready” state containing Student Name, Student ID, destination Course Code, Group and Start Date; it does not email, write back or enact a transfer.
+- ProMonitor Intention-to-Transfer is represented as a record of action, discussion and progress, never as the transfer request itself. Any integration is labelled potential and subject to technical validation.
+- Reciprocal-swap and capacity analysis retained only after learner suitability, entry/compliance, learner choice and human approval.
+- Multiple legitimate outcomes, including remaining on the current programme and an informed external-provider transition.
+- A controlled pilot/evaluation view based on the existing Intention-to-Transfer cohort, with clearly synthetic metrics.
 - A shared Lincoln-branded kickoff screen with clear entry points for the student, tutor/adviser and management demonstrations.
-- Configurable 28, 42 and 56-day views for scenario exploration; no claim is made that funding is paid on day 42.
+- Configurable 28, 42 and 56-day views for scenario exploration; the proposition is learner success, not “saving funding before day 42”.
 - Synthetic management data only, with no ProSolution connection, automated transfer or write-back.
 - A prominent **Quick Match** student route that shows only green courses whose encoded hard grade requirements are met, without requiring interest selection.
 - A separate **Guided Match** route for interest-aware exploration of likely matches, near matches and progression conversations.

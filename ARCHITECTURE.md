@@ -33,6 +33,7 @@ The prototype was designed around six goals:
 │ app.js                        │
 │ document-core.js              │
 │ matcher-core.js               │
+│ retention-core.js             │
 │ courses.js                    │
 │ vendor/                       │
 └───────────────────────────────┘
@@ -89,9 +90,10 @@ Responsibilities:
 - collecting interests/career text;
 - calling the pure matching functions;
 - rendering matching evidence;
-- parsing adviser CSV data and rendering reverse matches.
+- parsing adviser CSV data and rendering reverse matches;
+- rendering the synthetic Swap Not Drop intervention, transfer-handoff and management views.
 
-It imports data from `courses.js` and logic from `matcher-core.js`.
+It imports data from `courses.js` and pure logic from `matcher-core.js` and `retention-core.js`.
 
 It should not become the canonical source of course requirements.
 
@@ -119,6 +121,22 @@ Responsibilities:
 - simple OCR-style results-text parsing.
 
 Because it has no browser dependencies, it can be exercised directly with Node tests.
+
+### `retention-core.js`
+
+This is the pure policy/safeguard layer for the synthetic 42-day demonstration. It does not infer a concern or make a learner decision.
+
+Responsibilities:
+
+- mapping an explicitly recorded concern to the College process pathway;
+- distinguishing transfer-capable and non-transfer interventions;
+- keeping warm-start alternatives dormant unless transfer is appropriate;
+- limiting a transfer handoff to a human-agreed internal transfer;
+- representing potential withdrawal as a Student Recruitment Group review path;
+- preventing capacity optimisation until learner suitability, entry/compliance, learner choice and human approval are all true;
+- recognising internal retention, internal transfer, Careers/support, external transition and potential withdrawal as distinct outcomes.
+
+Because these rules are independent of the DOM, `tests/retention.test.mjs` exercises the required safety cases directly.
 
 ### `courses.js`
 
@@ -234,6 +252,28 @@ It is in memory only.
 There is no localStorage/sessionStorage persistence and no backend persistence of entered results in the current code.
 
 Refreshing or closing the page loses the state.
+
+The 42-day demonstration adds a separate in-memory `retentionState` for the selected synthetic learner, current evidence tab, selected contingency option and whether capacity modelling has been requested. Button actions only change that temporary demo state; they do not email Student Recruitment, create a ProMonitor comment or transfer a learner.
+
+## 5.1 Swap Not Drop decision flow
+
+```text
+learner concern
+      ↓
+supportive conversation
+      ↓
+diagnose why
+      ↓
+appropriate intervention
+      ↓
+monitor / review
+      ↓
+human-decided outcome
+```
+
+Course matching is invoked only when `transferAppropriate` is true and the recorded concern supports a course-fit pathway. Precomputed alternatives are contingency options, not recommendations. If a transfer is agreed by a person, the demo can assemble the existing Student Recruitment handoff fields, but it performs no external action.
+
+ProMonitor is represented conceptually as the existing record of action, discussion and progress. The repository contains no verified ProMonitor API or live integration. Any future connection is **potential integration / subject to technical validation**.
 
 ## 6. Qualification model
 
@@ -654,6 +694,11 @@ The most important architectural property to preserve is that **course requireme
 - automatic course-page scraping into live decisions;
 - opaque AI/LLM judgement of suitability;
 - a hidden weighted admissions model.
+- a live ProMonitor API or write-back;
+- automatic Intention-to-Transfer comments, emails, transfer requests or transfers;
+- automatic withdrawal decisions;
+- live College cohort, capacity, eligibility, funding or financial data;
+- capacity-led learner allocation.
 
 Those omissions are intentional safeguards as much as they are prototype simplifications.
 

@@ -10,6 +10,19 @@ The project currently follows a lightweight semantic-versioning approach:
 
 ## Unreleased — CIS handover/supportability
 
+### Swap Not Drop reframing
+
+- Reframed the existing 42-day view as **42-Day Student Fit & Retention - Swap Not Drop Decision Support**, explicitly complementing the College's established 2026/27 process rather than presenting a new retention process.
+- Replaced the alternatives-first experience with `concern -> diagnose why -> choose intervention -> monitor -> outcome`.
+- Added distinct course-mismatch, academic, support, belonging, transport/access, Careers, known-alternative, conduct and external-provider pathways.
+- Kept precomputed alternatives dormant until transfer is an appropriate intervention and labelled every displayed option as potential and human-reviewed.
+- Represented ProMonitor Intention-to-Transfer as a record of action, discussion and progress rather than a transfer request; any integration remains potential and subject to technical validation.
+- Added a human-reviewed transfer-handoff demonstration with Student Name, Student ID, destination Course Code, Group and Start Date, without email, write-back or automated transfer.
+- Added the Student Recruitment Group review path for potential withdrawals and retained external transition as a legitimate learner outcome.
+- Subordinated reciprocal swaps, backfill, capacity and financial modelling to learner suitability, entry/compliance, learner choice and human approval.
+- Expanded the synthetic management and pilot views to show intervention reasons, responsible teams, outcome mix, response/resolution time and baseline-comparison measures.
+- Added pure `retention-core.js` rules and regression tests for intervention classification, non-transfer routes, conduct, Careers, internal transfer, external transition, withdrawal review, handoff readiness and warm-start safeguards.
+
 ### Presentation
 
 - Added a dedicated Lincoln-branded demonstration home screen that launches the student Course Match, tutor/adviser reverse match and 42-day retention journeys from one place.

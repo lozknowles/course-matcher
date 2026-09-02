@@ -22,6 +22,7 @@ The project currently follows a lightweight semantic-versioning approach:
 - Subordinated reciprocal swaps, backfill, capacity and financial modelling to learner suitability, entry/compliance, learner choice and human approval.
 - Expanded the synthetic management and pilot views to show intervention reasons, responsible teams, outcome mix, response/resolution time and baseline-comparison measures.
 - Added pure `retention-core.js` rules and regression tests for intervention classification, non-transfer routes, conduct, Careers, internal transfer, external transition, withdrawal review, handoff readiness and warm-start safeguards.
+- Updated the established production helper to ship and publicly verify `retention-core.js` plus the diagnosis-first 42-day interface.
 
 ### Presentation
 

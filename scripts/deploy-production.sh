@@ -26,7 +26,7 @@ npm ci
 npm test
 npm run vendor
 
-for f in .htaccess index.html styles.css app.js document-core.js matcher-core.js courses.js; do
+for f in .htaccess index.html styles.css app.js document-core.js matcher-core.js retention-core.js courses.js; do
   test -s "$f"
 done
 for f in vendor/tesseract/tesseract.min.js vendor/tesseract/worker.min.js vendor/pdfjs/pdf.mjs vendor/pdfjs/pdf.worker.mjs; do
@@ -38,7 +38,7 @@ done
 ssh -p "$DEPLOY_PORT" "$DEPLOY_HOST" "rm -rf '$REMOTE_STAGE'; mkdir -p '$REMOTE_STAGE' '$REMOTE_BACKUP_DIR'"
 rsync -av --delete-after \
   -e "ssh -p $DEPLOY_PORT" \
-  .htaccess index.html styles.css app.js document-core.js matcher-core.js courses.js vendor \
+  .htaccess index.html styles.css app.js document-core.js matcher-core.js retention-core.js courses.js vendor \
   "$DEPLOY_HOST:$REMOTE_STAGE/"
 
 # Use sudo only for the final web-root operation. -tt permits an interactive
@@ -60,6 +60,9 @@ curl -fsS "$PUBLIC_URL" | grep -q 'prepared for discussion with Lincoln College'
 curl -fsS "$PUBLIC_URL" | grep -q 'Lincoln College, Lincoln and Newark'
 curl -fsS "$PUBLIC_URL" | grep -q 'Show courses I could apply for'
 curl -fsS "$PUBLIC_URL/matcher-core.js" | grep -q 'quickMatchCourses'
+curl -fsS "$PUBLIC_URL/retention-core.js" | grep -q 'buildTransferHandoff'
+curl -fsS "$PUBLIC_URL" | grep -q '42-Day Student Fit &amp; Retention'
+curl -fsS "$PUBLIC_URL" | grep -q 'Why is this learner at risk of disengaging?'
 curl -fsS "$PUBLIC_URL/vendor/pdfjs/pdf.mjs" >/dev/null
 curl -fsS "$PUBLIC_URL/vendor/tesseract/tesseract.min.js" >/dev/null
 curl -fsS "$PUBLIC_URL/document-core.js" | grep -q 'readAllPdfPages'

@@ -107,6 +107,8 @@ The four product principles are **learner-led, staff-supported, data-informed an
 - Multiple legitimate outcomes, including remaining on the current programme and an informed external-provider transition.
 - A controlled pilot/evaluation view based on the existing Intention-to-Transfer cohort, with clearly synthetic metrics.
 - A shared Lincoln-branded kickoff screen with clear entry points for the student, tutor/adviser and management demonstrations.
+- A persistent Lincoln College header and demonstration footer across every mode, with the wordmark returning to the shared kickoff screen.
+- Canonical live Lincoln College navigation and course links, guarded by `npm run test:links` before production deployment.
 - Configurable 28, 42 and 56-day views for scenario exploration; the proposition is learner success, not “saving funding before day 42”.
 - Synthetic management data only, with no ProSolution connection, automated transfer or write-back.
 - A prominent **Quick Match** student route that shows only green courses whose encoded hard grade requirements are met, without requiring interest selection.

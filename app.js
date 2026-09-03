@@ -55,6 +55,7 @@ function setMode(mode){
 }
 $$('.tab').forEach(t=>t.addEventListener('click',()=>setMode(t.dataset.mode)));
 $$('[data-launch-mode]').forEach(button=>button.addEventListener('click',()=>setMode(button.dataset.launchMode)));
+$$('[data-mode-link]').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();setMode(link.dataset.modeLink)}));
 
 function setStep(n){ $$('.step').forEach(s=>s.classList.toggle('active',Number(s.dataset.step)===n)); }
 function showStudentPanel(id, step){ ['results-entry','verify-panel','match-options-panel','interest-panel','matches-panel'].forEach(x=>$('#'+x).classList.toggle('hidden',x!==id)); setStep(step); $('#'+id).scrollIntoView({behavior:'smooth',block:'start'}); }

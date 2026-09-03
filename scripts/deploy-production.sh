@@ -24,6 +24,7 @@ fi
 
 npm ci
 npm test
+npm run test:links
 npm run vendor
 
 for f in .htaccess index.html styles.css app.js document-core.js matcher-core.js retention-core.js courses.js; do

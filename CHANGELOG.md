@@ -26,6 +26,9 @@ The project currently follows a lightweight semantic-versioning approach:
 
 ### Presentation
 
+- Kept the Lincoln College wordmark, institutional navigation and demonstration footer visible across every demo mode, including Swap Not Drop; the wordmark now returns to the shared kickoff screen.
+- Replaced stale Lincoln College header paths with the current canonical live URLs for events, adult learning, students, staff and the College Group.
+- Added an exhaustive official-link check covering header, footer, course and subject links, and made it a guarded production-deployment step.
 - Added a dedicated Lincoln-branded demonstration home screen that launches the student Course Match, tutor/adviser reverse match and 42-day retention journeys from one place.
 - Added a Lincoln-branded management dashboard for the 42-day student fit and retention concept while preserving the student Course Match and Quick Match journeys.
 - Added a calm cohort-flow workspace with prioritised learner triage, transferable-skills topology, evidence tabs and reciprocal-capacity scenarios.

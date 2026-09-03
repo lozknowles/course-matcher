@@ -6,6 +6,7 @@
   "description": "Unofficial Lincoln College Course Match and Swap Not Drop decision-support demonstration.",
   "scripts": {
     "test": "node --test tests/*.test.mjs",
+    "test:links": "node scripts/check-official-links.mjs",
     "vendor": "node scripts/vendor.mjs",
     "serve": "python3 -m http.server 8000"
   },

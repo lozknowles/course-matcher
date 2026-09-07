@@ -70,26 +70,32 @@ else
     echo 'Production files installed.'"
 fi
 
-curl -fsS "$PUBLIC_URL" | grep -q 'Turn your results into useful course conversations'
-curl -fsS "$PUBLIC_URL" | grep -q 'What are you interested in?'
-curl -fsS "$PUBLIC_URL" | grep -q 'Take photo'
-curl -fsS "$PUBLIC_URL" | grep -q 'prepared for discussion with Lincoln College'
-curl -fsS "$PUBLIC_URL" | grep -q 'Lincoln College, Lincoln and Newark'
-curl -fsS "$PUBLIC_URL" | grep -q 'Show courses I could apply for'
-curl -fsS "$PUBLIC_URL/matcher-core.js" | grep -q 'quickMatchCourses'
-curl -fsS "$PUBLIC_URL/retention-core.js" | grep -q 'buildTransferHandoff'
-curl -fsS "$PUBLIC_URL" | grep -q '42-Day Student Fit &amp; Retention'
-curl -fsS "$PUBLIC_URL" | grep -q 'Why is this learner at risk of disengaging?'
-curl -fsS "$PUBLIC_URL" | grep -q 'Four student-success journeys'
-curl -fsS "$PUBLIC_URL" | grep -q 'href="automated-change-request.html"'
+assert_public_contains() {
+  # Do not use grep -q here: under pipefail it can close a large successful
+  # curl response early and turn the verification into a false curl(23).
+  curl -fsS "$1" | grep -F "$2" >/dev/null
+}
+
+assert_public_contains "$PUBLIC_URL" 'Turn your results into useful course conversations'
+assert_public_contains "$PUBLIC_URL" 'What are you interested in?'
+assert_public_contains "$PUBLIC_URL" 'Take photo'
+assert_public_contains "$PUBLIC_URL" 'prepared for discussion with Lincoln College'
+assert_public_contains "$PUBLIC_URL" 'Lincoln College, Lincoln and Newark'
+assert_public_contains "$PUBLIC_URL" 'Show courses I could apply for'
+assert_public_contains "$PUBLIC_URL/matcher-core.js" 'quickMatchCourses'
+assert_public_contains "$PUBLIC_URL/retention-core.js" 'buildTransferHandoff'
+assert_public_contains "$PUBLIC_URL" '42-Day Student Fit &amp; Retention'
+assert_public_contains "$PUBLIC_URL" 'Why is this learner at risk of disengaging?'
+assert_public_contains "$PUBLIC_URL" 'Four student-success journeys'
+assert_public_contains "$PUBLIC_URL" 'href="automated-change-request.html"'
 curl -fsS "$PUBLIC_URL/vendor/pdfjs/pdf.mjs" >/dev/null
 curl -fsS "$PUBLIC_URL/vendor/tesseract/tesseract.min.js" >/dev/null
-curl -fsS "$PUBLIC_URL/document-core.js" | grep -q 'readAllPdfPages'
-curl -fsS "$PUBLIC_URL/automated-change-request.html" | grep -q 'Automated Change Request'
-curl -fsS "$PUBLIC_URL/automated-change-request.html" | grep -q 'agent-cursor'
-curl -fsS "$PUBLIC_URL/automated-change-request.html" | grep -q 'no real student data'
-curl -fsS "$PUBLIC_URL/automated-change-request.html" | grep -q 'Save &amp; Close\|Save & Close'
-curl -fsS "$PUBLIC_URL/automated-change-request.html" | grep -q 'ProSolution (26.1) - TEST SYSTEM'
-curl -fsS "$PUBLIC_URL/automated-change-request.html" | grep -q 'Lincoln and Newark'
+assert_public_contains "$PUBLIC_URL/document-core.js" 'readAllPdfPages'
+assert_public_contains "$PUBLIC_URL/automated-change-request.html" 'Automated Change Request'
+assert_public_contains "$PUBLIC_URL/automated-change-request.html" 'agent-cursor'
+assert_public_contains "$PUBLIC_URL/automated-change-request.html" 'no real student data'
+assert_public_contains "$PUBLIC_URL/automated-change-request.html" 'Save & Close'
+assert_public_contains "$PUBLIC_URL/automated-change-request.html" 'ProSolution (26.1) - TEST SYSTEM'
+assert_public_contains "$PUBLIC_URL/automated-change-request.html" 'Lincoln and Newark'
 
 echo "Lincoln College demonstration suite deployed and verified at $PUBLIC_URL"

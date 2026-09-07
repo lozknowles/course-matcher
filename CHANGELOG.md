@@ -21,6 +21,7 @@ The project currently follows a lightweight semantic-versioning approach:
 - Extended the official-link check and guarded production verification to cover the fourth journey and its Lincoln College links.
 - Added a same-host mode to the guarded deployment helper for running from a clean cottageserver checkout without weakening validation, backup or public verification gates.
 - Added fresh SHA-bound official-link evidence for deployment hosts that receive edge-level false 403 responses; evidence is rejected if stale, commit-mismatched, incomplete or unsuccessful.
+- Fixed public verification under `pipefail` so large successful responses are fully consumed instead of being misreported as curl write error 23 after an early `grep -q` exit.
 
 ### Swap Not Drop reframing
 

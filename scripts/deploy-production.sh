@@ -27,23 +27,19 @@ npm test
 npm run test:links
 npm run vendor
 
-for f in .htaccess index.html styles.css app.js document-core.js matcher-core.js retention-core.js courses.js; do
+for f in .htaccess index.html automated-change-request.html styles.css app.js document-core.js matcher-core.js retention-core.js courses.js; do
   test -s "$f"
 done
 for f in vendor/tesseract/tesseract.min.js vendor/tesseract/worker.min.js vendor/pdfjs/pdf.mjs vendor/pdfjs/pdf.worker.mjs; do
   test -s "$f"
 done
 
-# Upload to a directory owned by the SSH user first. The Apache document root
-# is intentionally not made writable by the deployment account.
 ssh -p "$DEPLOY_PORT" "$DEPLOY_HOST" "rm -rf '$REMOTE_STAGE'; mkdir -p '$REMOTE_STAGE' '$REMOTE_BACKUP_DIR'"
 rsync -av --delete-after \
   -e "ssh -p $DEPLOY_PORT" \
-  .htaccess index.html styles.css app.js document-core.js matcher-core.js retention-core.js courses.js vendor \
+  .htaccess index.html automated-change-request.html styles.css app.js document-core.js matcher-core.js retention-core.js courses.js vendor \
   "$DEPLOY_HOST:$REMOTE_STAGE/"
 
-# Use sudo only for the final web-root operation. -tt permits an interactive
-# sudo password prompt when cottageserver is not configured for passwordless sudo.
 ssh -tt -p "$DEPLOY_PORT" "$DEPLOY_HOST" "set -e; \
   if sudo test -d '$DEPLOY_DIR'; then \
     sudo tar -C '$DEPLOY_ROOT' -czf - lincoln-course-match > '$REMOTE_BACKUP_DIR/lincoln-course-match-$STAMP.tgz'; \
@@ -67,5 +63,9 @@ curl -fsS "$PUBLIC_URL" | grep -q 'Why is this learner at risk of disengaging?'
 curl -fsS "$PUBLIC_URL/vendor/pdfjs/pdf.mjs" >/dev/null
 curl -fsS "$PUBLIC_URL/vendor/tesseract/tesseract.min.js" >/dev/null
 curl -fsS "$PUBLIC_URL/document-core.js" | grep -q 'readAllPdfPages'
+curl -fsS "$PUBLIC_URL/automated-change-request.html" | grep -q 'Automated Change Request'
+curl -fsS "$PUBLIC_URL/automated-change-request.html" | grep -q 'agent-cursor'
+curl -fsS "$PUBLIC_URL/automated-change-request.html" | grep -q 'no real student data'
+curl -fsS "$PUBLIC_URL/automated-change-request.html" | grep -q 'Save &amp; Close\|Save & Close'
 
-echo "Course Match 1.0.0 deployed and verified at $PUBLIC_URL"
+echo "Lincoln College demonstration suite deployed and verified at $PUBLIC_URL"

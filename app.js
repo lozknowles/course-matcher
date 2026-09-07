@@ -42,7 +42,7 @@ const COMMON_SUBJECTS = [...RECOGNISED_GCSE_SUBJECTS];
 // ---------------------------------------------------------------------------
 function setMode(mode){
   $$('.mode-panel').forEach(p => p.classList.toggle('active', p.id === `${mode}-mode`));
-  $$('.tab').forEach(t => { const active=t.dataset.mode===mode; t.classList.toggle('active',active); t.setAttribute('aria-selected',active); });
+  $$('.tab[data-mode]').forEach(t => { const active=t.dataset.mode===mode; t.classList.toggle('active',active); t.setAttribute('aria-selected',active); });
   document.body.classList.toggle('retention-active',mode==='retention');
   const heroCopy={
     launch:['Lincoln College demonstration suite','Student success','Three connected demonstrations for course discovery, staff conversations and early retention support.'],
@@ -53,7 +53,7 @@ function setMode(mode){
   if(heroCopy){$('.hero-kicker').textContent=heroCopy[0];$('#course-match-title').textContent=heroCopy[1];$('.hero-lead').textContent=heroCopy[2]}
   window.scrollTo({top:0,behavior:'smooth'});
 }
-$$('.tab').forEach(t=>t.addEventListener('click',()=>setMode(t.dataset.mode)));
+$$('.tab[data-mode]').forEach(t=>t.addEventListener('click',()=>setMode(t.dataset.mode)));
 $$('[data-launch-mode]').forEach(button=>button.addEventListener('click',()=>setMode(button.dataset.launchMode)));
 $$('[data-mode-link]').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();setMode(link.dataset.modeLink)}));
 

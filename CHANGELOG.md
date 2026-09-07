@@ -12,6 +12,7 @@ The project currently follows a lightweight semantic-versioning approach:
 
 ### Automated Student Change Requests
 
+- Added Automated Change Requests to the persistent main menu on the right, immediately before About this demo.
 - Added a fourth Lincoln-branded kickoff option for an Automated Change Requests demonstration while preserving Course Match, tutor/adviser and Swap Not Drop.
 - Added a visible cursor runner that follows the observed ProSolution 26.1 Student Change Request UX: open the screen, select Accepted, double-click the row, inspect the changed value, Accept, verify Student Details, Save & Close and reconcile disappearance from the To Do queue.
 - Added click/double-click pulses, queue-count changes, a per-request narrative and an in-memory reconciliation audit so the demonstration is visibly the human UX rather than background magic.

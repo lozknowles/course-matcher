@@ -31,7 +31,7 @@ else
 fi
 npm run vendor
 
-for f in .htaccess index.html automated-change-request.html styles.css app.js document-core.js matcher-core.js retention-core.js courses.js; do
+for f in .htaccess index.html automated-change-request.html automated-change-request.js styles.css app.js document-core.js matcher-core.js retention-core.js courses.js; do
   test -s "$f"
 done
 for f in vendor/tesseract/tesseract.min.js vendor/tesseract/worker.min.js vendor/pdfjs/pdf.mjs vendor/pdfjs/pdf.worker.mjs; do
@@ -42,7 +42,7 @@ if [ "${DEPLOY_LOCAL:-0}" = "1" ]; then
   rm -rf "$REMOTE_STAGE"
   mkdir -p "$REMOTE_STAGE" "$REMOTE_BACKUP_DIR"
   rsync -av --delete-after \
-    .htaccess index.html automated-change-request.html styles.css app.js document-core.js matcher-core.js retention-core.js courses.js vendor \
+    .htaccess index.html automated-change-request.html automated-change-request.js styles.css app.js document-core.js matcher-core.js retention-core.js courses.js vendor \
     "$REMOTE_STAGE/"
   if sudo test -d "$DEPLOY_DIR"; then
     sudo tar -C "$DEPLOY_ROOT" -czf - lincoln-course-match > "$REMOTE_BACKUP_DIR/lincoln-course-match-$STAMP.tgz"
@@ -56,7 +56,7 @@ else
   ssh -p "$DEPLOY_PORT" "$DEPLOY_HOST" "rm -rf '$REMOTE_STAGE'; mkdir -p '$REMOTE_STAGE' '$REMOTE_BACKUP_DIR'"
   rsync -av --delete-after \
     -e "ssh -p $DEPLOY_PORT" \
-    .htaccess index.html automated-change-request.html styles.css app.js document-core.js matcher-core.js retention-core.js courses.js vendor \
+    .htaccess index.html automated-change-request.html automated-change-request.js styles.css app.js document-core.js matcher-core.js retention-core.js courses.js vendor \
     "$DEPLOY_HOST:$REMOTE_STAGE/"
 
   ssh -tt -p "$DEPLOY_PORT" "$DEPLOY_HOST" "set -e; \
@@ -97,5 +97,6 @@ assert_public_contains "$PUBLIC_URL/automated-change-request.html" 'no real stud
 assert_public_contains "$PUBLIC_URL/automated-change-request.html" 'Save & Close'
 assert_public_contains "$PUBLIC_URL/automated-change-request.html" 'ProSolution (26.1) - TEST SYSTEM'
 assert_public_contains "$PUBLIC_URL/automated-change-request.html" 'Lincoln and Newark'
+assert_public_contains "$PUBLIC_URL/automated-change-request.js" 'requests=requests.slice(1)'
 
 echo "Lincoln College demonstration suite deployed and verified at $PUBLIC_URL"

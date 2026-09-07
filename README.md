@@ -28,7 +28,8 @@ If you are a Lincoln College CIS engineer inheriting this repository, read these
 7. `retention-core.js` — pure intervention, warm-start, handoff, outcome and capacity-order safeguards.
 8. `app.js` — browser UI orchestration, OCR/PDF handling, adviser workflow and synthetic 42-day view.
 9. `automated-change-request.html` — self-contained visible automation prototype and synthetic queue.
-10. `tests/` — executable examples of expected behaviour.
+10. `automated-change-request.js` — CSP-compatible synthetic queue and visible UX runner.
+11. `tests/` — executable examples of expected behaviour.
 
 The application deliberately has **no application server or database**. It is plain HTML/CSS/JavaScript served as static files.
 
@@ -332,6 +333,7 @@ A generic deployment needs only:
 .htaccess
 index.html
 automated-change-request.html
+automated-change-request.js
 styles.css
 app.js
 document-core.js

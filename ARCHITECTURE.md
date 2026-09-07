@@ -30,6 +30,7 @@ The prototype was designed around six goals:
 │                               │
 │ index.html                    │
 │ automated-change-request.html│
+│ automated-change-request.js  │
 │ styles.css                    │
 │ app.js                        │
 │ document-core.js              │
@@ -139,9 +140,9 @@ Responsibilities:
 
 Because these rules are independent of the DOM, `tests/retention.test.mjs` exercises the required safety cases directly.
 
-### `automated-change-request.html`
+### `automated-change-request.html` and `automated-change-request.js`
 
-This is an isolated, static demonstration of the observed ProSolution 26.1 Student Change Request UX. It contains a wholly synthetic in-memory queue covering mobile, telephone, email, home address and NI number changes.
+This is an isolated, static demonstration of the observed ProSolution 26.1 Student Change Request UX. The JavaScript is served as a separate same-origin asset so it complies with the route's restrictive CSP. It contains a wholly synthetic in-memory queue covering mobile, telephone, email, home address and NI number changes.
 
 The runner deliberately makes its interaction visible: it moves an on-screen cursor, emits click or double-click pulses, navigates Student Change Request, selects `Next Stage = Accepted`, opens the row, inspects the changed value, accepts it, verifies the normal-colour accepted value in Student Details, selects Save & Close, removes the request from the To Do list and appends an audit/reconciliation record. Reset restores the original synthetic queue.
 

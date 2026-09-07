@@ -22,6 +22,7 @@ The project currently follows a lightweight semantic-versioning approach:
 - Added a same-host mode to the guarded deployment helper for running from a clean cottageserver checkout without weakening validation, backup or public verification gates.
 - Added fresh SHA-bound official-link evidence for deployment hosts that receive edge-level false 403 responses; evidence is rejected if stale, commit-mismatched, incomplete or unsuccessful.
 - Fixed public verification under `pipefail` so large successful responses are fully consumed instead of being misreported as curl write error 23 after an early `grep -q` exit.
+- Moved the automation runner into a same-origin JavaScript asset so the live route's restrictive CSP permits the queue and visible workflow to execute; deployment now requires and verifies that asset.
 
 ### Swap Not Drop reframing
 

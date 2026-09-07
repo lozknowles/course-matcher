@@ -3,6 +3,7 @@ import fs from 'node:fs/promises';
 import test from 'node:test';
 
 const page = await fs.readFile(new URL('../automated-change-request.html', import.meta.url), 'utf8');
+const automation = await fs.readFile(new URL('../automated-change-request.js', import.meta.url), 'utf8');
 const home = await fs.readFile(new URL('../index.html', import.meta.url), 'utf8');
 
 test('home exposes the fourth Lincoln-branded journey', () => {
@@ -13,10 +14,10 @@ test('home exposes the fourth Lincoln-branded journey', () => {
 
 test('automation covers the five requested synthetic field types', () => {
   for (const field of ['MobileTel', 'HomeTel', 'Email', 'Address1', 'NINumber']) {
-    assert.match(page, new RegExp(`field:'${field}'`));
+    assert.match(automation, new RegExp(`field:'${field}'`));
   }
   assert.match(page, /no real student data/);
-  assert.doesNotMatch(page, /@(?!example\.test|student\.example\.test)[\w.-]+\.[a-z]{2,}/i);
+  assert.doesNotMatch(automation, /@(?!example\.test|student\.example\.test)[\w.-]+\.[a-z]{2,}/i);
 });
 
 test('visible automation follows the observed UI sequence and reconciles the queue', () => {
@@ -33,7 +34,7 @@ test('visible automation follows the observed UI sequence and reconciles the que
   ];
   let previous = -1;
   for (const step of steps) {
-    const position = page.indexOf(step);
+    const position = automation.indexOf(step);
     assert.ok(position > previous, `${step} must occur in order`);
     previous = position;
   }
@@ -45,4 +46,5 @@ test('visible automation follows the observed UI sequence and reconciles the que
 test('prototype documents the mandatory test-first progression', () => {
   assert.match(page, /ProSolution \(26\.1\) - TEST SYSTEM/);
   assert.match(page, /no live ProSolution connection/);
+  assert.match(page, /src="automated-change-request\.js"/);
 });

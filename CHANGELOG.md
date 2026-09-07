@@ -20,6 +20,7 @@ The project currently follows a lightweight semantic-versioning approach:
 - Documented future controls for roles, versioned fail-closed selectors, idempotency, bounded retries/timeouts, audit, post-save read-back, reconciliation and manual recovery.
 - Extended the official-link check and guarded production verification to cover the fourth journey and its Lincoln College links.
 - Added a same-host mode to the guarded deployment helper for running from a clean cottageserver checkout without weakening validation, backup or public verification gates.
+- Added fresh SHA-bound official-link evidence for deployment hosts that receive edge-level false 403 responses; evidence is rejected if stale, commit-mismatched, incomplete or unsuccessful.
 
 ### Swap Not Drop reframing
 

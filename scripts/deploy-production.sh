@@ -24,7 +24,11 @@ fi
 
 npm ci
 npm test
-npm run test:links
+if [ -n "${OFFICIAL_LINK_EVIDENCE:-}" ]; then
+  node scripts/verify-link-evidence.mjs "$OFFICIAL_LINK_EVIDENCE" "$(git rev-parse HEAD)"
+else
+  npm run test:links
+fi
 npm run vendor
 
 for f in .htaccess index.html automated-change-request.html styles.css app.js document-core.js matcher-core.js retention-core.js courses.js; do

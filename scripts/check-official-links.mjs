@@ -49,4 +49,17 @@ for (const result of results) {
 
 const failures = results.filter(result => !result.ok);
 console.log(`Checked ${results.length} official Lincoln College links; ${failures.length} failed.`);
-if (failures.length) process.exitCode = 1;
+if (failures.length) {
+  process.exitCode = 1;
+} else if (process.env.LINK_EVIDENCE_PATH) {
+  const { stdout } = await execFileAsync('git', ['rev-parse', 'HEAD']);
+  const evidence = {
+    schemaVersion: 1,
+    commit: stdout.trim(),
+    checkedAt: new Date().toISOString(),
+    officialHost: OFFICIAL_HOST,
+    results: results.map(({ url, status, finalUrl, ok }) => ({ url, status, finalUrl, ok }))
+  };
+  await fs.writeFile(process.env.LINK_EVIDENCE_PATH, `${JSON.stringify(evidence, null, 2)}\n`, 'utf8');
+  console.log(`Wrote SHA-bound link evidence to ${process.env.LINK_EVIDENCE_PATH}`);
+}

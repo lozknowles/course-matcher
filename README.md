@@ -360,6 +360,8 @@ The helper also verifies the fourth landing-page card and the public Automated C
 
 Set `DEPLOY_LOCAL=1` only when running the clean checkout on the destination host itself. This uses the same validation, writable staging directory, timestamped backup, final `sudo` sync and public checks without requiring the host to SSH back into itself.
 
+If the deployment host is blocked by Lincoln College's edge while the release workstation is not, set `LINK_EVIDENCE_PATH` when running `npm run test:links`, transfer that JSON evidence to the host, then pass its path as `OFFICIAL_LINK_EVIDENCE`. The helper accepts it only when it is under 30 minutes old, matches the exact deployment commit, contains the complete current official-URL set and records no failed status. This preserves the release gate without treating host-specific 403 responses as broken College links.
+
 ### Mandatory path beyond the prototype
 
 The static demonstration is not evidence that production automation is ready. Any real integration must progress in this order:

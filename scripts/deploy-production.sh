@@ -34,21 +34,37 @@ for f in vendor/tesseract/tesseract.min.js vendor/tesseract/worker.min.js vendor
   test -s "$f"
 done
 
-ssh -p "$DEPLOY_PORT" "$DEPLOY_HOST" "rm -rf '$REMOTE_STAGE'; mkdir -p '$REMOTE_STAGE' '$REMOTE_BACKUP_DIR'"
-rsync -av --delete-after \
-  -e "ssh -p $DEPLOY_PORT" \
-  .htaccess index.html automated-change-request.html styles.css app.js document-core.js matcher-core.js retention-core.js courses.js vendor \
-  "$DEPLOY_HOST:$REMOTE_STAGE/"
+if [ "${DEPLOY_LOCAL:-0}" = "1" ]; then
+  rm -rf "$REMOTE_STAGE"
+  mkdir -p "$REMOTE_STAGE" "$REMOTE_BACKUP_DIR"
+  rsync -av --delete-after \
+    .htaccess index.html automated-change-request.html styles.css app.js document-core.js matcher-core.js retention-core.js courses.js vendor \
+    "$REMOTE_STAGE/"
+  if sudo test -d "$DEPLOY_DIR"; then
+    sudo tar -C "$DEPLOY_ROOT" -czf - lincoln-course-match > "$REMOTE_BACKUP_DIR/lincoln-course-match-$STAMP.tgz"
+  fi
+  sudo mkdir -p "$DEPLOY_DIR"
+  sudo rsync -a --delete "$REMOTE_STAGE/" "$DEPLOY_DIR/"
+  sudo chmod -R a+rX "$DEPLOY_DIR"
+  rm -rf "$REMOTE_STAGE"
+  echo 'Production files installed locally.'
+else
+  ssh -p "$DEPLOY_PORT" "$DEPLOY_HOST" "rm -rf '$REMOTE_STAGE'; mkdir -p '$REMOTE_STAGE' '$REMOTE_BACKUP_DIR'"
+  rsync -av --delete-after \
+    -e "ssh -p $DEPLOY_PORT" \
+    .htaccess index.html automated-change-request.html styles.css app.js document-core.js matcher-core.js retention-core.js courses.js vendor \
+    "$DEPLOY_HOST:$REMOTE_STAGE/"
 
-ssh -tt -p "$DEPLOY_PORT" "$DEPLOY_HOST" "set -e; \
-  if sudo test -d '$DEPLOY_DIR'; then \
-    sudo tar -C '$DEPLOY_ROOT' -czf - lincoln-course-match > '$REMOTE_BACKUP_DIR/lincoln-course-match-$STAMP.tgz'; \
-  fi; \
-  sudo mkdir -p '$DEPLOY_DIR'; \
-  sudo rsync -a --delete '$REMOTE_STAGE/' '$DEPLOY_DIR/'; \
-  sudo chmod -R a+rX '$DEPLOY_DIR'; \
-  rm -rf '$REMOTE_STAGE'; \
-  echo 'Production files installed.'"
+  ssh -tt -p "$DEPLOY_PORT" "$DEPLOY_HOST" "set -e; \
+    if sudo test -d '$DEPLOY_DIR'; then \
+      sudo tar -C '$DEPLOY_ROOT' -czf - lincoln-course-match > '$REMOTE_BACKUP_DIR/lincoln-course-match-$STAMP.tgz'; \
+    fi; \
+    sudo mkdir -p '$DEPLOY_DIR'; \
+    sudo rsync -a --delete '$REMOTE_STAGE/' '$DEPLOY_DIR/'; \
+    sudo chmod -R a+rX '$DEPLOY_DIR'; \
+    rm -rf '$REMOTE_STAGE'; \
+    echo 'Production files installed.'"
+fi
 
 curl -fsS "$PUBLIC_URL" | grep -q 'Turn your results into useful course conversations'
 curl -fsS "$PUBLIC_URL" | grep -q 'What are you interested in?'

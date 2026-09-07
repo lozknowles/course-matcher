@@ -358,6 +358,8 @@ No backend route is required.
 
 The helper also verifies the fourth landing-page card and the public Automated Change Requests page. It takes a timestamped backup before replacement.
 
+Set `DEPLOY_LOCAL=1` only when running the clean checkout on the destination host itself. This uses the same validation, writable staging directory, timestamped backup, final `sudo` sync and public checks without requiring the host to SSH back into itself.
+
 ### Mandatory path beyond the prototype
 
 The static demonstration is not evidence that production automation is ready. Any real integration must progress in this order:

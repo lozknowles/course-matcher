@@ -19,6 +19,7 @@ The project currently follows a lightweight semantic-versioning approach:
 - Documented the mandatory progression from prototype to Lincoln's test ProSolution, read-back/reconciliation evidence, supervised live pilot and only then production approval.
 - Documented future controls for roles, versioned fail-closed selectors, idempotency, bounded retries/timeouts, audit, post-save read-back, reconciliation and manual recovery.
 - Extended the official-link check and guarded production verification to cover the fourth journey and its Lincoln College links.
+- Added a same-host mode to the guarded deployment helper for running from a clean cottageserver checkout without weakening validation, backup or public verification gates.
 
 ### Swap Not Drop reframing
 

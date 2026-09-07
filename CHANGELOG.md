@@ -41,6 +41,8 @@ The project currently follows a lightweight semantic-versioning approach:
 
 ### Presentation
 
+- Restyled the student Course Match journey as a responsive, student-readable interpretation of the photographed ProSolution record workspace, using compact blue title bars, tabbed record sections, pale-grey field groups and explicit status metadata while preserving Lincoln College branding.
+- Kept OCR/photo and all-page PDF parsing, mandatory grade verification, Quick Match, Guided Match and course evidence unchanged inside the revised student presentation.
 - Kept the Lincoln College wordmark, institutional navigation and demonstration footer visible across every demo mode, including Swap Not Drop; the wordmark now returns to the shared kickoff screen.
 - Replaced stale Lincoln College header paths with the current canonical live URLs for events, adult learning, students, staff and the College Group.
 - Added an exhaustive official-link check covering header, footer, course and subject links, and made it a guarded production-deployment step.

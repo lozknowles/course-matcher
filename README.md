@@ -4,7 +4,7 @@ This small static application contains Course Match, a wider 42-day learner-inte
 
 It has four user journeys:
 
-1. **Student view** — enter or upload results, verify every extracted grade, then choose either Quick Match (only courses whose encoded hard grade rules pass) or Guided Match (interest-filtered likely and near matches).
+1. **Student view** — enter or upload results in a responsive, student-readable interpretation of the College's ProSolution record layout, verify every extracted grade, then choose either Quick Match (only courses whose encoded hard grade rules pass) or Guided Match (interest-filtered likely and near matches).
 2. **Tutor / adviser view** — select a course and triage an anonymised cohort to identify students who may be worth a human conversation.
 3. **42-Day Student Fit & Retention - Swap Not Drop Decision Support** — complement the College's established 2026/27 “Swap not drop - first 42 days” process by starting with why a learner is struggling, selecting the right intervention, monitoring progress and showing course alternatives only when transfer is appropriate.
 4. **Automated Change Requests** — visibly reproduce the observed ProSolution 26.1 Student Change Request journey, including cursor movement, Accept, Student Details, Save & Close, queue removal and audit reconciliation, using only synthetic records.

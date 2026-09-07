@@ -71,7 +71,21 @@
       <div class="launch-safety"><strong>Unofficial, synthetic demonstration.</strong><span>No admissions decisions, live learner data, ProSolution connection or automated transfers.</span></div>
     </section>
 
-    <section id="student-mode" class="mode-panel" aria-labelledby="student-heading">
+    <section id="student-mode" class="mode-panel student-record-app" aria-labelledby="student-heading">
+      <div class="student-record-shell">
+      <header class="student-record-titlebar">
+        <div><strong>Student Course Match</strong><span>Results and qualifications</span></div>
+        <span class="student-record-system">Student view · 2026/27</span>
+      </header>
+      <nav class="student-record-tabs" aria-label="Student Course Match sections">
+        <span class="active">Results</span><span>Qualifications</span><span>Match route</span><span>Course matches</span>
+      </nav>
+      <div class="student-record-summary" aria-label="Course Match status">
+        <div><small>Academic year</small><strong>2026/27</strong></div>
+        <div><small>Application stage</small><strong>Exploring courses</strong></div>
+        <div><small>Evidence</small><strong>Student supplied</strong></div>
+        <div><small>Status</small><strong>Not submitted</strong></div>
+      </div>
       <div class="hero-grid">
         <div>
           <p class="step-kicker">STUDENT VIEW</p>
@@ -159,6 +173,7 @@
         <div id="match-list" class="match-list"></div>
         <section class="explore-panel"><h3>Explore every published subject area</h3><p>Not every Lincoln College course has been converted into a machine-readable rule in this demonstration. These links let you continue on the official subject pages without Course Match pretending it has assessed criteria it has not encoded.</p><div id="subject-links" class="subject-links"></div></section>
       </section>
+      </div>
     </section>
 
     <section id="retention-mode" class="mode-panel retention-app" aria-labelledby="retention-heading">
@@ -277,6 +292,6 @@
 
   <footer class="site-footer"><p><strong>Lincoln College student-success demonstrations</strong> · Prepared for discussion · Not yet an official Lincoln College service.</p><p>Official course information: <a href="https://www.lincolncollege.ac.uk/school-leavers/course-subjects" target="_blank" rel="noreferrer">Lincoln College course subjects ↗</a></p></footer>
 
-  <script type="module" src="app.js"></script>
+  <script type="module" src="app.js?v=20260907-student-record"></script>
 </body>
 </html>

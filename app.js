@@ -44,6 +44,7 @@ function setMode(mode){
   $$('.mode-panel').forEach(p => p.classList.toggle('active', p.id === `${mode}-mode`));
   $$('.tab[data-mode]').forEach(t => { const active=t.dataset.mode===mode; t.classList.toggle('active',active); t.setAttribute('aria-selected',active); });
   document.body.classList.toggle('retention-active',mode==='retention');
+  document.body.classList.toggle('student-active',mode==='student');
   const heroCopy={
     launch:['Lincoln College demonstration suite','Student success','Three connected demonstrations for course discovery, staff conversations and early retention support.'],
     student:['Results day course finder','Course Match','Turn achieved grades into useful Lincoln College course conversations.'],
@@ -56,6 +57,8 @@ function setMode(mode){
 $$('.tab[data-mode]').forEach(t=>t.addEventListener('click',()=>setMode(t.dataset.mode)));
 $$('[data-launch-mode]').forEach(button=>button.addEventListener('click',()=>setMode(button.dataset.launchMode)));
 $$('[data-mode-link]').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();setMode(link.dataset.modeLink)}));
+const requestedMode=new URLSearchParams(window.location.search).get('mode');
+if(['launch','student','adviser','retention','about'].includes(requestedMode))setMode(requestedMode);
 
 function setStep(n){ $$('.step').forEach(s=>s.classList.toggle('active',Number(s.dataset.step)===n)); }
 function showStudentPanel(id, step){ ['results-entry','verify-panel','match-options-panel','interest-panel','matches-panel'].forEach(x=>$('#'+x).classList.toggle('hidden',x!==id)); setStep(step); $('#'+id).scrollIntoView({behavior:'smooth',block:'start'}); }

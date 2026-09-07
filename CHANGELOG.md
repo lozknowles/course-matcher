@@ -10,6 +10,16 @@ The project currently follows a lightweight semantic-versioning approach:
 
 ## Unreleased — CIS handover/supportability
 
+### Automated Student Change Requests
+
+- Added a fourth Lincoln-branded kickoff option for an Automated Change Requests demonstration while preserving Course Match, tutor/adviser and Swap Not Drop.
+- Added a visible cursor runner that follows the observed ProSolution 26.1 Student Change Request UX: open the screen, select Accepted, double-click the row, inspect the changed value, Accept, verify Student Details, Save & Close and reconcile disappearance from the To Do queue.
+- Added click/double-click pulses, queue-count changes, a per-request narrative and an in-memory reconciliation audit so the demonstration is visibly the human UX rather than background magic.
+- Added wholly synthetic mobile, telephone, email, home-address and NI-number changes. No values were copied from real screenshots and there is no live ProSolution connection or write-back.
+- Documented the mandatory progression from prototype to Lincoln's test ProSolution, read-back/reconciliation evidence, supervised live pilot and only then production approval.
+- Documented future controls for roles, versioned fail-closed selectors, idempotency, bounded retries/timeouts, audit, post-save read-back, reconciliation and manual recovery.
+- Extended the official-link check and guarded production verification to cover the fourth journey and its Lincoln College links.
+
 ### Swap Not Drop reframing
 
 - Reframed the existing 42-day view as **42-Day Student Fit & Retention - Swap Not Drop Decision Support**, explicitly complementing the College's established 2026/27 process rather than presenting a new retention process.

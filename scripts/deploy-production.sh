@@ -60,6 +60,8 @@ curl -fsS "$PUBLIC_URL/matcher-core.js" | grep -q 'quickMatchCourses'
 curl -fsS "$PUBLIC_URL/retention-core.js" | grep -q 'buildTransferHandoff'
 curl -fsS "$PUBLIC_URL" | grep -q '42-Day Student Fit &amp; Retention'
 curl -fsS "$PUBLIC_URL" | grep -q 'Why is this learner at risk of disengaging?'
+curl -fsS "$PUBLIC_URL" | grep -q 'Four student-success journeys'
+curl -fsS "$PUBLIC_URL" | grep -q 'href="automated-change-request.html"'
 curl -fsS "$PUBLIC_URL/vendor/pdfjs/pdf.mjs" >/dev/null
 curl -fsS "$PUBLIC_URL/vendor/tesseract/tesseract.min.js" >/dev/null
 curl -fsS "$PUBLIC_URL/document-core.js" | grep -q 'readAllPdfPages'
@@ -67,5 +69,7 @@ curl -fsS "$PUBLIC_URL/automated-change-request.html" | grep -q 'Automated Chang
 curl -fsS "$PUBLIC_URL/automated-change-request.html" | grep -q 'agent-cursor'
 curl -fsS "$PUBLIC_URL/automated-change-request.html" | grep -q 'no real student data'
 curl -fsS "$PUBLIC_URL/automated-change-request.html" | grep -q 'Save &amp; Close\|Save & Close'
+curl -fsS "$PUBLIC_URL/automated-change-request.html" | grep -q 'ProSolution (26.1) - TEST SYSTEM'
+curl -fsS "$PUBLIC_URL/automated-change-request.html" | grep -q 'Lincoln and Newark'
 
 echo "Lincoln College demonstration suite deployed and verified at $PUBLIC_URL"

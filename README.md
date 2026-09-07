@@ -1,14 +1,15 @@
 # Lincoln College student-success demonstrations
 
-This small static application contains Course Match and a wider 42-day learner-intervention demonstration. Course matching is one capability in the suite, not the whole proposition.
+This small static application contains Course Match, a wider 42-day learner-intervention demonstration and a visible Student Change Request automation prototype. Course matching is one capability in the suite, not the whole proposition.
 
-It has three user journeys:
+It has four user journeys:
 
 1. **Student view** — enter or upload results, verify every extracted grade, then choose either Quick Match (only courses whose encoded hard grade rules pass) or Guided Match (interest-filtered likely and near matches).
 2. **Tutor / adviser view** — select a course and triage an anonymised cohort to identify students who may be worth a human conversation.
 3. **42-Day Student Fit & Retention - Swap Not Drop Decision Support** — complement the College's established 2026/27 “Swap not drop - first 42 days” process by starting with why a learner is struggling, selecting the right intervention, monitoring progress and showing course alternatives only when transfer is appropriate.
+4. **Automated Change Requests** — visibly reproduce the observed ProSolution 26.1 Student Change Request journey, including cursor movement, Accept, Student Details, Save & Close, queue removal and audit reconciliation, using only synthetic records.
 
-All three journeys start from one Lincoln College-branded demonstration home screen. The persistent navigation lets presenters move between the kickoff screen and each journey without leaving the application.
+All four journeys start from one Lincoln College-branded demonstration home screen. The first three use persistent navigation; the automation page provides a clear return to the same kickoff screen.
 
 > **Status:** independent demonstration/prototype. This is not an official Lincoln College service, is not endorsed by Lincoln College, and must not be treated as an admissions decision engine.
 
@@ -26,7 +27,8 @@ If you are a Lincoln College CIS engineer inheriting this repository, read these
 6. `document-core.js` — PDF row reconstruction and all-page traversal.
 7. `retention-core.js` — pure intervention, warm-start, handoff, outcome and capacity-order safeguards.
 8. `app.js` — browser UI orchestration, OCR/PDF handling, adviser workflow and synthetic 42-day view.
-9. `tests/` — executable examples of expected behaviour.
+9. `automated-change-request.html` — self-contained visible automation prototype and synthetic queue.
+10. `tests/` — executable examples of expected behaviour.
 
 The application deliberately has **no application server or database**. It is plain HTML/CSS/JavaScript served as static files.
 
@@ -107,10 +109,13 @@ The four product principles are **learner-led, staff-supported, data-informed an
 - Multiple legitimate outcomes, including remaining on the current programme and an informed external-provider transition.
 - A controlled pilot/evaluation view based on the existing Intention-to-Transfer cohort, with clearly synthetic metrics.
 - A shared Lincoln-branded kickoff screen with clear entry points for the student, tutor/adviser and management demonstrations.
+- A fourth Lincoln-branded Automated Change Requests entry with visible cursor movement and click/double-click pulses through the observed staff UX.
+- Five synthetic request types: mobile, telephone, email, home address and NI number; all names, IDs and values are demonstration-only.
 - A persistent Lincoln College header and demonstration footer across every mode, with the wordmark returning to the shared kickoff screen.
 - Canonical live Lincoln College navigation and course links, guarded by `npm run test:links` before production deployment.
 - Configurable 28, 42 and 56-day views for scenario exploration; the proposition is learner success, not “saving funding before day 42”.
 - Synthetic management data only, with no ProSolution connection, automated transfer or write-back.
+- No change-request write-back: the automation queue, accepted values and audit log exist only in memory and Reset restores the synthetic seed.
 - A prominent **Quick Match** student route that shows only green courses whose encoded hard grade requirements are met, without requiring interest selection.
 - A separate **Guided Match** route for interest-aware exploration of likely matches, near matches and progression conversations.
 - Combined Science double-award support, e.g. `5-5`.
@@ -326,6 +331,7 @@ A generic deployment needs only:
 ```text
 .htaccess
 index.html
+automated-change-request.html
 styles.css
 app.js
 document-core.js
@@ -349,6 +355,22 @@ No backend route is required.
 6. backs up the previous demo;
 7. uses `sudo` only for the final Apache document-root replacement;
 8. verifies the public HTML and OCR/PDF assets.
+
+The helper also verifies the fourth landing-page card and the public Automated Change Requests page. It takes a timestamped backup before replacement.
+
+### Mandatory path beyond the prototype
+
+The static demonstration is not evidence that production automation is ready. Any real integration must progress in this order:
+
+```text
+prototype
+  → Lincoln test ProSolution
+  → read-back and reconciliation evidence
+  → supervised live pilot
+  → production approval
+```
+
+Lincoln's separate **test ProSolution** is the mandatory first target for real automation. Never test writes against live ProSolution while that test environment exists. A later implementation needs named operator/service roles, versioned and fail-closed UI selectors, idempotency keys, bounded retries and timeouts, per-step audit evidence, post-save read-back, queue reconciliation, pause/stop controls and a documented manual recovery route.
 
 The current demonstration document root is `/var/www/lozknowles.com/public_html/dist/lincoln-course-match`. The route-level `.htaccess` keeps the locally vendored OCR/PDF runtime within a restrictive content-security policy and marks the unofficial demonstration as unindexed.
 

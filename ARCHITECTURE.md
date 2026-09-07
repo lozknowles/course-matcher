@@ -29,6 +29,7 @@ The prototype was designed around six goals:
 │ Static web host               │
 │                               │
 │ index.html                    │
+│ automated-change-request.html│
 │ styles.css                    │
 │ app.js                        │
 │ document-core.js              │
@@ -137,6 +138,14 @@ Responsibilities:
 - recognising internal retention, internal transfer, Careers/support, external transition and potential withdrawal as distinct outcomes.
 
 Because these rules are independent of the DOM, `tests/retention.test.mjs` exercises the required safety cases directly.
+
+### `automated-change-request.html`
+
+This is an isolated, static demonstration of the observed ProSolution 26.1 Student Change Request UX. It contains a wholly synthetic in-memory queue covering mobile, telephone, email, home address and NI number changes.
+
+The runner deliberately makes its interaction visible: it moves an on-screen cursor, emits click or double-click pulses, navigates Student Change Request, selects `Next Stage = Accepted`, opens the row, inspects the changed value, accepts it, verifies the normal-colour accepted value in Student Details, selects Save & Close, removes the request from the To Do list and appends an audit/reconciliation record. Reset restores the original synthetic queue.
+
+It has no network integration, credentials, live student data, ProSolution selector package or write-back capability. The `TEST SYSTEM` title is a demonstration label, not evidence that this page is connected to Lincoln's test system.
 
 ### `courses.js`
 
@@ -605,6 +614,36 @@ It:
 7. verifies the live application and vendor files.
 
 This mechanism is **not part of the domain architecture**. A College deployment could use any appropriate static hosting/CDN/web platform.
+
+## 18.1 Change-request productionisation gates
+
+Lincoln has a separate test ProSolution environment. Any real change-request integration must therefore follow this mandatory progression:
+
+```text
+static prototype
+      ↓
+Lincoln test ProSolution
+      ↓
+post-write read-back and queue reconciliation evidence
+      ↓
+supervised live pilot with named operators
+      ↓
+production approval
+```
+
+Real writes must not be trialled against live ProSolution while the test environment exists. A production design must define:
+
+- least-privilege operator and automation-service roles, with secrets outside the client;
+- versioned selectors tied to the tested ProSolution release and fail-closed behaviour when a selector or expected screen is absent;
+- one idempotency key per source request so retries cannot apply the same change twice;
+- bounded retries for transient navigation only, explicit timeouts and no blind retry after an uncertain save;
+- before/after field values, request ID, actor, timestamps and step outcomes in an immutable audit trail;
+- post-save read-back of the changed field and reconciliation that the request left the expected queue;
+- pause, stop, exception routing and a documented human recovery procedure;
+- synthetic qualification in test first, followed by controlled test records approved by Lincoln; and
+- supervised pilot evidence and formal production approval before scale-up.
+
+The prototype's in-memory audit narrative illustrates the evidence shape, but does not satisfy these controls by itself.
 
 ## 19. Change impact guide
 

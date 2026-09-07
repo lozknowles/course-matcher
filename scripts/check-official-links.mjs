@@ -9,8 +9,9 @@ const execFileAsync = promisify(execFile);
 const curl = process.platform === 'win32' ? 'curl.exe' : 'curl';
 const nullDevice = process.platform === 'win32' ? 'NUL' : '/dev/null';
 
-const html = await fs.readFile(new URL('../index.html', import.meta.url), 'utf8');
-const htmlUrls = [...html.matchAll(/href="(https:\/\/www\.lincolncollege\.ac\.uk\/[^"#]*)"/g)].map(match => match[1]);
+const htmlFiles = ['../index.html', '../automated-change-request.html'];
+const htmlDocuments = await Promise.all(htmlFiles.map(path => fs.readFile(new URL(path, import.meta.url), 'utf8')));
+const htmlUrls = htmlDocuments.flatMap(html => [...html.matchAll(/href="(https:\/\/www\.lincolncollege\.ac\.uk\/[^"#]*)"/g)].map(match => match[1]));
 const urls = [...new Set([
   ...htmlUrls,
   ...COURSES.map(course => course.url),

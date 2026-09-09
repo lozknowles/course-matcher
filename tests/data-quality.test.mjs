@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {cleanName,cleanMobile,makeStudents} from '../data-quality-core.js';
+test('name trimming and word casing preserve apostrophes and hyphens',()=>{assert.equal(cleanName("  ANNE-MARIE O’NEILL  "),"Anne-Marie O’Neill");});
+test('mobile spacing is removed but a twelfth digit is never guessed away',()=>{assert.deepEqual(cleanMobile('07700 900 123'),{value:'07700900123',valid:true});assert.deepEqual(cleanMobile('07700 9000123'),{value:'077009000123',valid:false});assert.equal(cleanMobile('07700abc123').valid,false);});
+test('20 fixtures contain four 12-digit exceptions and only example email addresses',()=>{const s=makeStudents();assert.equal(s.length,20);assert.equal(new Set(s.map(x=>x.id)).size,20);assert.equal(s.filter(x=>!cleanMobile(x.mobile).valid).length,4);assert.ok(s.every(x=>x.email.endsWith('@example.com')));});

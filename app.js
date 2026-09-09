@@ -46,7 +46,7 @@ function setMode(mode){
   document.body.classList.toggle('retention-active',mode==='retention');
   document.body.classList.toggle('student-active',mode==='student');
   const heroCopy={
-    launch:['Lincoln College demonstration suite','Student success','Three connected demonstrations for course discovery, staff conversations and early retention support.'],
+    launch:['Lincoln College demonstration suite','Student success','Five connected demonstrations for course discovery, staff conversations, retention, change requests and data quality.'],
     student:['Results day course finder','Course Match','Turn achieved grades into useful Lincoln College course conversations.'],
     adviser:['Tutor and adviser demonstration','Course conversations','Start with a course and find learners worth a transparent, human-led conversation.'],
     about:['About this prototype','Course Match','Understand the evidence, safety boundaries and purpose of this unofficial demonstration.']

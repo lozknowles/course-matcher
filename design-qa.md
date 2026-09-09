@@ -49,3 +49,11 @@ Compared Personal screen at 1071 x 873. Revised after user feedback to the compa
 Verified in browser: synthetic reference opens correct learner; QoE retains source grades; Apps & Enqs retains course and matching evidence; Close returns to unchanged results. No browser error logs. Node syntax check and 28 existing tests passed. Remaining P3: native tab bevels and exact dropdown chrome are approximations; not a pixel-identical ProSolution client.
 
 final result: passed
+
+## Demo 5 — Data Quality Automation, 9 September 2026
+
+Sources: PS-NAV-002 student list and PS-NAV-008 Personal detail capture. Uses compact grey desktop panels, blue selected rows/tabs, original-style column order and paired addresses with fictional data. Browser inspected list, field-correction state and AutoEmail draft. Intentional variation: automation controls/audit sidebar and synthetic banner.
+
+Full browser run completed all 20 records: 16 corrected, four mobile exceptions, four retained drafts, zero sent emails. Reopened SYN-004 draft correctly addressed to learner4@example.com. Pause/Resume observed working. Console error log empty. 31 tests passed. Final small visual fix: wrap AutoEmail message text rather than horizontal scrolling.
+
+final result: passed

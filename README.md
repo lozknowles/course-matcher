@@ -450,3 +450,15 @@ None of those should be inferred to exist merely because the demo works.
 - **A failed OCR path must not prevent manual entry.**
 
 For deeper technical detail, continue with [`ARCHITECTURE.md`](ARCHITECTURE.md).
+
+## Demo 5: Data Quality Automation
+
+Open data-quality.html. Run all 20 or Next student; Pause/Resume stops at the next animation boundary. Playback has Normal/Fast/Slow settings. Reset restores all original synthetic fixtures once playback stops.
+
+Uses PS-NAV-002 list structure and PS-NAV-008 personal-detail layout. Simulates trim and title case on Tab, mobile whitespace removal, red target highlights, and Save & Close. Four 12-digit fixtures retain their digits and are flagged for review; AutoEmail displays an unsent request for a correct number. No network writes, email integration, real student records or MIS automation. Name casing rules are illustrative and require institutional agreement before use with real names.
+
+## Demo 5 acceptance notes
+
+Synthetic fixtures: 20 unique student references; 16 valid 11-digit mobile values after whitespace removal; four 12-digit exceptions. Name fields include leading/trailing spaces and inconsistent case. Automation uses a local state machine with Run All, Next, Pause/Resume and Reset. Controls cannot start overlapping runs. Name and mobile rules have dedicated tests; all 31 suite tests pass.
+
+Source layout: navigation capture PS-NAV-002 (Student list) and PS-NAV-008 (Student Details / Personal). Displayed records are generated, not extracted from the real list. AutoEmail drafts stay in browser memory only, use example.com recipients and can be reopened after playback. No sending or network write code exists.

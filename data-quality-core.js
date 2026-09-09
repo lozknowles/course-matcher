@@ -1,0 +1,5 @@
+// Demonstration rules only: institution-approved name casing is required in production.
+export function cleanName(value) { return value.trim().toLocaleLowerCase('en-GB').replace(/(^|[\s’'-])\p{L}/gu,c=>c.toLocaleUpperCase('en-GB')); }
+export function cleanMobile(value) { const compact=value.replace(/\s/g,'');return {value:compact,valid:/^\d{11}$/.test(compact)}; }
+const names=[[' jamie ',' ellis '],['MORGAN ','REED'],[' taylor','brooks '],['casey ',' patel'],[' RILEY ','green'],['avery',' CLARKE '],['rowan ','hill'],[' alex',' carter '],['JORDAN','bell '],['sam ','parker'],['amelia',' wood '],[' noah ','jones'],['isla',' WRIGHT'],['leo ',' thomas'],['ava','brown '],['oliver',' wilson'],[' freya','evans '],['oscar ','taylor'],[' mia ','davies'],['archie',' roberts ']];
+export function makeStudents(){return names.map(([forename,surname],i)=>({id:`SYN-${String(i+1).padStart(3,'0')}`,forename,surname,mobile:i%5===3?`07700 90000${String(i).padStart(2,'0')}`:`07700 900 ${String(i).padStart(3,'0')}`,email:`learner${i+1}@example.com`,dob:'14/02/2009',address:`${i+1} Example Lane`,status:'Pending'}));}

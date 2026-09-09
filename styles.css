@@ -57,3 +57,59 @@ h2{font-family:"Arial Narrow",Arial,sans-serif;text-transform:uppercase}h3,h4{fo
 .student-active .college-hero{min-height:180px;padding:0 20px}.student-active .college-hero .hero-inner{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;padding:34px 24px 28px}.student-active .college-hero h1{font-size:clamp(30px,4vw,50px)}.student-active .college-hero .hero-lead{max-width:620px;margin:0}.student-active .college-hero .hero-evidence{width:100%;margin:0}.student-active main{max-width:1420px;padding-top:22px}
 @media(max-width:800px){.student-record-titlebar{align-items:flex-start;flex-direction:column}.student-record-titlebar>div{align-items:flex-start;flex-direction:column;gap:2px}.student-record-summary{grid-template-columns:1fr 1fr}.student-record-tabs span{min-width:115px}.student-record-app .hero-grid>div{padding:18px}.student-record-app .entry-grid{padding:8px}.student-active .college-hero .hero-inner{display:block}.student-record-app #verify-panel>.callout,.student-record-app #verify-panel>.table-wrap,.student-record-app #verify-panel>#extraction-summary,.student-record-app #verify-panel>#verify-status,.student-record-app #match-options-panel>p,.student-record-app #match-options-panel>.match-route-grid,.student-record-app #match-options-panel>.callout,.student-record-app #interest-panel>p,.student-record-app #interest-panel>.chips,.student-record-app #interest-panel>.field-label,.student-record-app #interest-panel>.text-input{margin-left:10px;margin-right:10px}}
 @media(max-width:480px){.student-record-summary{grid-template-columns:1fr}.student-record-app .panel,.student-record-app #matches-panel{margin:8px}.student-record-app .entry-grid{display:block;background:#c4d1d7}.student-record-app .upload-zone{margin-bottom:1px}.student-record-app .manual-row{grid-template-columns:1fr 78px 38px}.student-record-app .actions{padding:10px}.student-record-app .actions>*{width:100%}}
+
+/* Student Details: Windows-style form hierarchy from PS-NAV-008. */
+.student-record-link{border:0;background:none;color:#205c8b;text-decoration:underline;padding:4px;font:inherit;font-weight:700;cursor:pointer}
+.mis-record{width:min(1000px,96vw);max-height:92vh;padding:0;border:1px solid #7e8d9b;border-radius:0;background:#ececec;color:#20252b;font:13px Arial,sans-serif;box-shadow:0 16px 55px #0005}
+.mis-record::backdrop{background:#17233188}
+.mis-record button{font:inherit;letter-spacing:0;text-transform:none;border-radius:0;background:#f8f8f8;color:#222;border:1px solid #a9afb6;padding:7px 12px;cursor:pointer}
+.mis-record button:focus-visible{outline:3px solid #154e7a;outline-offset:2px}
+.mis-titlebar{display:flex;align-items:center;justify-content:space-between;gap:14px;background:#427ea7;color:white;padding:12px 16px}
+.mis-record .mis-titlebar h2{font:700 17px Arial,sans-serif;color:white;margin:0;text-transform:none}
+.mis-notice{padding:9px 16px;background:#fff7dc;color:#604900;font-size:12px}
+.mis-tabs{display:flex;flex-wrap:wrap;gap:2px;padding:7px 8px 0;border-bottom:1px solid #a6afb7}
+.mis-tabs button{padding:6px 10px;border-bottom:0}
+.mis-tabs button[aria-pressed=true]{background:#4f87ad;color:white}
+.mis-subtabs{padding-top:5px;background:#e2e5e8}
+.mis-content{padding:14px;min-height:360px}
+.mis-record fieldset{min-width:0;padding:12px;border:1px solid #afb3b7;margin:0 0 12px}
+.mis-record legend{padding:0 5px;font-weight:400;font-size:13px}
+.mis-fields,.mis-addresses{display:grid;grid-template-columns:1fr 1fr;gap:5px 18px}
+.mis-record label{display:grid;grid-template-columns:125px minmax(0,1fr);align-items:center;gap:7px;font-size:12px;font-weight:400;margin:0 0 6px}
+.mis-record input{width:100%;min-width:0;background:#fff;border:1px solid #b5b8bd;border-radius:0;padding:6px;color:#172531;font:13px Arial,sans-serif;height:auto}
+.mis-record h3{font:700 15px Arial,sans-serif;text-transform:none}
+.mis-table{overflow:auto}.mis-record table{font-size:13px;background:white;width:100%}.mis-record th{background:#dae3eb;color:#273847}.mis-record th,.mis-record td{padding:10px;border:1px solid #bec5cd;text-transform:none}
+.mis-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-top:1px solid #afb3b7;background:#e2e5e8}
+@media(max-width:650px){.mis-fields,.mis-addresses{grid-template-columns:1fr}.mis-titlebar{align-items:start}.mis-record .mis-titlebar h2{font-size:15px}.mis-record label{grid-template-columns:110px minmax(0,1fr)}.mis-tabs button{padding:8px}.mis-content{padding:10px}}
+.mis-record .mis-footer{color:#273847}.mis-record .mis-footer span{color:inherit}
+.mis-record .mis-titlebar h2{max-width:none}.mis-record input{padding:4px 6px}.mis-record label{margin-bottom:4px}.mis-record .mis-footer{position:sticky;bottom:0}
+
+/* Compact desktop record proportions and hierarchy from the navigation capture. */
+.mis-record{width:782px;max-width:96vw;background:#ececec;font:11px Arial,sans-serif;box-shadow:0 4px 24px #0003;border:1px solid #aeb3ba}
+.mis-record::backdrop{background:#e4e7ecf5}
+.mis-titlebar{padding:5px 7px;background:#e4e7ec;color:#252525;border-bottom:1px solid #b3b8bf}
+.mis-record .mis-titlebar h2{font:11px Arial,sans-serif;color:#252525}
+.mis-record .mis-titlebar button{padding:2px 8px}
+.mis-notice{padding:4px 7px;font-size:10px;background:#f8f4e8}
+.mis-record .mis-tabs{padding:2px 3px 0;gap:1px;flex-wrap:nowrap;overflow-x:auto;background:#ececec}
+.mis-record button{font:11px Arial,sans-serif;padding:3px 8px;border:1px solid #b8b8b8;background:#f7f7f7;color:#222;white-space:nowrap;min-height:0}
+.mis-record button:disabled{color:#666;background:#ededed;cursor:default}
+.mis-record .mis-tabs button{padding:3px 7px;border-radius:5px 5px 0 0;border-bottom:0;flex-shrink:0}
+.mis-record .mis-tabs button[aria-pressed=true]{background:#538bb2;color:white}
+.mis-record .mis-content{padding:5px;min-height:360px}
+.mis-record fieldset{padding:5px 6px;margin:0;min-width:0;border:1px solid #aaa}
+.mis-record legend{font:11px Arial,sans-serif;padding:0 3px}
+.mis-identity{display:grid;grid-template-columns:2fr 1fr;gap:6px;margin-bottom:5px;align-items:stretch}
+.mis-record .mis-fields{grid-template-columns:1fr 1fr;gap:8px}
+.mis-record label{grid-template-columns:93px minmax(0,1fr);gap:4px;margin-bottom:5px;font:11px Arial,sans-serif;min-height:21px}
+.mis-record input{padding:2px 3px;font:11px Arial,sans-serif;height:21px;border:1px solid #bbb;box-shadow:inset 1px 1px 1px #ddd;background:#fff}
+.mis-record .mis-addresses{grid-template-columns:1fr 1fr;gap:7px}
+.mis-record .mis-addresses label{grid-template-columns:76px minmax(0,1fr);margin-bottom:3px}
+.mis-record .mis-identifiers{margin-top:8px;padding-top:12px}
+.mis-controls{display:flex;gap:4px;margin:4px 0}.mis-controls button{flex:1;padding:4px 8px}
+.mis-record .mis-footer{padding:4px 0 0;border:0;background:#e4e7ec;font-size:10px;gap:6px}
+.mis-footer .mis-controls{margin:0}.mis-footer .mis-controls button{min-width:52px;padding:7px 12px}.mis-footer .mis-controls button:last-child{background:#91acc1;color:#fff}
+@media(max-width:650px){.mis-record{max-width:98vw}.mis-identity{grid-template-columns:1fr}.mis-record .mis-fields{grid-template-columns:1fr 1fr}.mis-record label{grid-template-columns:80px minmax(0,1fr)}.mis-record .mis-addresses{grid-template-columns:1fr}.mis-record .mis-footer{flex-wrap:wrap}.mis-record .mis-titlebar h2{font-size:11px}}
+.mis-record .mis-footer{width:100%;min-width:0;margin:0;box-sizing:border-box}.mis-record .mis-footer .mis-controls{flex:0 1 auto;min-width:0}.mis-record .mis-footer .mis-controls button{min-width:0;padding:7px 10px}.mis-record{overflow-x:hidden}
+.mis-record .mis-footer{padding-right:24px}.mis-record .mis-footer .mis-controls{gap:3px}.mis-record .mis-footer .mis-controls button{padding:7px 7px}
+.mis-record .mis-footer{display:grid;grid-template-columns:minmax(0,1fr) 320px;justify-content:normal;padding:4px 8px 0}.mis-record .mis-footer .mis-controls{width:100%;display:flex}.mis-record .mis-footer .mis-controls button{flex:1 1 0;width:auto;max-width:none;white-space:nowrap;font-size:10px;padding:7px 3px}@media(max-width:650px){.mis-record .mis-footer{grid-template-columns:1fr}.mis-record .mis-footer .mis-controls{max-width:100%}}

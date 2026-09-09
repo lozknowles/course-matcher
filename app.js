@@ -334,8 +334,8 @@ const SYNTHETIC=[
 function selectedCourse(){return COURSES.find(c=>c.id===$('#adviser-course').value)||COURSES[0]}
 function renderCourseRule(){const c=selectedCourse();$('#course-rule-card').innerHTML=`<strong>${c.title}</strong><br>${c.summary}<br><a href="${c.url}" target="_blank" rel="noreferrer">Official source ↗</a>`;renderCohort()}
 $('#adviser-course').addEventListener('change',renderCourseRule);
-$('#load-cohort').addEventListener('click',()=>{state.cohort=structuredClone(SYNTHETIC);renderCohort()});
-function renderCohort(){const body=$('#cohort-results');body.innerHTML='';const c=selectedCourse();state.cohort.map(person=>({person,result:matchCourse(person.grades,c)})).sort((a,b)=>b.result.score-a.result.score).forEach(({person,result})=>{const tr=document.createElement('tr');tr.innerHTML=`<td><strong>${escapeHtml(person.id)}</strong></td><td>${escapeHtml(person.interest||'—')}</td><td><span class="badge ${result.status}">${result.status==='green'?'Likely':result.status==='amber'?'Check':'No'}</span></td><td>${result.checks.map(x=>`${x.pass?'✓':'!'} ${x.label}`).join('<br>')}</td>`;body.appendChild(tr)});if(!state.cohort.length)body.innerHTML='<tr><td colspan="4">Load the synthetic cohort or import a CSV to begin.</td></tr>'}
+$('#load-cohort').addEventListener('click',()=>{state.cohort=structuredClone(SYNTHETIC).map(person=>({...person,synthetic:true}));renderCohort()});
+function renderCohort(){const body=$('#cohort-results');body.innerHTML='';const c=selectedCourse();state.cohort.map(person=>({person,result:matchCourse(person.grades,c)})).sort((a,b)=>b.result.score-a.result.score).forEach(({person,result})=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${person.synthetic?`<button class="student-record-link" data-student-record="${escapeHtml(person.id)}" aria-haspopup="dialog">${escapeHtml(person.id)}</button>`:`<strong>${escapeHtml(person.id)}</strong>`}</td><td>${escapeHtml(person.interest||'—')}</td><td><span class="badge ${result.status}">${result.status==='green'?'Likely':result.status==='amber'?'Check':'No'}</span></td><td>${result.checks.map(x=>`${x.pass?'✓':'!'} ${x.label}`).join('<br>')}</td>`;body.appendChild(tr)});if(!state.cohort.length)body.innerHTML='<tr><td colspan="4">Load the synthetic cohort or import a CSV to begin.</td></tr>'}
 $('#cohort-file').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;state.cohort=parseCohortCsv(await f.text());renderCohort()});
 
 // Lightweight CSV parsing for the demonstration. For a production integration,
@@ -452,3 +452,48 @@ $('#optimise-scenario').addEventListener('click',()=>{retentionState.optimised=t
 $('#monitor-learner').addEventListener('click',()=>{retentionState.selected.status='Monitoring';$('#monitor-learner').textContent='Review status updated in demo';renderRetentionQueue();renderDiagnosis()});
 $('#start-conversation').addEventListener('click',()=>{retentionState.selected.status='Supportive conversation';$('#start-conversation').textContent='Conversation recorded in demo';renderRetentionQueue();renderDiagnosis()});
 renderRetention();
+
+
+// Synthetic student detail view, grounded in PS-NAV-008 to PS-NAV-021.
+// Imported rows never acquire fictional identities or a synthetic record link.
+const recordDialog = document.createElement('dialog');
+recordDialog.className = 'mis-record';
+recordDialog.setAttribute('aria-labelledby','mis-record-title');
+document.body.append(recordDialog);
+let recordContext;
+const recordNames = ['Jamie Ellis','Morgan Reed','Taylor Brooks','Casey Patel','Riley Green','Avery Clarke','Rowan Hill','Alex Carter','Jordan Bell','Sam Parker'];
+const recordTabs = ['Student','QoE','Enrolments','Fees','Exams','Registers','Apps & Enqs','Diary','Personnel','Timetable','Employment','Requests'];
+const recordField = (label,value) => `<label>${escapeHtml(label)}<input readonly value="${escapeHtml(String(value))}"></label>`;
+const recordTable = (headers,rows) => `<div class="mis-table"><table><thead><tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(row=>`<tr>${row.map(v=>`<td>${escapeHtml(String(v))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+function renderStudentRecord(tab='Student',sub='Personal') {
+  const {person,course,result,name}=recordContext;
+  const [first,last]=name.split(' ');
+  const fields = pairs=>pairs.map(([k,v])=>recordField(k,v)).join('');
+  const address = [['No & Street','12 Example Lane'],['District','Demonstration district'],['City/Town','Lincoln'],['County','Lincolnshire'],['Postcode','Not allocated (demo)'],['Country','England']];
+  let content='';
+  const controls = labels=>`<div class="mis-controls">${labels.map(t=>`<button disabled>${t}</button>`).join('')}</div>`;
+  if(tab==='Student' && sub==='Personal') content=`<div class="mis-personal"><div class="mis-identity"><fieldset><legend>Personal Details</legend><div class="mis-fields"><div>${fields([['Ref No:',person.id],['First Forename:',first],['Known As f/name:',first],['Other Forenames:',''],['Date Of Birth:','14/02/2009'],['Country of Residence:','XF - England']])}</div><div>${fields([['ULN:','Not allocated'],['Family Name:',last],['Known As s/name:',last],['Pref. Pronoun:','They / them'],['Previous Family Name:',''],['Title:','Mx'],['Ethnic Group:','Not supplied']])}</div></div></fieldset><fieldset class="mis-identifiers">${fields([['NI:','Not allocated'],['UCI Ref:','Not allocated'],['SLC Ref No:',''],['Support Ref:',''],['Learner Status:','Applicant'],['BKSB User ID:',''],['Staff:','']])}</fieldset></div><div class="mis-addresses"><fieldset><legend>Home Address</legend>${fields(address.slice(0,5))}${controls(['Check SOF','Copy','Paste','New','Edit...'])}${fields([['Country:','England'],['Tel:','01632 960123'],['Mob:','07700 900123'],['Email:',first.toLowerCase()+'.'+last.toLowerCase()+'@example.com']])}</fieldset><fieldset><legend>Term Time Address</legend>${fields(address.slice(0,5))}${controls(['Check SOF','Copy Home','Paste','New','Edit...'])}${fields([['Alt Country:','England'],['Tel 1:','01632 960123'],['Acc Type:','7 - Own residence'],['College Email:','Not allocated']])}</fieldset></div></div>`;
+  else if(tab==='Student' && sub==='Address') content=recordTable(['Address','Town','Type','Primary'],[['12 Example Lane','Lincoln','Home','Yes'],['12 Example Lane','Lincoln','Term time','No']]);
+  else if(tab==='Student' && sub==='Contact') content=recordTable(['Contact','Relationship','Telephone','Email'],[['Robin '+last,'Parent / carer','01632 960124','robin.'+last.toLowerCase()+'@example.com']]);
+  else if(tab==='Student') content=`<h3>${escapeHtml(sub)}</h3><p>No ${escapeHtml(sub)} information recorded in this synthetic example.</p>`;
+  else if(tab==='QoE') content=`<h3>Qualifications on Entry</h3><p>Prior attainment from the selected synthetic cohort record.</p>${recordTable(['Subject','Grade','Evidence'],person.grades.map(g=>[g.subject,g.grade,'Synthetic fixture']))}`;
+  else if(tab==='Apps & Enqs') content=`<h3>Applications</h3>${recordTable(['Offering','Application status','Grade match'],[[course.title,'Exploring course — no offer made',result.status==='green'?'Likely':result.status==='amber'?'Check':'No']])}<h3>Matching evidence</h3><ul>${result.checks.map(c=>`<li>${c.pass?'Met':'Review'}: ${escapeHtml(c.label)}</li>`).join('')}</ul><p>Entry criteria, capacity and non-grade conditions require a staff decision.</p>`;
+  else if(tab==='Enrolments') content=`<h3>Current Enrolments</h3><p>No enrolments in this synthetic applicant record.</p><p>Course under discussion: <strong>${escapeHtml(course.title)}</strong>. Matching does not enrol the learner.</p>`;
+  else if(tab==='Diary') content=recordTable(['Review Date','Review Type','Detail'],[['09 September 2026','Course conversation',`Discuss ${course.title} with ${first}; confirm entry evidence and learner preference.`]]);
+  else content=`<h3>${escapeHtml(tab)}</h3><p>No ${escapeHtml(tab.toLowerCase())} records have been added to this synthetic applicant.</p>`;
+  recordDialog.innerHTML=`<header class="mis-titlebar"><h2 id="mis-record-title">Student Details — ${escapeHtml(name)} · ${escapeHtml(person.id)}</h2><button data-record-close>Back to matches</button></header><div class="mis-notice">SYNTHETIC DATA · ProSolution-style mockup · No connection to College records</div><nav class="mis-tabs" aria-label="Student detail sections">${recordTabs.map(t=>`<button data-record-tab="${t}" aria-pressed="${t===tab}">${t}</button>`).join('')}</nav>${tab==='Student'?`<nav class="mis-tabs mis-subtabs" aria-label="Student sections">${['Personal','Address','Contact','Other','Other2','Other3','FAM','Ref','User','HE','Photo','ALS','Dest','Health','IPS'].map(t=>`<button data-record-sub="${t}" aria-pressed="${t===sub}">${t}</button>`).join('')}</nav>`:''}<section class="mis-content" aria-label="${escapeHtml(tab)} details">${content}</section><footer class="mis-footer"><span>Synthetic record · Read only</span><div class="mis-controls"><button disabled>Names</button><button disabled>ILR</button><button data-record-close>Close</button><button disabled>Save</button><button disabled>Save &amp; Close</button></div></footer>`;
+}
+$('#cohort-results').addEventListener('click',event=>{
+  const link=event.target.closest('[data-student-record]');if(!link)return;
+  const person=state.cohort.find(p=>p.synthetic && p.id===link.dataset.studentRecord);if(!person)return;
+  const course=selectedCourse();
+  recordContext={person,course,result:matchCourse(person.grades,course),name:recordNames[SYNTHETIC.findIndex(p=>p.id===person.id)]};
+  renderStudentRecord();recordDialog.showModal();
+});
+recordDialog.addEventListener('click',event=>{
+  if(event.target.closest('[data-record-close]'))recordDialog.close();
+  const tab=event.target.closest('[data-record-tab]');
+  const sub=event.target.closest('[data-record-sub]');
+  if(tab){renderStudentRecord(tab.dataset.recordTab);recordDialog.querySelector(`[data-record-tab="${tab.dataset.recordTab}"]`).focus();}
+  if(sub){renderStudentRecord('Student',sub.dataset.recordSub);recordDialog.querySelector(`[data-record-sub="${sub.dataset.recordSub}"]`).focus();}
+});

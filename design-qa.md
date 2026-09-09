@@ -38,3 +38,14 @@ No actionable P0, P1 or P2 differences remain for the requested interpretation.
 - P3: a future iteration could shorten the surrounding College header specifically on very small screens, provided the official-link navigation remains accessible.
 
 final result: passed
+
+## Demo 2 student-detail mockup — 9 September 2026
+
+Reference: C:/Users/Loz/Documents/Codex/2026-09-07/th/outputs/evidence/PS-NAV-008.png and screen-registry.md.
+Implementation capture: C:/Users/Loz/Documents/Codex/2026-09-08/referenced-chatgpt-conversation-this-is-an/outputs/student-details-preview.png.
+
+Compared Personal screen at 1071 x 873. Revised after user feedback to the compact 782px grey desktop record, three personal-detail columns, two address panels, full second-level navigation and bottom actions. Intentional differences: fictional values replace redactions; a small synthetic-data notice and return action are added; write controls are disabled. Narrow viewport stacks address panels.
+
+Verified in browser: synthetic reference opens correct learner; QoE retains source grades; Apps & Enqs retains course and matching evidence; Close returns to unchanged results. No browser error logs. Node syntax check and 28 existing tests passed. Remaining P3: native tab bevels and exact dropdown chrome are approximations; not a pixel-identical ProSolution client.
+
+final result: passed

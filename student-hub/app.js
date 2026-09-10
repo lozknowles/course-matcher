@@ -21,7 +21,8 @@ let expired = false;
 let editing = null;
 let returnFocus = null;
 let clockMinutes = 0;
-let fetchedAt = navigator.onLine ? new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : 'not yet available';
+const CACHE_TIME_KEY = 'lincoln-student-hub:synthetic-fixture-loaded-at';
+let fetchedAt = null;
 let installPrompt = null;
 
 const esc = value => String(value ?? '').replace(/[&<>\"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
@@ -32,10 +33,26 @@ const nowISO = () => new Date(new Date(FIXED_NOW).getTime() + clockMinutes * 600
 const card = (title, body, extra = '') => `<section class="card ${extra}"><h2>${title}</h2>${body}</section>`;
 const action = (label, target, secondary = false) => `<button type="button" data-go="${target}" class="${secondary ? 'secondary' : ''}">${label}</button>`;
 
+function storedCacheTime() {
+  try {
+    const value = localStorage.getItem(CACHE_TIME_KEY);
+    return value && Number.isFinite(Date.parse(value)) ? value : null;
+  } catch { return null; }
+}
+function refreshSnapshot() {
+  const next = adapter.read();
+  snapshot = next;
+  if (navigator.onLine) {
+    const loadedAt = new Date().toISOString();
+    try { localStorage.setItem(CACHE_TIME_KEY, loadedAt); fetchedAt = loadedAt; } catch { fetchedAt = null; }
+  } else {
+    fetchedAt = storedCacheTime();
+  }
+}
 function start(id = personaId) {
   if (dialog.open) dialog.close();
   editing = null; returnFocus = null;
-  personaId = id; adapter = createDemoAdapter(id); snapshot = adapter.read(); expired = false; clockMinutes = 0; week = false; route = 'home';
+  personaId = id; adapter = createDemoAdapter(id); refreshSnapshot(); expired = false; clockMinutes = 0; week = false; route = 'home';
 }
 
 
@@ -44,7 +61,10 @@ picker.value = personaId;
 picker.addEventListener('change', () => { start(picker.value); location.hash = 'home'; render(); });
 
 function shell(title, body, eyebrow = 'Student Hub') {
-  return `<article class="page"><header><p class="eyebrow">${eyebrow}</p><h1 tabindex="-1">${title}</h1></header>${offline ? `<div class="card warning" role="status"><strong>You are offline.</strong> Timetable cached at ${esc(fetchedAt)}. Demo updates are unavailable.</div>` : ''}${expired ? `<div class="card warning"><strong>Demo session expired.</strong> No changes can be saved. <button type="button" data-action="restart">Start new demo session</button></div>` : ''}${body}</article>`;
+  const cacheTime = fetchedAt && Number.isFinite(Date.parse(fetchedAt))
+    ? `<time data-cache-time datetime="${esc(fetchedAt)}">${esc(new Date(fetchedAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }))}</time>`
+    : '<span data-cache-time>timestamp unavailable</span>';
+  return `<article class="page"><header><p class="eyebrow">${eyebrow}</p><h1 tabindex="-1">${title}</h1></header>${offline ? `<div class="card warning" role="status"><strong>You are offline.</strong> Synthetic fixture last loaded at ${cacheTime}. Demo updates are unavailable.</div>` : ''}${expired ? `<div class="card warning"><strong>Demo session expired.</strong> No changes can be saved. <button type="button" data-action="restart">Start new demo session</button></div>` : ''}${body}</article>`;
 }
 
 function home() {
@@ -112,14 +132,19 @@ function render(focus = false) {
   } else {
     app.innerHTML = route === 'home' ? home() : route === 'timetable' ? timetable() : route === 'course' ? course() : route === 'details' ? details() : route === 'more' ? more() : subview(route);
   }
+  if (offline || expired) app.querySelectorAll('[data-edit], [data-action="review"], [data-action="format-name"]').forEach(control => { control.disabled = true; });
   document.querySelectorAll('[data-route]').forEach(link => link.setAttribute('aria-current', !expired && link.dataset.route === route ? 'page' : 'false'));
   if (focus) app.querySelector('h1')?.focus();
 }
 
 function navigate(target) { route = target || 'home'; if (location.hash !== `#${route}`) location.hash = route; render(true); }
 window.addEventListener('hashchange', () => { route = location.hash.slice(1) || 'home'; render(true); });
-window.addEventListener('offline', () => { offline = true; render(); });
-window.addEventListener('online', () => { offline = false; fetchedAt = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}); render(); });
+window.addEventListener('offline', () => { offline = true; fetchedAt = storedCacheTime(); render(); updatePreview(); });
+window.addEventListener('online', () => {
+  if (expired) { render(); updatePreview(); return; }
+  try { refreshSnapshot(); offline = false; } catch { offline = true; fetchedAt = storedCacheTime(); }
+  render(); updatePreview();
+});
 
 app.addEventListener('click', event => {
   const go = event.target.closest('[data-go]'); if (go) return navigate(go.dataset.go);
@@ -129,11 +154,12 @@ app.addEventListener('click', event => {
   if (actionName === 'advance') { clockMinutes += 15; render(); }
   if (actionName === 'reset' || actionName === 'restart') { start(); picker.value = personaId; render(); }
   if (actionName === 'expire') { adapter.expire(); adapter = undefined; snapshot = undefined; expired = true; if (dialog.open) dialog.close(); editing = null; returnFocus = null; render(); }
-  if (actionName === 'review') { if (offline || expired) return; adapter.requestReview('Structural contact issue: staff must review duplicate, delete or role swap'); snapshot = adapter.read(); render(); }
+  if (actionName === 'review') { if (offline || expired) return; adapter.requestReview('Structural contact issue: staff must review duplicate, delete or role swap'); refreshSnapshot(); render(); }
   if (actionName === 'format-name') openEdit('forename', event.target);
 });
 
 function openEdit(field, opener) {
+  if (offline || expired) return;
   editing = field; returnFocus = opener; const current = snapshot.student[field] ?? '';
   dialog.querySelector('h2').textContent = `Edit ${labels[field]}`; document.querySelector('#edit-current').textContent = `Current value: ${current}`; input.value = current; message.textContent = ''; updatePreview(); dialog.showModal(); input.focus();
 }
@@ -145,11 +171,11 @@ function updatePreview() {
 input.addEventListener('input', updatePreview);
 form.addEventListener('submit', event => {
   if (event.submitter?.value === 'cancel') return; event.preventDefault();
-  if (offline) { message.textContent = 'Offline: this change was not saved.'; return; }
-  if (expired) { message.textContent = 'Session expired: this change was not saved.'; return; }
+  if (offline) { message.textContent = 'Offline: this change was not saved.'; updatePreview(); return; }
+  if (expired) { message.textContent = 'Session expired: this change was not saved.'; updatePreview(); return; }
   const result = adapter.update(editing, input.value, { transactionId: `${personaId}-${editing}-${snapshot.revision}-${normalise(editing,input.value)}`, expectedRevision: snapshot.revision });
   if (!result.ok) { message.textContent = result.error; return; }
-  snapshot = adapter.read(); dialog.close(); render();
+  refreshSnapshot(); dialog.close(); render();
 });
 dialog.addEventListener('close', () => returnFocus?.focus());
 

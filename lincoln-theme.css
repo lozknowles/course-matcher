@@ -391,3 +391,7 @@ body[data-demo-theme="change-request"] .summary tr.selected td {
   background-color: var(--lincoln-teal);
   border-color: var(--lincoln-teal);
 }
+
+body[data-demo-theme="course-match"] .retention-titlebar .period-control span {
+  color: #fff;
+}

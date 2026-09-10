@@ -90,7 +90,7 @@ function timetable() {
   const visible = (week ? all : state.today).filter(item => !item.cancelled && String(item.status).toLowerCase() !== 'cancelled');
   const groups = Object.groupBy ? Object.groupBy(visible, item => fmtDate(item.start)) : visible.reduce((out, item) => ((out[fmtDate(item.start)] ||= []).push(item), out), {});
   const list = Object.entries(groups).map(([day, lessons]) => `<section class="day"><h2>${esc(day)}</h2>${lessons.sort((a,b) => new Date(a.start)-new Date(b.start)).map(item => `<article class="card lesson"><strong>${fmtTime(item.start)}–${fmtTime(item.end)}</strong><div><h3>${esc(item.title)}</h3><p>${esc(item.tutor)} · Room ${esc(item.room)}</p>${item.changeNotice ? `<p class="notice">${esc(item.changeNotice)}</p>` : ''}${item.tutorChange ? `<p class="notice">${esc(item.tutorChange)}</p>` : ''}</div><span class="status">${lessonStatus(item, state)}</span></article>`).join('')}</section>`).join('') || card('Nothing scheduled', '<p>No lessons are shown for today.</p>');
-  return shell('Timetable', `<div class="segments" role="tablist" aria-label="Timetable range"><button type="button" data-range="today" role="tab" aria-selected="${!week}">Today</button><button type="button" data-range="week" role="tab" aria-selected="${week}">Week</button></div>${week ? '<button type="button" class="secondary" data-range="today">Back to today</button>' : ''}${list}<p class="hint">Need help finding a room? Ask reception if needed.</p>`);
+  return shell('Timetable', `<div class="segments" aria-label="Timetable range"><button type="button" data-range="today" aria-pressed="${!week}">Today</button><button type="button" data-range="week" aria-pressed="${week}">Week</button></div>${week ? '<button type="button" class="secondary" data-range="today">Back to today</button>' : ''}${list}<p class="hint">Need help finding a room? Ask reception if needed.</p>`);
 }
 
 function course() {
@@ -102,7 +102,7 @@ function course() {
 }
 
 function details() {
-  const rows = Object.keys(labels).map(field => `<div class="detail-row"><strong>${labels[field]}</strong><span class="value">${esc(snapshot.student[field])}</span><button type="button" class="secondary" data-edit="${field}">Edit</button></div>`).join('');
+  const rows = Object.keys(labels).map(field => `<div class="detail-row"><strong>${labels[field]}</strong><span class="value">${esc(snapshot.student[field])}</span><button type="button" class="secondary" data-edit="${field}" aria-label="Edit ${esc(labels[field])}">Edit</button></div>`).join('');
   const contacts = (snapshot.contacts || []).map(c => `<div class="contact"><div><strong>${esc(c.name)}</strong> · ${esc(c.relationship || c.role)}<br><span>${esc(c.role)} · ${esc(c.phone)} · ${esc(c.email)}</span></div></div>`).join('');
   const issues = contactIssues(snapshot.contacts);
   const warning = issues.length ? `<div class="card warning"><h2>Contact details need checking</h2><ul>${issues.map(x => `<li>${esc(x)}</li>`).join('')}</ul><button type="button" data-action="review">Request staff review</button><p>Contacts stay unchanged while staff review this synthetic request.</p></div>` : '';
@@ -148,20 +148,23 @@ window.addEventListener('online', () => {
 
 app.addEventListener('click', event => {
   const go = event.target.closest('[data-go]'); if (go) return navigate(go.dataset.go);
-  const range = event.target.closest('[data-range]'); if (range) { week = range.dataset.range === 'week'; return render(); }
+  const range = event.target.closest('[data-range]'); if (range) { const selected = range.dataset.range; week = selected === 'week'; render(); app.querySelector(`[data-range="${selected}"]`)?.focus(); return; }
   const edit = event.target.closest('[data-edit]'); if (edit) return openEdit(edit.dataset.edit, edit);
   const actionName = event.target.closest('[data-action]')?.dataset.action;
   if (actionName === 'advance') { clockMinutes += 15; render(); }
   if (actionName === 'reset' || actionName === 'restart') { start(); picker.value = personaId; render(); }
   if (actionName === 'expire') { adapter.expire(); adapter = undefined; snapshot = undefined; expired = true; if (dialog.open) dialog.close(); editing = null; returnFocus = null; render(); }
-  if (actionName === 'review') { if (offline || expired) return; adapter.requestReview('Structural contact issue: staff must review duplicate, delete or role swap'); refreshSnapshot(); render(); }
+  if (actionName === 'review') { if (offline || expired) return; adapter.requestReview('Structural contact issue: staff must review duplicate, delete or role swap'); refreshSnapshot(); render(); document.querySelector('#app-status').textContent = 'Staff review requested successfully.'; }
   if (actionName === 'format-name') openEdit('forename', event.target);
 });
 
 function openEdit(field, opener) {
   if (offline || expired) return;
   editing = field; returnFocus = opener; const current = snapshot.student[field] ?? '';
-  dialog.querySelector('h2').textContent = `Edit ${labels[field]}`; document.querySelector('#edit-current').textContent = `Current value: ${current}`; input.value = current; message.textContent = ''; updatePreview(); dialog.showModal(); input.focus();
+  dialog.querySelector('h2').textContent = `Edit ${labels[field]}`; document.querySelector('#edit-label').textContent = `New ${labels[field]}`; document.querySelector('#edit-current').textContent = `Current value: ${current}`;
+  input.type = field === 'email' ? 'email' : field === 'mobile' ? 'tel' : 'text';
+  input.inputMode = field === 'email' ? 'email' : field === 'mobile' ? 'tel' : field === 'postcode' ? 'text' : '';
+  input.value = current; message.textContent = ''; updatePreview(); dialog.showModal(); input.focus();
 }
 function updatePreview() {
   if (!editing) return; const change = classifyChange(editing, snapshot.student[editing], input.value);
@@ -173,11 +176,15 @@ form.addEventListener('submit', event => {
   if (event.submitter?.value === 'cancel') return; event.preventDefault();
   if (offline) { message.textContent = 'Offline: this change was not saved.'; updatePreview(); return; }
   if (expired) { message.textContent = 'Session expired: this change was not saved.'; updatePreview(); return; }
-  const result = adapter.update(editing, input.value, { transactionId: `${personaId}-${editing}-${snapshot.revision}-${normalise(editing,input.value)}`, expectedRevision: snapshot.revision });
+  const savedField = editing;
+  const result = adapter.update(savedField, input.value, { transactionId: `${personaId}-${savedField}-${snapshot.revision}-${normalise(savedField,input.value)}`, expectedRevision: snapshot.revision });
   if (!result.ok) { message.textContent = result.error; return; }
-  refreshSnapshot(); dialog.close(); render();
+  refreshSnapshot(); returnFocus = null; dialog.close(); render();
+  app.querySelector(`[data-edit="${savedField}"]`)?.focus();
+  document.querySelector('#app-status').textContent = `${labels[savedField]} saved successfully.`;
+  editing = null;
 });
-dialog.addEventListener('close', () => returnFocus?.focus());
+dialog.addEventListener('close', () => { const opener = returnFocus; returnFocus = null; opener?.focus(); });
 
 window.addEventListener('beforeinstallprompt', event => {
   event.preventDefault();

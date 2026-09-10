@@ -19,8 +19,9 @@
     <nav class="side-nav" aria-label="Main navigation"><a href="#home" data-route="home">Home</a><a href="#timetable" data-route="timetable">Timetable</a><a href="#course" data-route="course">My Course</a><a href="#details" data-route="details">My Details</a><a href="#more" data-route="more">More</a></nav>
     <main id="app" tabindex="-1" aria-live="polite"></main>
   </div>
-  <nav class="bottom-nav" aria-label="Mobile navigation"><a href="#home">⌂<span>Home</span></a><a href="#timetable">▦<span>Timetable</span></a><a href="#course">◈<span>My Course</span></a><a href="#details">◎<span>My Details</span></a><a href="#more">⋯<span>More</span></a></nav>
-  <dialog id="edit-dialog"><form method="dialog" id="edit-form"><button class="close" value="cancel" aria-label="Close">×</button><h2>Edit detail</h2><p id="edit-current"></p><label for="edit-value">New value</label><input id="edit-value" required><p id="edit-preview" class="hint"></p><p id="edit-message" role="status"></p><div class="dialog-actions"><button value="cancel" class="button secondary">Cancel</button><button id="save-edit" value="default" class="button">Save in demo</button></div></form></dialog>
+  <nav class="bottom-nav" aria-label="Mobile navigation"><a href="#home" data-route="home">⌂<span>Home</span></a><a href="#timetable" data-route="timetable">▦<span>Timetable</span></a><a href="#course" data-route="course">◈<span>My Course</span></a><a href="#details" data-route="details">◎<span>My Details</span></a><a href="#more" data-route="more">⋯<span>More</span></a></nav>
+  <dialog id="edit-dialog" aria-labelledby="edit-title"><form method="dialog" id="edit-form"><button class="close" value="cancel" aria-label="Close">×</button><h2 id="edit-title">Edit detail</h2><p id="edit-current"></p><label id="edit-label" for="edit-value">New value</label><input id="edit-value" aria-describedby="edit-preview edit-message" required><p id="edit-preview" class="hint"></p><p id="edit-message" role="status"></p><div class="dialog-actions"><button value="cancel" class="button secondary">Cancel</button><button id="save-edit" value="default" class="button">Save in demo</button></div></form></dialog>
+  <p id="app-status" class="visually-hidden" role="status" aria-live="polite"></p>
   <script type="module" src="./app.js"></script>
 </body>
 </html>

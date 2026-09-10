@@ -21,6 +21,7 @@
  */
 
 import { COURSES, SUBJECTS, SUBJECT_LINKS } from './courses.js';
+import { hubHandoff } from './student-hub/bridge.js';
 import { normaliseGrades, parseResultsText, rankCourses, quickMatchCourses, matchCourse, validateGrades, RECOGNISED_GCSE_SUBJECTS } from './matcher-core.js';
 import { pdfTextItemsToLines, readAllPdfPages } from './document-core.js';
 import { alternativesState, buildTransferHandoff, capacityOptimisationAllowed, interventionFor, outcomeLabel, warmStartAlternatives, withdrawalReviewPath } from './retention-core.js';
@@ -453,6 +454,28 @@ $('#monitor-learner').addEventListener('click',()=>{retentionState.selected.stat
 $('#start-conversation').addEventListener('click',()=>{retentionState.selected.status='Supportive conversation';$('#start-conversation').textContent='Conversation recorded in demo';renderRetentionQueue();renderDiagnosis()});
 renderRetention();
 
+
+queueMicrotask(() => {
+  const handoff = hubHandoff(window.location.search);
+  if (!handoff) return;
+
+  setMode('student');
+  state.grades = handoff.grades;
+  seedManual(handoff.grades);
+  renderVerify();
+
+  const summary = document.getElementById('extraction-summary');
+  if (summary) {
+    summary.textContent = 'Synthetic Student Hub qualifications; please check';
+    const returnLink = document.createElement('a');
+    returnLink.href = './student-hub/';
+    returnLink.textContent = 'Return to Student Hub';
+    returnLink.className = 'hub-return-link';
+    summary.insertAdjacentElement('afterend', returnLink);
+  }
+
+  showStudentPanel('verify-panel', 2);
+});
 
 // Synthetic student detail view, grounded in PS-NAV-008 to PS-NAV-021.
 // Imported rows never acquire fictional identities or a synthetic record link.

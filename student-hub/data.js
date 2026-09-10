@@ -51,7 +51,7 @@ export const personaData = {
     { id: 'alex-primary', name: 'Robin Morgan', role: 'Primary', relationship: 'Parent', phone: '07700900202', email: 'robin@example.test' },
     { id: 'alex-secondary', name: 'Casey Morgan', role: 'Secondary', relationship: 'Guardian', phone: '07700900203', email: 'casey.morgan@example.test' }
   ]),
-  jordan: base('jordan', 'jOrDaN', 'o\'neal', '07700900301', 'jordan@example.test', ' 3   Example   Street ', 'ln2 3cd', [
+  jordan: base('jordan', 'jOrDaN', 'o\'neal', '07700900301', 'jordan@example.test', ' 3   Example   Street ', 'ln2 3ab', [
     { id: 'jordan-primary', name: 'Chris O\'Neal', role: 'Primary', relationship: 'Parent', phone: '07700900302', email: 'chris@example.test' },
     { id: 'jordan-secondary', name: 'Morgan O\'Neal', role: 'Secondary', relationship: 'Guardian', phone: '07700900303', email: 'morgan.oneal@example.test' }
   ]),

@@ -32,10 +32,10 @@ function validName(value) {
   return value.length > 0 && /^[\p{L}]+(?:[\s'’\-][\p{L}]+)*$/u.test(value);
 }
 function validEmail(value) {
-  return /^\S+@\S+\.\S+$/u.test(value);
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(value);
 }
 function validPostcode(value) {
-  return /^[A-Z]{1,2}[0-9][0-9A-Z]? [0-9][A-Z]{2}$/u.test(value) && !/^(?:GIR 0AA|BF1 0AA)$/u.test(value) || /^(?:GIR 0AA|BF1 0AA)$/u.test(value);
+  return /^(?:GIR 0AA|(?:[A-PR-UWYZ][0-9][0-9A-HJKSTUW]?|[A-PR-UWYZ][A-HK-Y][0-9][0-9A-HJKSTUW]?) [0-9][ABD-HJLNP-UW-Z]{2})$/u.test(value);
 }
 function validation(field, value) {
   if (!FIELDS.has(field)) return 'Unknown field';

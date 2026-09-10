@@ -37,7 +37,7 @@ function base(id, forename, surname, mobile, email, address, postcode, contacts)
     ],
     exams: [{ name: 'Engineering Principles', date: '2026-12-14', time: '09:30', room: 'E105', seat: 'B14', status: 'Scheduled' }],
     attendance94: 94, progress: 62,
-    notices: ['Synthetic demonstration data only', 'Room change examples may appear in the timetable'],
+    notices: ['Synthetic demonstration data only', "Today's Engineering Workshop has moved from D201 to D203."],
     lessons: lessonsFor(id)
   };
 }

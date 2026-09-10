@@ -21,7 +21,8 @@ let expired = false;
 let editing = null;
 let returnFocus = null;
 let clockMinutes = 0;
-let fetchedAt = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+let fetchedAt = navigator.onLine ? new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : 'not yet available';
+let installPrompt = null;
 
 const esc = value => String(value ?? '').replace(/[&<>\"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 const val = (obj, ...keys) => keys.map(key => obj?.[key]).find(value => value !== undefined && value !== null && value !== '') ?? 'Not supplied';
@@ -99,7 +100,7 @@ function subview(name) {
   if (name === 'notices') return shell('Notices', (snapshot.notices || ['Room change: check your timetable','Details check reminder']).map(n => card('Student notice', `<p>${esc(n)}</p>`)).join(''));
   if (name === 'audit') return shell('Audit', (snapshot.audit || []).map(a => card(esc(labels[a.field] || a.field), `<dl><dt>Before / after</dt><dd>${esc(a.before)} → ${esc(a.after)}</dd><dt>Reason / classification</dt><dd>${esc(a.kind)}</dd><dt>Source / method / decision</dt><dd>${esc(a.source)} · Student Hub demo · ${esc(a.readBack)}</dd><dt>Transaction / time / revision</dt><dd>${esc(a.transactionId)} · ${esc(a.timestamp)} · ${snapshot.revision}</dd><dt>Read-back</dt><dd>${esc(a.readBack)} · synthetic</dd></dl>`)).join('') || card('No demo changes yet', '<p>Saved demonstration actions will appear here.</p>'));
   if (name === 'session') return shell('Demo session controls', card('Synthetic session', `<p>In-memory only. Reset never contacts real services.</p><div class="actions"><button type="button" data-action="reset">Reset demo</button><button type="button" class="secondary" data-action="expire">Expire session</button></div>`));
-  return shell('Help', card('Need help?', '<p>Ask reception, your tutor or student support. This independent demo is not a real institutional login.</p><p>Install support is planned for a separate PWA increment; this version does not claim install eligibility.</p>'));
+  return shell('Help', `${card('Need help?', '<p>Ask reception, your tutor or student support. This independent demo is not a real institutional login.</p>')}${card('Add Student Hub to this device', installPrompt ? '<p>Your browser says this demonstration can be installed.</p><button type="button" data-action="install">Add to Home Screen</button>' : '<p>Use your browser menu and choose <strong>Add to Home Screen</strong> or <strong>Install app</strong>, if available. Availability depends on your browser and device.</p>')}`);
 }
 
 function render(focus = false) {

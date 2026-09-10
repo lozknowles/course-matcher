@@ -6,8 +6,8 @@ function clone(value) {
 }
 
 export function createDemoAdapter(personaId, { clock } = {}) {
+  if (!Object.hasOwn(personaData, personaId)) throw new Error(`Unknown persona: ${personaId}`);
   const source = personaData[personaId];
-  if (!source) throw new Error(`Unknown persona: ${personaId}`);
   const now = typeof clock === 'function' ? clock : () => new Date().toISOString();
   const student = clone({
     id: source.id, forename: source.forename, surname: source.surname, mobile: source.mobile,
@@ -42,7 +42,7 @@ export function createDemoAdapter(personaId, { clock } = {}) {
         return failure('Transaction ID was already used for a different change');
       }
       if (!Number.isInteger(options.expectedRevision) || options.expectedRevision !== revision) return failure('Revision conflict');
-      if (!(field in student)) {
+      if (!Object.hasOwn(student, field)) {
         const result = failure('Unknown field');
         transactions.set(transactionId, { field, input: value, result });
         return result;

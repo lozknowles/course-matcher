@@ -108,7 +108,7 @@ function details() {
   const issues = contactIssues(snapshot.contacts);
   const warning = issues.length ? `<div class="card warning"><h2>Contact details need checking</h2><ul>${issues.map(x => `<li>${esc(x)}</li>`).join('')}</ul><button type="button" data-action="review">Request staff review</button><p>Contacts stay unchanged while staff review this synthetic request.</p></div>` : '';
   const pending = (snapshot.requests || []).map(r => `<p><strong>${esc(r.status)}</strong> · reference ${esc(r.id)}<br>${esc(r.reason)}</p>`).join('');
-  return shell('My Details', `${card('About me', rows)}${card('Primary and Secondary contacts', contacts)}${warning}${pending ? card('Review requests', pending, 'pending') : ''}<div class="actions"><button type="button" class="secondary" data-action="format-name">Demonstrate name formatting</button>${action('View audit', 'audit', true)}</div>`);
+  return shell('My Details', `${card('About me', `<p><strong>Student ID:</strong> ${esc(snapshot.student.id)}</p>${rows}`)}${card('Primary and Secondary contacts', contacts)}${warning}${pending ? card('Review requests', pending, 'pending') : ''}<div class="actions"><button type="button" class="secondary" data-action="format-name">Demonstrate name formatting</button>${action('View audit', 'audit', true)}</div>`);
 }
 
 function more() {

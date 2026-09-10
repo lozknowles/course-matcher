@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'lincoln-student-hub-shell-';
-const CACHE_NAME = `${CACHE_PREFIX}v2`;
+const CACHE_NAME = `${CACHE_PREFIX}final-audit-v3`;
 const SHELL_PATHS = [
   './',
   './index.html',

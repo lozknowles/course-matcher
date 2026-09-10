@@ -80,6 +80,7 @@ function home() {
 }
 
 function lessonStatus(lesson, state) {
+  if (lesson.cancelled || String(lesson.status).toLowerCase() === 'cancelled') return 'Cancelled';
   if (state.current === lesson) return 'Current';
   if (state.next === lesson) return 'Next';
   if (new Date(lesson.end) <= new Date(nowISO())) return 'Completed';
@@ -88,7 +89,7 @@ function lessonStatus(lesson, state) {
 function timetable() {
   const all = snapshot.lessons || [];
   const state = lessonState(all, nowISO());
-  const visible = (week ? all : state.today).filter(item => !item.cancelled && String(item.status).toLowerCase() !== 'cancelled');
+  const visible = week ? all : state.today;
   const groups = Object.groupBy ? Object.groupBy(visible, item => fmtDate(item.start)) : visible.reduce((out, item) => ((out[fmtDate(item.start)] ||= []).push(item), out), {});
   const list = Object.entries(groups).map(([day, lessons]) => `<section class="day"><h2>${esc(day)}</h2>${lessons.sort((a,b) => new Date(a.start)-new Date(b.start)).map(item => `<article class="card lesson"><strong>${fmtTime(item.start)}–${fmtTime(item.end)}</strong><div><h3>${esc(item.title)}</h3><p>${esc(item.tutor)} · Room ${esc(item.room)}</p>${item.changeNotice ? `<p class="notice">${esc(item.changeNotice)}</p>` : ''}${item.tutorChange ? `<p class="notice">${esc(item.tutorChange)}</p>` : ''}</div><span class="status">${lessonStatus(item, state)}</span></article>`).join('')}</section>`).join('') || card('Nothing scheduled', '<p>No lessons are shown for today.</p>');
   return shell('Timetable', `<div class="segments" aria-label="Timetable range"><button type="button" data-range="today" aria-pressed="${!week}">Today</button><button type="button" data-range="week" aria-pressed="${week}">Week</button></div>${week ? '<button type="button" class="secondary" data-range="today">Back to today</button>' : ''}${list}<p class="hint">Need help finding a room? Ask reception if needed.</p>`);

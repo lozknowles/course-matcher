@@ -298,3 +298,96 @@ body[data-demo-theme="data-quality"] #run {
   background-color: var(--lincoln-dark-pink);
   border-color: var(--lincoln-dark-pink);
 }
+
+/* Browser-confirmed form colour corrections. */
+body[data-demo-theme="course-match"] .retention-titlebar > div > p,
+body[data-demo-theme="course-match"] .retention-titlebar .eyebrow,
+body[data-demo-theme="course-match"] .retention-titlebar .step-kicker {
+  color: var(--lincoln-white);
+}
+
+body[data-demo-theme="course-match"] .retention-toolbar,
+body[data-demo-theme="course-match"] .retention-toolbar label {
+  color: var(--lincoln-navy);
+}
+
+body[data-demo-theme="course-match"] .retention-toolbar input,
+body[data-demo-theme="course-match"] .retention-toolbar select {
+  color: var(--lincoln-navy);
+  background-color: var(--lincoln-white);
+  border-color: var(--lincoln-teal);
+}
+
+body[data-demo-theme="course-match"] .student-record-tabs span {
+  color: var(--lincoln-navy);
+  background-color: var(--lincoln-white);
+}
+
+body[data-demo-theme="course-match"] .student-record-tabs span.active {
+  color: var(--lincoln-white);
+  background-color: var(--lincoln-dark-pink);
+  border-color: var(--lincoln-pink);
+}
+
+body[data-demo-theme="course-match"] .student-record-app .step.active {
+  border-bottom-color: var(--lincoln-pink);
+}
+
+body[data-demo-theme="course-match"] .mis-record button:disabled,
+body[data-demo-theme="data-quality"] button:disabled,
+body[data-demo-theme="change-request"] button:disabled {
+  color: var(--lincoln-navy);
+  background-color: var(--lincoln-cream);
+  border-color: var(--lincoln-navy);
+}
+
+body[data-demo-theme="change-request"] .titlebar,
+body[data-demo-theme="change-request"] .win-title {
+  color: var(--lincoln-white);
+  background-color: var(--lincoln-navy);
+  border-color: var(--lincoln-navy);
+  background-image: none;
+}
+
+body[data-demo-theme="change-request"] .win-body,
+body[data-demo-theme="change-request"] .fake,
+body[data-demo-theme="change-request"] .tablewrap {
+  color: var(--lincoln-navy);
+  background-color: var(--lincoln-white);
+  border-color: var(--lincoln-teal);
+}
+
+body[data-demo-theme="change-request"] .win-actions,
+body[data-demo-theme="change-request"] .student-tabs,
+body[data-demo-theme="change-request"] .student-subtabs,
+body[data-demo-theme="change-request"] .statusbar,
+body[data-demo-theme="change-request"] .audit-title {
+  color: var(--lincoln-navy);
+  background-color: var(--lincoln-pale-teal);
+  border-color: var(--lincoln-teal);
+}
+
+body[data-demo-theme="change-request"] .win-actions button.blue,
+body[data-demo-theme="change-request"] .student-tabs .active,
+body[data-demo-theme="change-request"] .student-subtabs .active,
+body[data-demo-theme="change-request"] .student-tabs .selected,
+body[data-demo-theme="change-request"] .student-subtabs .selected {
+  color: var(--lincoln-white);
+  background-color: var(--lincoln-dark-pink);
+  border-color: var(--lincoln-pink);
+}
+
+body[data-demo-theme="change-request"] .summary-title,
+body[data-demo-theme="change-request"] .summary th,
+body[data-demo-theme="change-request"] .fieldset h4 {
+  color: var(--lincoln-white);
+  background-color: var(--lincoln-navy);
+  border-color: var(--lincoln-navy);
+}
+
+body[data-demo-theme="change-request"] .queue tr.selected td,
+body[data-demo-theme="change-request"] .summary tr.selected td {
+  color: var(--lincoln-white);
+  background-color: var(--lincoln-teal);
+  border-color: var(--lincoln-teal);
+}

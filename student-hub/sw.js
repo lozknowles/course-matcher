@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'lincoln-student-hub-shell-';
-const CACHE_NAME = `${CACHE_PREFIX}final-timetable-v4`;
+const CACHE_NAME = `${CACHE_PREFIX}lincoln-theme-v5`;
 const SHELL_PATHS = [
   './',
   './index.html',

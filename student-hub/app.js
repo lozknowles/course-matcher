@@ -138,7 +138,11 @@ function render(focus = false) {
 }
 
 function navigate(target) { route = target || 'home'; if (location.hash !== `#${route}`) location.hash = route; render(true); }
-window.addEventListener('hashchange', () => { route = location.hash.slice(1) || 'home'; render(true); });
+window.addEventListener('hashchange', () => {
+  const nextRoute = location.hash.slice(1) || 'home';
+  if (nextRoute === route) return;
+  route = nextRoute; render(true);
+});
 window.addEventListener('offline', () => { offline = true; fetchedAt = storedCacheTime(); render(); updatePreview(); });
 window.addEventListener('online', () => {
   if (expired) { render(); updatePreview(); return; }

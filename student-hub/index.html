@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#063956">
+  <title>Student Hub · Lincoln College</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="demo-banner" role="note">Independent demo · synthetic students</div>
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="Student Hub home"><img src="./logo.jpg" alt="Lincoln College"><span>Student Hub</span></a>
+    <label class="presenter">Presenter <select id="persona" aria-label="Choose demo student"></select></label>
+  </header>
+  <div class="layout">
+    <nav class="side-nav" aria-label="Main navigation"><a href="#home" data-route="home">Home</a><a href="#timetable" data-route="timetable">Timetable</a><a href="#course" data-route="course">My Course</a><a href="#details" data-route="details">My Details</a><a href="#more" data-route="more">More</a></nav>
+    <main id="app" tabindex="-1" aria-live="polite"></main>
+  </div>
+  <nav class="bottom-nav" aria-label="Mobile navigation"><a href="#home">⌂<span>Home</span></a><a href="#timetable">▦<span>Timetable</span></a><a href="#course">◈<span>My Course</span></a><a href="#details">◎<span>My Details</span></a><a href="#more">⋯<span>More</span></a></nav>
+  <dialog id="edit-dialog"><form method="dialog" id="edit-form"><button class="close" value="cancel" aria-label="Close">×</button><h2>Edit detail</h2><p id="edit-current"></p><label for="edit-value">New value</label><input id="edit-value" required><p id="edit-preview" class="hint"></p><p id="edit-message" role="status"></p><div class="dialog-actions"><button value="cancel" class="button secondary">Cancel</button><button id="save-edit" value="default" class="button">Save in demo</button></div></form></dialog>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

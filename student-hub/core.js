@@ -8,7 +8,7 @@ function text(value) {
 
 function titleName(value) {
   const collapsed = text(value).trim().replace(/\s+/gu, ' ');
-  return collapsed.toLocaleLowerCase().replace(/(^|[\s\-'])(\p{L})/gu, (_, prefix, letter) => prefix + letter.toLocaleUpperCase());
+  return collapsed.toLocaleLowerCase().replace(/(^|[\s\-'’])(\p{L})/gu, (_, prefix, letter) => prefix + letter.toLocaleUpperCase());
 }
 
 export function normalise(field, value) {
@@ -29,7 +29,7 @@ export function normalise(field, value) {
 }
 
 function validName(value) {
-  return value.length > 0 && /^[\p{L}]+(?:[\s'\-][\p{L}]+)*$/u.test(value);
+  return value.length > 0 && /^[\p{L}]+(?:[\s'’\-][\p{L}]+)*$/u.test(value);
 }
 function validEmail(value) {
   return /^\S+@\S+\.\S+$/u.test(value);
@@ -93,7 +93,7 @@ export function lessonState(lessons, nowISO) {
   if (Number.isNaN(now.getTime()) || !/[Tt]/u.test(String(nowISO))) throw new Error('Invalid now timestamp');
   const todayDate = londonDate(nowISO);
   const today = (Array.isArray(lessons) ? lessons : []).filter(lesson => londonDate(lesson.start) === todayDate).sort((a, b) => new Date(a.start) - new Date(b.start));
-  const active = (Array.isArray(lessons) ? lessons : []).filter(lesson => !lesson.cancelled);
+  const active = (Array.isArray(lessons) ? lessons : []).filter(lesson => !lesson.cancelled && String(lesson.status || '').trim().toLowerCase() !== 'cancelled');
   const current = active.find(lesson => new Date(lesson.start) <= now && now < new Date(lesson.end)) || null;
   const next = active.filter(lesson => new Date(lesson.start) > now).sort((a, b) => new Date(a.start) - new Date(b.start))[0] || null;
   return { current, next, today };

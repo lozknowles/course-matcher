@@ -1,0 +1,300 @@
+body[data-demo-theme] {
+  --lincoln-navy: #063956;
+  --lincoln-cream: #fbf2e4;
+  --lincoln-pink: #ed1e79;
+  --lincoln-dark-pink: #c41669;
+  --lincoln-teal: #087f78;
+  --lincoln-pale-pink: #fde8f3;
+  --lincoln-pale-teal: #e2f3f1;
+  --lincoln-white: #ffffff;
+  --lincoln-ink: #063956;
+  color: var(--lincoln-ink);
+  background-color: var(--lincoln-cream);
+}
+
+body[data-demo-theme="course-match"] .student-record-shell,
+body[data-demo-theme="course-match"] .student-record-app,
+body[data-demo-theme="course-match"] .retention-workspace,
+body[data-demo-theme="course-match"] .launch-page,
+body[data-demo-theme="course-match"] .launch-shell,
+body[data-demo-theme="course-match"] .scenario-section {
+  color: var(--lincoln-ink);
+  background-color: var(--lincoln-cream);
+}
+
+body[data-demo-theme="course-match"] .student-record-titlebar,
+body[data-demo-theme="course-match"] .student-record-app .panel-heading,
+body[data-demo-theme="course-match"] .student-record-app .results-heading,
+body[data-demo-theme="course-match"] .student-record-app #verify-panel > h3,
+body[data-demo-theme="course-match"] .student-record-app #match-options-panel > h3,
+body[data-demo-theme="course-match"] .student-record-app #interest-panel > h3,
+body[data-demo-theme="course-match"] .student-record-app .table-wrap th,
+body[data-demo-theme="course-match"] .retention-titlebar,
+body[data-demo-theme="course-match"] .launch-titlebar,
+body[data-demo-theme="course-match"] .launch-header,
+body[data-demo-theme="course-match"] .scenario-title {
+  color: var(--lincoln-white);
+  background-color: var(--lincoln-navy);
+  border-color: var(--lincoln-navy);
+}
+
+body[data-demo-theme="course-match"] .student-record-titlebar h1,
+body[data-demo-theme="course-match"] .student-record-titlebar h2,
+body[data-demo-theme="course-match"] .student-record-titlebar .step-kicker,
+body[data-demo-theme="course-match"] .student-record-app .panel-heading h2,
+body[data-demo-theme="course-match"] .student-record-app .panel-heading h3,
+body[data-demo-theme="course-match"] .student-record-app .panel-heading .step-kicker,
+body[data-demo-theme="course-match"] .student-record-app .results-heading h2,
+body[data-demo-theme="course-match"] .student-record-app .results-heading h3 {
+  color: var(--lincoln-white);
+}
+
+body[data-demo-theme="course-match"] .student-record-tabs,
+body[data-demo-theme="course-match"] .student-record-summary > div,
+body[data-demo-theme="course-match"] .student-record-app .hero-grid,
+body[data-demo-theme="course-match"] .student-record-app .steps,
+body[data-demo-theme="course-match"] .student-record-app .entry-grid,
+body[data-demo-theme="course-match"] .student-record-app .ocr-details,
+body[data-demo-theme="course-match"] .student-record-app .actions,
+body[data-demo-theme="course-match"] .retention-toolbar,
+body[data-demo-theme="course-match"] .launch-card,
+body[data-demo-theme="course-match"] .launch-panel,
+body[data-demo-theme="course-match"] .scenario-card {
+  color: var(--lincoln-ink);
+  background-color: var(--lincoln-pale-teal);
+  border-color: var(--lincoln-teal);
+}
+
+body[data-demo-theme="course-match"] .student-record-tabs span.active {
+  color: var(--lincoln-teal);
+  border-color: var(--lincoln-pink);
+}
+
+body[data-demo-theme="course-match"] .student-record-app .step,
+body[data-demo-theme="course-match"] .student-record-app .upload-zone,
+body[data-demo-theme="course-match"] .student-record-app .manual-card {
+  color: var(--lincoln-ink);
+  background-color: var(--lincoln-white);
+  border-color: var(--lincoln-teal);
+}
+
+body[data-demo-theme="course-match"] .student-record-app .step span,
+body[data-demo-theme="course-match"] .student-record-app .upload-icon {
+  color: var(--lincoln-teal);
+  background-color: var(--lincoln-pale-teal);
+  border-color: var(--lincoln-teal);
+}
+
+body[data-demo-theme="course-match"] .student-record-app .step.active,
+body[data-demo-theme="course-match"] .student-record-app .step.active span,
+body[data-demo-theme="course-match"] .student-record-app .match-route-card.guided {
+  color: var(--lincoln-dark-pink);
+  background-color: var(--lincoln-pale-pink);
+  border-color: var(--lincoln-pink);
+}
+
+body[data-demo-theme="course-match"] .student-record-app .match-route-card.quick {
+  color: var(--lincoln-teal);
+  background-color: var(--lincoln-pale-teal);
+  border-color: var(--lincoln-teal);
+}
+
+body[data-demo-theme="course-match"] .student-record-app .primary,
+body[data-demo-theme="course-match"] .mis-record .primary {
+  color: var(--lincoln-white);
+  background-color: var(--lincoln-dark-pink);
+  border-color: var(--lincoln-dark-pink);
+}
+
+body[data-demo-theme="course-match"] .student-record-app .primary:hover,
+body[data-demo-theme="course-match"] .mis-record .primary:hover {
+  color: var(--lincoln-white);
+  background-color: var(--lincoln-navy);
+  border-color: var(--lincoln-pink);
+}
+
+body[data-demo-theme="course-match"] .student-record-app .secondary,
+body[data-demo-theme="course-match"] .mis-record button:not(.primary) {
+  color: var(--lincoln-white);
+  background-color: var(--lincoln-teal);
+  border-color: var(--lincoln-teal);
+}
+
+body[data-demo-theme="course-match"] .mis-record {
+  color: var(--lincoln-ink);
+  background-color: var(--lincoln-cream);
+  border-color: var(--lincoln-navy);
+  box-shadow: 0 16px 44px #06395666;
+}
+
+body[data-demo-theme="course-match"] .mis-record .mis-titlebar {
+  color: var(--lincoln-white);
+  background-color: var(--lincoln-navy);
+  border-color: var(--lincoln-navy);
+}
+
+body[data-demo-theme="course-match"] .mis-record .mis-titlebar h2 {
+  color: var(--lincoln-white);
+}
+
+body[data-demo-theme="course-match"] .mis-record .mis-tabs,
+body[data-demo-theme="course-match"] .mis-record .mis-subtabs,
+body[data-demo-theme="course-match"] .mis-record .mis-content,
+body[data-demo-theme="course-match"] .mis-record .mis-footer {
+  color: var(--lincoln-ink);
+  background-color: var(--lincoln-pale-teal);
+  border-color: var(--lincoln-teal);
+}
+
+body[data-demo-theme="course-match"] .mis-record .mis-tabs button[aria-pressed="true"] {
+  color: var(--lincoln-white);
+  background-color: var(--lincoln-dark-pink);
+  border-color: var(--lincoln-dark-pink);
+}
+
+body[data-demo-theme="course-match"] .mis-record fieldset,
+body[data-demo-theme="course-match"] .mis-record legend {
+  color: var(--lincoln-ink);
+  background-color: var(--lincoln-cream);
+  border-color: var(--lincoln-teal);
+}
+
+body[data-demo-theme="course-match"] .mis-record input {
+  color: var(--lincoln-ink);
+  background-color: var(--lincoln-white);
+  border-color: var(--lincoln-teal);
+}
+
+body[data-demo-theme="course-match"] .mis-record table th {
+  color: var(--lincoln-white);
+  background-color: var(--lincoln-navy);
+  border-color: var(--lincoln-navy);
+}
+
+body[data-demo-theme="course-match"] .evidence-tabs button[aria-pressed="true"],
+body[data-demo-theme="course-match"] .evidence-tabs button.active,
+body[data-demo-theme="course-match"] .topology-toggle button[aria-pressed="true"],
+body[data-demo-theme="course-match"] .topology-toggle button.active {
+  color: var(--lincoln-white);
+  background-color: var(--lincoln-teal);
+  border-color: var(--lincoln-pink);
+}
+
+body[data-demo-theme="change-request"] .desktop {
+  color: var(--lincoln-ink);
+  background-color: var(--lincoln-cream);
+}
+
+body[data-demo-theme="change-request"] .titlebar,
+body[data-demo-theme="change-request"] .queue-title,
+body[data-demo-theme="change-request"] .queue th,
+body[data-demo-theme="change-request"] .window-title {
+  color: var(--lincoln-white);
+  background-color: var(--lincoln-navy);
+  border-color: var(--lincoln-navy);
+}
+
+body[data-demo-theme="change-request"] .menubar,
+body[data-demo-theme="change-request"] .tabs,
+body[data-demo-theme="change-request"] .filters,
+body[data-demo-theme="change-request"] .window-footer {
+  color: var(--lincoln-ink);
+  background-color: var(--lincoln-pale-teal);
+  border-color: var(--lincoln-teal);
+}
+
+body[data-demo-theme="change-request"] .tab {
+  color: var(--lincoln-teal);
+  background-color: var(--lincoln-white);
+  border-color: var(--lincoln-teal);
+}
+
+body[data-demo-theme="change-request"] .tab.active {
+  color: var(--lincoln-white);
+  background-color: var(--lincoln-dark-pink);
+  border-color: var(--lincoln-pink);
+}
+
+body[data-demo-theme="change-request"] .window,
+body[data-demo-theme="change-request"] .record-form {
+  color: var(--lincoln-ink);
+  background-color: var(--lincoln-white);
+  border-color: var(--lincoln-teal);
+  box-shadow: 0 10px 30px #06395633;
+}
+
+body[data-demo-theme="change-request"] input,
+body[data-demo-theme="change-request"] select,
+body[data-demo-theme="change-request"] textarea {
+  color: var(--lincoln-ink);
+  background-color: var(--lincoln-white);
+  border-color: var(--lincoln-teal);
+  accent-color: var(--lincoln-pink);
+}
+
+body[data-demo-theme="data-quality"] .desktop {
+  color: var(--lincoln-ink);
+  background-color: var(--lincoln-cream);
+}
+
+body[data-demo-theme="data-quality"] .title,
+body[data-demo-theme="data-quality"] .grid th,
+body[data-demo-theme="data-quality"] .record-title,
+body[data-demo-theme="data-quality"] #autoemail h2 {
+  color: var(--lincoln-white);
+  background-color: var(--lincoln-navy);
+  border-color: var(--lincoln-navy);
+}
+
+body[data-demo-theme="data-quality"] .menu,
+body[data-demo-theme="data-quality"] .tabs,
+body[data-demo-theme="data-quality"] .filters,
+body[data-demo-theme="data-quality"] .list-footer,
+body[data-demo-theme="data-quality"] .record-footer,
+body[data-demo-theme="data-quality"] aside,
+body[data-demo-theme="data-quality"] #status {
+  color: var(--lincoln-ink);
+  background-color: var(--lincoln-pale-teal);
+  border-color: var(--lincoln-teal);
+}
+
+body[data-demo-theme="data-quality"] .tabs span {
+  color: var(--lincoln-teal);
+  background-color: var(--lincoln-white);
+  border-color: var(--lincoln-teal);
+}
+
+body[data-demo-theme="data-quality"] .tabs .selected {
+  color: var(--lincoln-white);
+  background-color: var(--lincoln-dark-pink);
+  border-color: var(--lincoln-pink);
+}
+
+body[data-demo-theme="data-quality"] .grid,
+body[data-demo-theme="data-quality"] #record,
+body[data-demo-theme="data-quality"] .record-body,
+body[data-demo-theme="data-quality"] #autoemail {
+  color: var(--lincoln-ink);
+  background-color: var(--lincoln-white);
+  border-color: var(--lincoln-teal);
+  box-shadow: 0 10px 30px #06395633;
+}
+
+body[data-demo-theme="data-quality"] fieldset,
+body[data-demo-theme="data-quality"] legend {
+  color: var(--lincoln-ink);
+  background-color: var(--lincoln-cream);
+  border-color: var(--lincoln-teal);
+}
+
+body[data-demo-theme="data-quality"] button,
+body[data-demo-theme="data-quality"] #run {
+  color: var(--lincoln-white);
+  background-color: var(--lincoln-teal);
+  border-color: var(--lincoln-teal);
+}
+
+body[data-demo-theme="data-quality"] #run {
+  background-color: var(--lincoln-dark-pink);
+  border-color: var(--lincoln-dark-pink);
+}

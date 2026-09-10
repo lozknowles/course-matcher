@@ -60,11 +60,13 @@ export function createDemoAdapter(personaId, { clock } = {}) {
         return result;
       }
       const timestamp = now();
-      const readBack = change.kind === 'review' ? 'Pending staff review' : 'Confirmed';
       if (change.kind !== 'review') student[field] = change.value;
+      const readBack = change.kind === 'review'
+        ? 'Pending staff review'
+        : student[field] === change.value ? 'Confirmed' : 'Read-back mismatch';
       revision += 1;
       if (change.kind === 'review') requests.push({ id: `${personaId}-request-${revision}`, reason: `Change ${field} from ${before} to ${change.value}`, status: 'Pending staff review', timestamp });
-      audit.push({ transactionId, field, before, after: change.value, kind: change.kind, timestamp, source: 'Student self-service', readBack });
+      audit.push({ transactionId, field, before, after: change.value, kind: change.kind, timestamp, revision, source: 'Student self-service', readBack });
       const result = { ok: true, kind: change.kind, revision };
       transactions.set(transactionId, { field, input: value, result });
       return clone(result);

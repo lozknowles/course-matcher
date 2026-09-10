@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'lincoln-student-hub-shell-';
-const CACHE_NAME = `${CACHE_PREFIX}v1`;
+const CACHE_NAME = `${CACHE_PREFIX}v2`;
 const SHELL_PATHS = [
   './',
   './index.html',
@@ -45,12 +45,12 @@ async function networkFirst(request, fallbackURL) {
   }
 }
 
-async function cachedAsset(request) {
+async function cachedAsset(request, cacheURL) {
   const cache = await caches.open(CACHE_NAME);
-  const cached = await cache.match(request.url);
+  const cached = await cache.match(cacheURL);
   if (cached) return cached;
   const response = await fetch(request);
-  if (response.ok) await cache.put(request.url, response.clone());
+  if (response.ok) await cache.put(cacheURL, response.clone());
   return response;
 }
 
@@ -61,6 +61,7 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url);
   const scope = new URL(self.registration.scope);
   if (url.origin !== scope.origin) return;
+  url.hash = '';
 
   const indexURL = scopedURL('./index.html');
   const rootURL = scopedURL('./');
@@ -73,5 +74,5 @@ self.addEventListener('fetch', event => {
   }
 
   if (!allowed.has(url.href)) return;
-  event.respondWith(cachedAsset(request));
+  event.respondWith(cachedAsset(request, url.href));
 });

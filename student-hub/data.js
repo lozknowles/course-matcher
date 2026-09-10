@@ -15,8 +15,8 @@ function lessonsFor(personaId) {
     end: `${date}T${index === 3 ? '12:00' : '10:00'}:00+01:00`,
     room: index === 3 ? 'D203' : 'B101',
     cancelled: personaId === 'alex' && day === 'Tuesday',
-    changeNotice: index === 3 ? 'Synthetic timetable demonstration' : '',
-    tutorChange: personaId === 'taylor' && day === 'Thursday' ? 'Tutor changed from Dr Lee' : ''
+    changeNotice: index === 3 ? 'Room changed from D201 to D203' : '',
+    tutorChange: personaId === 'taylor' && day === 'Thursday' ? 'Tutor changed from Dr Lee to Dr Morgan' : ''
   }));
   lessons.push(
     { id: `${personaId}-thursday-design`, title: 'Engineering Design', tutor: 'Ms Khan', start: '2026-09-10T13:00:00+01:00', end: '2026-09-10T14:00:00+01:00', room: 'C112', cancelled: false, changeNotice: 'Room changed from C110', tutorChange: '' },

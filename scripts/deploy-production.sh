@@ -112,18 +112,18 @@ assert_public_contains() {
   curl -fsS "$1" | grep -F "$2" >/dev/null
 }
 
-assert_public_contains "$PUBLIC_URL" 'Turn your results into useful course conversations'
-assert_public_contains "$PUBLIC_URL" 'What are you interested in?'
-assert_public_contains "$PUBLIC_URL" 'Take photo'
-assert_public_contains "$PUBLIC_URL" 'prepared for discussion with Lincoln College'
-assert_public_contains "$PUBLIC_URL" 'Lincoln College, Lincoln and Newark'
-assert_public_contains "$PUBLIC_URL" 'Show courses I could apply for'
+assert_public_contains "$PUBLIC_URL/" 'Turn your results into useful course conversations'
+assert_public_contains "$PUBLIC_URL/" 'What are you interested in?'
+assert_public_contains "$PUBLIC_URL/" 'Take photo'
+assert_public_contains "$PUBLIC_URL/" 'prepared for discussion with Lincoln College'
+assert_public_contains "$PUBLIC_URL/" 'Lincoln College, Lincoln and Newark'
+assert_public_contains "$PUBLIC_URL/" 'Show courses I could apply for'
 assert_public_contains "$PUBLIC_URL/matcher-core.js" 'quickMatchCourses'
 assert_public_contains "$PUBLIC_URL/retention-core.js" 'buildTransferHandoff'
-assert_public_contains "$PUBLIC_URL" '42-Day Student Fit &amp; Retention'
-assert_public_contains "$PUBLIC_URL" 'Why is this learner at risk of disengaging?'
-assert_public_contains "$PUBLIC_URL" 'Five student-success journeys'
-assert_public_contains "$PUBLIC_URL" 'href="automated-change-request.html"'
+assert_public_contains "$PUBLIC_URL/" '42-Day Student Fit &amp; Retention'
+assert_public_contains "$PUBLIC_URL/" 'Why is this learner at risk of disengaging?'
+assert_public_contains "$PUBLIC_URL/" 'Five student-success journeys'
+assert_public_contains "$PUBLIC_URL/" 'href="automated-change-request.html"'
 curl -fsS "$PUBLIC_URL/vendor/pdfjs/pdf.mjs" >/dev/null
 curl -fsS "$PUBLIC_URL/vendor/tesseract/tesseract.min.js" >/dev/null
 assert_public_contains "$PUBLIC_URL/document-core.js" 'readAllPdfPages'

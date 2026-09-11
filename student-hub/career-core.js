@@ -49,7 +49,10 @@ function occupationRoute(raw, fallback) {
 }
 
 function soc2020(raw) {
-  const supplied = raw?.soc2020 ?? raw?.soc?.soc2020 ?? raw?.soc;
+  const nestedCode = text(raw?.soc?.soc2020Code);
+  if (nestedCode) return { code: nestedCode, description: text(raw?.soc?.soc2020Description) };
+
+  const supplied = raw?.soc2020 ?? raw?.soc?.soc2020;
   const candidates = Array.isArray(supplied) ? supplied : [supplied];
   for (const soc of candidates) {
     if (!soc || typeof soc !== 'object') continue;

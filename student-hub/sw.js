@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'lincoln-student-hub-shell-';
-const CACHE_NAME = `${CACHE_PREFIX}skills-england-v8`;
+const CACHE_NAME = `${CACHE_PREFIX}skills-england-v9`;
 const SHELL_PATHS = [
   './',
   './index.html',
@@ -8,7 +8,7 @@ const SHELL_PATHS = [
   './adapter.js',
   './core.js',
   './data.js',
-  './manifest.webmanifest',
+  './student-hub.webmanifest',
   './icon.svg',
   './logo.jpg',
   './careers.html',

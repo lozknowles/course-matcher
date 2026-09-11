@@ -208,6 +208,10 @@ export async function loadExplorer() {
   } finally { clearTimeout(timeout); }
 }
 
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(() => {});
+}
+
 cacheElements();
 bindEvents();
 loadExplorer();

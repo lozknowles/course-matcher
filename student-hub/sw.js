@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'lincoln-student-hub-shell-';
-const CACHE_NAME = `${CACHE_PREFIX}lincoln-theme-v6`;
+const CACHE_NAME = `${CACHE_PREFIX}skills-england-v7`;
 const SHELL_PATHS = [
   './',
   './index.html',
@@ -10,7 +10,13 @@ const SHELL_PATHS = [
   './data.js',
   './manifest.webmanifest',
   './icon.svg',
-  './logo.jpg'
+  './logo.jpg',
+  './careers.html',
+  './careers.js',
+  './careers.css',
+  './career-core.js',
+  './skills-england-reference.json',
+  './skills-england-logo.svg'
 ];
 
 const scopedURL = path => new URL(path, self.registration.scope).href;
@@ -36,7 +42,11 @@ async function networkFirst(request, fallbackURL) {
   const cache = await caches.open(CACHE_NAME);
   try {
     const response = await fetch(request);
-    if (response.ok) await cache.put(fallbackURL, response.clone());
+    if (!response.ok) {
+      const cached = await cache.match(fallbackURL);
+      return cached || response;
+    }
+    await cache.put(fallbackURL, response.clone());
     return response;
   } catch (error) {
     const cached = await cache.match(fallbackURL);
@@ -62,17 +72,25 @@ self.addEventListener('fetch', event => {
   const scope = new URL(self.registration.scope);
   if (url.origin !== scope.origin) return;
   url.hash = '';
+  url.search = '';
 
   const indexURL = scopedURL('./index.html');
   const rootURL = scopedURL('./');
+  const careersURL = scopedURL('./careers.html');
+  const referenceURL = scopedURL('./skills-england-reference.json');
   const allowed = shellURLs();
 
   if (request.mode === 'navigate') {
-    if (url.href !== rootURL && url.href !== indexURL) return;
-    event.respondWith(networkFirst(request, indexURL));
+    if (url.href === rootURL || url.href === indexURL) {
+      event.respondWith(networkFirst(request, indexURL));
+    } else if (url.href === careersURL) {
+      event.respondWith(networkFirst(request, careersURL));
+    }
     return;
   }
 
   if (!allowed.has(url.href)) return;
-  event.respondWith(cachedAsset(request, url.href));
+  event.respondWith(url.href === referenceURL
+    ? networkFirst(request, referenceURL)
+    : cachedAsset(request, url.href));
 });

@@ -60,7 +60,7 @@ PUBLIC_FILES=(
   student-hub/icon.svg
   student-hub/index.html
   student-hub/logo.jpg
-  student-hub/manifest.webmanifest
+  student-hub/student-hub.webmanifest
   student-hub/skills-england-logo.svg
   student-hub/skills-england-reference.json
   student-hub/styles.css
@@ -144,6 +144,7 @@ assert_public_contains "$PUBLIC_URL/lincoln-theme.css" 'lincoln'
 assert_public_contains "$PUBLIC_URL/student-hub/index.html" 'Student Hub'
 assert_public_contains "$PUBLIC_URL/student-hub/careers.html" 'Skills England occupation explorer'
 curl -fsS "$PUBLIC_URL/student-hub/sw.js" >/dev/null
+assert_public_contains "$PUBLIC_URL/student-hub/student-hub.webmanifest" 'Lincoln Student Hub'
 curl -fsS "$PUBLIC_URL/student-hub/skills-england-reference.json" | node -e '
 let body = "";
 process.stdin.setEncoding("utf8");

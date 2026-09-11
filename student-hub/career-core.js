@@ -63,7 +63,8 @@ function occupationRoute(raw, fallback) {
 }
 
 function soc2020(raw) {
-  const nestedCode = text(raw?.soc?.soc2020Code);
+  const nestedValue = raw?.soc?.soc2020Code;
+  const nestedCode = nestedValue === 0 ? '' : text(nestedValue);
   if (nestedCode) return { code: nestedCode, description: text(raw?.soc?.soc2020Description) };
 
   const supplied = raw?.soc2020 ?? raw?.soc?.soc2020;

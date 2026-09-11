@@ -64,7 +64,11 @@ async function liveEnvelope({ keyFile, fetchImpl, now, seedCodes }) {
   for (const summary of routeList) {
     const id = idOf(summary);
     if (!id) throw endpointError('route', 'invalid response');
-    routes.push(await request(fetchImpl, `/api/v1/Routes/${encodeURIComponent(id)}?expand=${ROUTE_EXPAND}`, key, 'route', sources, now));
+    const expanded = await request(fetchImpl, `/api/v1/Routes/${encodeURIComponent(id)}?expand=${ROUTE_EXPAND}`, key, 'route', sources, now);
+    routes.push({
+      ...expanded,
+      links: Array.isArray(expanded?.links) && expanded.links.length > 0 ? expanded.links : summary?.links
+    });
   }
 
   const requestedSeeds = [...new Set((Array.isArray(seedCodes) ? seedCodes : []).map(value => String(value).trim()).filter(Boolean))];

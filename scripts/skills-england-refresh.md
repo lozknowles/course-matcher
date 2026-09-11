@@ -10,14 +10,14 @@ Normalize a previously obtained raw envelope without API access:
 node scripts/refresh-skills-england.mjs --input raw.json --output snapshot.json
 ```
 
-The input must include schema version 1, provider `Skills England`, retrieval and source metadata, routes or occupations, licence details, and attribution. Invalid metadata, non-canonical URLs, or an empty occupation set are rejected.
+The input must include schema version 1, provider `Skills England`, retrieval and source metadata, routes or occupations, licence details, and attribution. Invalid metadata or an empty occupation set are rejected; non-canonical URLs are discarded.
 
 ## Host-only live refresh
 
 On an authorised host, keep the API key in a file outside the repository and run:
 
 ```sh
-node scripts/refresh-skills-england.mjs --key-file external/path/to/key --output snapshot.json --seed ST0001 --seed ST0002
+node scripts/refresh-skills-england.mjs --key-file external/path/to/key --output snapshot.json --seed OCC0015 --seed OCC0019
 ```
 
 `--seed` is repeatable (maximum 32) and caches the requested progression responses. Alternatively, set `SKILLS_ENGLAND_API_KEY_FILE` to the external key-file path and omit `--key-file`. Never commit or serialize the key: snapshots contain only public data and request provenance.

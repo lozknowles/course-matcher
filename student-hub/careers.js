@@ -114,7 +114,7 @@ function showDetail(id, push = false, trigger = null) {
   const item = list(snapshot.occupations).find(entry => String(entry.id) === String(id));
   if (!item) return;
   selectedId = String(item.id);
-  selectedCard = trigger || selectedCard;
+  if (trigger?.classList?.contains('occupation-card')) selectedCard = trigger;
   els['occupation-title'].textContent = text(item.title);
   const content = els['occupation-content'];
   content.replaceChildren();
@@ -135,7 +135,7 @@ function showDetail(id, push = false, trigger = null) {
   const details = document.createElement('details');
   add(details, 'summary', 'Source details');
   const source = document.createElement('p');
-  source.textContent = `SOC2020: ${typeof item.soc2020 === 'object' ? `${text(item.soc2020.code)} — ${text(item.soc2020.description)}` : text(item.soc2020)} · Version: ${text(item.version)} · Status updated: ${dateLabel(item.statusLastUpdated)}. `;
+  source.textContent = `SOC2020: ${item.soc2020 && typeof item.soc2020 === 'object' ? `${text(item.soc2020.code)} — ${text(item.soc2020.description)}` : text(item.soc2020)} · Version: ${text(item.version)} · Status updated: ${dateLabel(item.statusLastUpdated)}. `;
   sourceLink(source, 'Official occupation source', item.sourceUrl);
   details.append(source);
   content.append(details);

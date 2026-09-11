@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Career pathways | Lincoln Student Hub</title>
+  <link rel="stylesheet" href="./careers.css">
+  <script type="module" src="./careers.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./index.html"><img src="./logo.jpg" alt="University of Lincoln"><span>Student Hub</span></a>
+    <a class="back-hub" href="./index.html">Back to Student Hub</a>
+  </header>
+  <main>
+    <section class="hero" aria-labelledby="page-title">
+      <p class="eyebrow">Explore career possibilities</p>
+      <h1 id="page-title">Where could your course take you?</h1>
+      <p>Explore occupational pathways from Skills England. These are possibilities, not guaranteed outcomes or eligibility decisions. Course context is illustrative and unreviewed, and all routes remain available.</p>
+    </section>
+    <section class="explorer" aria-labelledby="explorer-title">
+      <div class="source-panel">
+        <img src="./skills-england-logo.svg" alt="Skills England">
+        <div><h2 id="explorer-title">Skills England occupation explorer</h2><p id="reference-status" role="status" aria-live="polite">Loading reference…</p></div>
+      </div>
+      <div id="reference-error" class="notice error" role="alert" hidden><p>We could not load the occupation reference. The Student Hub is still available.</p><button id="retry-reference" type="button">Try again</button></div>
+      <div class="controls">
+        <label for="route-filter">Route<select id="route-filter" disabled><option value="">All routes</option></select></label>
+        <label for="occupation-search">Search occupations<input id="occupation-search" type="search" autocomplete="off" disabled></label>
+      </div>
+      <section id="results-panel" aria-labelledby="result-count">
+        <p id="result-count" role="status" aria-live="polite">Loading occupations…</p>
+        <div id="occupation-results"></div>
+        <nav class="pagination" aria-label="Occupation results pages"><button id="previous-page" type="button" disabled>Previous</button><button id="next-page" type="button" disabled>Next</button></nav>
+      </section>
+      <section id="occupation-detail" aria-labelledby="occupation-title" hidden>
+        <button id="back-to-results" type="button">Back to results</button>
+        <h2 id="occupation-title" tabindex="-1"></h2>
+        <div id="occupation-content"></div>
+        <section aria-labelledby="next-title"><h3 id="next-title">Possible next steps</h3><div id="next-steps"></div></section>
+        <section aria-labelledby="earlier-title"><h3 id="earlier-title">Possible earlier steps</h3><div id="earlier-steps"></div></section>
+        <p id="progression-coverage" class="notice"></p>
+      </section>
+    </section>
+    <aside class="limitations" aria-labelledby="limits-title"><h2 id="limits-title">Planning your next step</h2><p>Salary and local demand information is unavailable in this bounded reference demo. For entry requirements, visit <a href="./course-match.html">Course Match</a>; no grades are inferred here.</p></aside>
+  </main>
+  <footer><p>© Skills England 2025 · <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">Open Government Licence v3.0</a> · <a href="https://occupational-maps.skillsengland.education.gov.uk/public-api">Skills England public API information</a></p></footer>
+</body>
+</html>

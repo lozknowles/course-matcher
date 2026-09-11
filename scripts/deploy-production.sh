@@ -31,7 +31,42 @@ else
 fi
 npm run vendor
 
-for f in .htaccess index.html automated-change-request.html automated-change-request.js data-quality.html data-quality.css data-quality.js data-quality-core.js styles.css app.js document-core.js matcher-core.js retention-core.js courses.js; do
+PUBLIC_FILES=(
+  .htaccess
+  index.html
+  automated-change-request.html
+  automated-change-request.js
+  data-quality.html
+  data-quality.css
+  data-quality.js
+  data-quality-core.js
+  styles.css
+  app.js
+  document-core.js
+  matcher-core.js
+  retention-core.js
+  courses.js
+  lincoln-theme.css
+  student-hub/adapter.js
+  student-hub/app.js
+  student-hub/bridge.js
+  student-hub/career-core.js
+  student-hub/careers.css
+  student-hub/careers.html
+  student-hub/careers.js
+  student-hub/core.js
+  student-hub/data.js
+  student-hub/icon.svg
+  student-hub/index.html
+  student-hub/logo.jpg
+  student-hub/manifest.webmanifest
+  student-hub/skills-england-logo.svg
+  student-hub/skills-england-reference.json
+  student-hub/styles.css
+  student-hub/sw.js
+)
+
+for f in "${PUBLIC_FILES[@]}"; do
   test -s "$f"
 done
 for f in vendor/tesseract/tesseract.min.js vendor/tesseract/worker.min.js vendor/pdfjs/pdf.mjs vendor/pdfjs/pdf.worker.mjs; do
@@ -42,7 +77,7 @@ if [ "${DEPLOY_LOCAL:-0}" = "1" ]; then
   rm -rf "$REMOTE_STAGE"
   mkdir -p "$REMOTE_STAGE" "$REMOTE_BACKUP_DIR"
   rsync -av --delete-after \
-    .htaccess index.html automated-change-request.html automated-change-request.js data-quality.html data-quality.css data-quality.js data-quality-core.js styles.css app.js document-core.js matcher-core.js retention-core.js courses.js vendor \
+    --relative "${PUBLIC_FILES[@]}" vendor \
     "$REMOTE_STAGE/"
   if sudo test -d "$DEPLOY_DIR"; then
     sudo tar -C "$DEPLOY_ROOT" -czf - lincoln-course-match > "$REMOTE_BACKUP_DIR/lincoln-course-match-$STAMP.tgz"
@@ -56,7 +91,7 @@ else
   ssh -p "$DEPLOY_PORT" "$DEPLOY_HOST" "rm -rf '$REMOTE_STAGE'; mkdir -p '$REMOTE_STAGE' '$REMOTE_BACKUP_DIR'"
   rsync -av --delete-after \
     -e "ssh -p $DEPLOY_PORT" \
-    .htaccess index.html automated-change-request.html automated-change-request.js data-quality.html data-quality.css data-quality.js data-quality-core.js styles.css app.js document-core.js matcher-core.js retention-core.js courses.js vendor \
+    --relative "${PUBLIC_FILES[@]}" vendor \
     "$DEPLOY_HOST:$REMOTE_STAGE/"
 
   ssh -tt -p "$DEPLOY_PORT" "$DEPLOY_HOST" "set -e; \
@@ -103,4 +138,20 @@ assert_public_contains "$PUBLIC_URL/data-quality.html" 'AutoEmail'
 assert_public_contains "$PUBLIC_URL/data-quality.js" 'makeStudents'
 assert_public_contains "$PUBLIC_URL/data-quality-core.js" 'cleanMobile'
 assert_public_contains "$PUBLIC_URL/data-quality.css" '#autoemail'
+
+assert_public_contains "$PUBLIC_URL/lincoln-theme.css" 'lincoln'
+assert_public_contains "$PUBLIC_URL/student-hub/index.html" 'Student Hub'
+assert_public_contains "$PUBLIC_URL/student-hub/careers.html" 'Skills England occupation explorer'
+curl -fsS "$PUBLIC_URL/student-hub/sw.js" >/dev/null
+curl -fsS "$PUBLIC_URL/student-hub/skills-england-reference.json" | node -e '
+let body = "";
+process.stdin.setEncoding("utf8");
+process.stdin.on("data", chunk => { body += chunk; });
+process.stdin.on("end", () => {
+  const data = JSON.parse(body);
+  if (data.provider !== "Skills England" || data.routes.length !== 15 || data.occupations.length !== 1287 || data.edges.length !== 75) {
+    process.exit(1);
+  }
+});
+'
 echo "Lincoln College demonstration suite deployed and verified at $PUBLIC_URL"

@@ -12,13 +12,14 @@ function endpointError(category, status) {
   return new Error(`Skills England ${category} request failed${status ? ` (${status})` : ''}`);
 }
 
-async function request(fetchImpl, path, key, category) {
+async function request(fetchImpl, path, key, category, sources, now) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  const endpoint = `${API_ORIGIN}${path}`;
   try {
     let response;
     try {
-      response = await fetchImpl(`${API_ORIGIN}${path}`, {
+      response = await fetchImpl(endpoint, {
         headers: { 'X-API-KEY': key },
         redirect: 'error',
         signal: controller.signal
@@ -27,11 +28,14 @@ async function request(fetchImpl, path, key, category) {
       throw endpointError(category);
     }
     if (!response || !response.ok) throw endpointError(category, response?.status);
+    let data;
     try {
-      return await response.json();
+      data = await response.json();
     } catch {
       throw endpointError(category, 'invalid response');
     }
+    sources.push({ endpoint, retrievedAt: now(), status: 200 });
+    return data;
   } finally {
     clearTimeout(timer);
   }
@@ -53,23 +57,24 @@ async function liveEnvelope({ keyFile, fetchImpl, now, seedCodes }) {
   }
   if (!key) throw new Error('Skills England key is empty');
 
-  const routeList = await request(fetchImpl, '/api/v1/Routes?expand=route.links', key, 'route list');
+  const sources = [];
+  const routeList = await request(fetchImpl, '/api/v1/Routes?expand=route.links', key, 'route list', sources, now);
   if (!Array.isArray(routeList)) throw endpointError('route list', 'invalid response');
   const routes = [];
   for (const summary of routeList) {
     const id = idOf(summary);
     if (!id) throw endpointError('route', 'invalid response');
-    routes.push(await request(fetchImpl, `/api/v1/Routes/${encodeURIComponent(id)}?expand=${ROUTE_EXPAND}`, key, 'route'));
+    routes.push(await request(fetchImpl, `/api/v1/Routes/${encodeURIComponent(id)}?expand=${ROUTE_EXPAND}`, key, 'route', sources, now));
   }
 
   const requestedSeeds = [...new Set((Array.isArray(seedCodes) ? seedCodes : []).map(value => String(value).trim()).filter(Boolean))];
   if (requestedSeeds.length > 32) throw new Error('At most 32 progression seeds are allowed');
   const progressions = [];
   for (const stdCode of requestedSeeds) {
-    const data = await request(fetchImpl, `/api/v1/OccupationalProgression/${encodeURIComponent(stdCode)}`, key, 'progression');
+    const data = await request(fetchImpl, `/api/v1/OccupationalProgression/${encodeURIComponent(stdCode)}`, key, 'progression', sources, now);
     progressions.push({
       stdCode,
-      sourceUrl: `${PUBLIC_ORIGIN}/occupational-progression/${encodeURIComponent(stdCode)}`,
+      sourceUrl: `${PUBLIC_ORIGIN}/maps/progression-map/${encodeURIComponent(stdCode)}`,
       data
     });
   }
@@ -85,16 +90,13 @@ async function liveEnvelope({ keyFile, fetchImpl, now, seedCodes }) {
     },
     attribution: {
       text: '© Skills England 2025',
-      sourceUrl: `${PUBLIC_ORIGIN}/api`,
+      sourceUrl: `${PUBLIC_ORIGIN}/public-api/`,
       logoFile: 'skills-england-logo.svg',
       logoSourceUrl: `${PUBLIC_ORIGIN}/media/xmehhrr0/skills-england_lesser_arms_stacked-dfe-blue-se-logo.svg`
     },
     routes,
     progressions,
-    sources: [
-      { endpoint: 'routes', retrievedAt, status: 200 },
-      ...requestedSeeds.map(stdCode => ({ endpoint: `progression:${stdCode}`, retrievedAt, status: 200 }))
-    ]
+    sources
   };
 }
 

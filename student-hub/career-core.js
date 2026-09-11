@@ -18,6 +18,20 @@ function publicUrl(value) {
   }
 }
 
+function licenceUrl(value) {
+  const canonical = 'https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/';
+  try {
+    return new URL(String(value)).href === canonical ? canonical : null;
+  } catch {
+    return null;
+  }
+}
+
+function relatedUrl(links, rel) {
+  const link = array(links).find(item => text(item?.rel) === rel);
+  return link ? publicUrl(link.href) : undefined;
+}
+
 function validDate(value) {
   const input = text(value);
   const date = new Date(input);
@@ -84,7 +98,6 @@ function normalOccupation(raw, fallbackRoute) {
   const id = occupationCode(raw);
   if (!id) return null;
   const route = occupationRoute(raw, fallbackRoute);
-  const links = raw?.links && typeof raw.links === 'object' ? raw.links : {};
   return {
     id,
     title: text(raw?.title ?? raw?.name),
@@ -95,8 +108,8 @@ function normalOccupation(raw, fallbackRoute) {
     soc2020: soc2020(raw),
     typicalJobTitles: jobTitles(raw),
     products: products(raw),
-    sourceUrl: publicUrl(raw?.sourceUrl ?? links?.occupation ?? links?.publicUrl),
-    progressionUrl: publicUrl(raw?.progressionUrl ?? links?.progression),
+    sourceUrl: relatedUrl(raw?.links, 'occupationalStandardURL'),
+    progressionUrl: relatedUrl(raw?.links, 'occupationalProgressionURL'),
     status: raw?.status ?? null,
     statusName: nullable(raw?.statusName),
     version: raw?.versionNo ?? null,
@@ -137,7 +150,7 @@ export function normalizeReference(raw) {
   const routes = array(raw.routes).map(route => ({
     id: routeId(route),
     name: routeName(route),
-    sourceUrl: publicUrl(route?.sourceUrl ?? route?.links?.route ?? route?.links?.publicUrl)
+    sourceUrl: relatedUrl(route?.links, 'mapURL')
   })).filter(route => route.id);
   const routeById = new Map(routes.map(route => [route.id, route]));
   const occupations = new Map();
@@ -165,7 +178,7 @@ export function normalizeReference(raw) {
     const data = response?.data;
     if (!data || typeof data !== 'object') continue;
     const seed = text(response.stdCode ?? data.keyStdCode);
-    const source = publicUrl(response.sourceUrl ?? data.sourceUrl) || occupations.get(seed)?.progressionUrl || (seed ? `https://${PUBLIC_HOST}/occupational-progression/${encodeURIComponent(seed)}` : null);
+    const source = publicUrl(response.sourceUrl ?? data.sourceUrl) || occupations.get(seed)?.progressionUrl || (seed ? `https://${PUBLIC_HOST}/maps/progression-map/${encodeURIComponent(seed)}` : null);
     for (const edge of array(data.progressions)) {
       const from = text(edge?.stdCodeFrom);
       const to = text(edge?.stdCodeTo);
@@ -179,7 +192,7 @@ export function normalizeReference(raw) {
     provider: 'Skills England',
     retrievedAt,
     datasetVersion: raw.datasetVersion ?? null,
-    licence: { name: text(raw.licence.name), url: publicUrl(raw.licence.url) },
+    licence: { name: text(raw.licence.name), url: licenceUrl(raw.licence.url) },
     attribution: {
       text: text(raw.attribution.text),
       sourceUrl: publicUrl(raw.attribution.sourceUrl),

@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'lincoln-student-hub-shell-';
-const CACHE_NAME = `${CACHE_PREFIX}skills-england-v7`;
+const CACHE_NAME = `${CACHE_PREFIX}skills-england-v8`;
 const SHELL_PATHS = [
   './',
   './index.html',
@@ -71,8 +71,6 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url);
   const scope = new URL(self.registration.scope);
   if (url.origin !== scope.origin) return;
-  url.hash = '';
-  url.search = '';
 
   const indexURL = scopedURL('./index.html');
   const rootURL = scopedURL('./');
@@ -81,6 +79,8 @@ self.addEventListener('fetch', event => {
   const allowed = shellURLs();
 
   if (request.mode === 'navigate') {
+    url.hash = '';
+    url.search = '';
     if (url.href === rootURL || url.href === indexURL) {
       event.respondWith(networkFirst(request, indexURL));
     } else if (url.href === careersURL) {

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#063956">
+  <title>Funding Decision Tree | Lincoln College demonstration</title>
+  <meta name="description" content="Unofficial graphical funding eligibility decision-tree demonstration for Lincoln College.">
+  <link rel="stylesheet" href="funding-decision.css">
+</head>
+<body>
+  <header class="brand">
+    <div><strong>LINCOLN COLLEGE</strong><small>Lincoln and Newark · Demonstration suite</small></div>
+    <a href="index.html">← All demonstrations</a>
+  </header>
+  <div class="banner">DEMO 06 · SYNTHETIC / ILLUSTRATIVE ONLY · NOT A FUNDING DETERMINATION</div>
+
+  <section class="hero">
+    <div class="eyebrow">GRAPHICAL FUNDING DECISION SUPPORT · 2026/27</div>
+    <h1>Funding Decision Tree</h1>
+    <p>Turn funding rules into a visible path that explains <b>why</b> a learner appears fully funded, co-funded, loan-funded or needs a funding officer review.</p>
+    <p>The point of the prototype is the interaction model: ask only the questions relevant to this learner, show the active decision path, and retain the evidence needed to support the outcome.</p>
+    <span class="rule-chip" id="ruleset-chip">Loading rules…</span>
+  </section>
+
+  <main class="shell">
+    <div class="scenario-strip" id="scenario-strip" aria-label="Example learner scenarios"></div>
+
+    <div class="workspace">
+      <section class="panel" aria-labelledby="learner-heading">
+        <div class="panel-head"><h2 id="learner-heading">Learner & course facts</h2><p>Change an answer and the graphical path updates instantly.</p></div>
+        <form class="form" id="funding-form">
+          <div class="inline">
+            <div class="field"><label for="age">Age on 31 August 2026</label><input id="age" name="age" type="number" min="16" max="90" value="35"></div>
+            <div class="field"><label for="courseLevel">Course level</label><select id="courseLevel" name="courseLevel"><option value="entry">Entry</option><option value="l1">Level 1</option><option value="l2" selected>Level 2</option><option value="l3">Level 3</option><option value="l4plus">Level 4+</option></select></div>
+          </div>
+          <label class="checkline"><input id="ehcp" name="ehcp" type="checkbox"> 19-24 with an EHC plan</label>
+          <div class="field"><label for="residency">Residency position</label><select id="residency" name="residency"><option value="yes" selected>3-year condition confirmed</option><option value="exception">Possible permitted exception</option><option value="no">Not confirmed</option></select><div class="help">The prototype never treats a failed simple test as the end of the matter where a residency exception may apply.</div></div>
+          <div class="field"><label for="entitlement">Course / entitlement category</label><select id="entitlement" name="entitlement"><option value="other" selected>Other / local flexibility</option><option value="english-maths">English or maths legal entitlement</option><option value="essential-digital">Essential digital skills entitlement</option><option value="first-full-l2">19-23 first full Level 2</option><option value="first-full-l3">19-23 first full Level 3</option><option value="fcfj-l3">Eligible Level 3 Free Courses for Jobs</option></select></div>
+          <div class="field"><label for="employment">Employment status</label><select id="employment" name="employment"><option value="employed" selected>Employed</option><option value="self-employed">Self-employed</option><option value="unemployed">Not working / seeking work</option><option value="retired">Retired / pensioner</option></select></div>
+          <div class="field"><label for="benefit">Benefit status</label><select id="benefit" name="benefit"><option value="none" selected>None selected</option><option value="jsa">Jobseeker's Allowance</option><option value="esa">Employment and Support Allowance</option><option value="uc">Universal Credit</option><option value="pip">PIP</option><option value="other">Other state benefit</option></select></div>
+          <div class="inline">
+            <div class="field"><label for="annualGross">Annual gross employment earnings (£)</label><input id="annualGross" name="annualGross" type="number" min="0" step="100" value="24000"></div>
+            <div class="field"><label for="ucClaim">UC claim type</label><select id="ucClaim" name="ucClaim"><option value="single" selected>Sole adult</option><option value="joint">Joint claim</option></select></div>
+          </div>
+          <div class="field"><label for="ucMonthlyEarnings">Monthly earned income shown on UC statement (£)</label><input id="ucMonthlyEarnings" name="ucMonthlyEarnings" type="number" min="0" step="10" value="0"></div>
+          <div class="controls"><button class="primary" type="button" id="reset">Reset demo</button><button class="secondary" type="button" id="print">Print / save view</button></div>
+        </form>
+      </section>
+
+      <section class="tree-wrap" aria-live="polite">
+        <div class="tree">
+          <div class="tree-title"><div><h2>Live decision path</h2><div class="help">Pink = current path · teal = passed gate · amber/red = review/stop</div></div><span>Explainable, versioned rules</span></div>
+          <div class="stages" id="stages">
+            <div class="stage" data-stage="age"><h3>1 · Age route</h3><div class="node" data-key="16-18"><strong>16-18</strong><small>16-19 funding methodology</small></div><div class="node" data-key="19-23"><strong>19-23</strong><small>Adult route unless EHC plan</small></div><div class="node" data-key="24+"><strong>24+</strong><small>Adult funding route</small></div></div>
+            <div class="stage" data-stage="residency"><h3>2 · Residency</h3><div class="node" data-key="3-years"><strong>3 years confirmed</strong><small>Continue</small></div><div class="node" data-key="exception"><strong>Exception route</strong><small>Evidence + review</small></div><div class="node" data-key="not-confirmed"><strong>Not confirmed</strong><small>Do not auto-fund</small></div></div>
+            <div class="stage" data-stage="course"><h3>3 · Course entitlement</h3><div class="node" data-key="english-maths"><strong>English / maths</strong><small>Legal entitlement if conditions met</small></div><div class="node" data-key="first-full-l2"><strong>First full L2</strong><small>19-23 entitlement</small></div><div class="node" data-key="first-full-l3"><strong>First full L3</strong><small>19-23 entitlement</small></div><div class="node" data-key="fcfj-l3"><strong>FCFJ Level 3</strong><small>Income/unemployment test</small></div><div class="node" data-key="other"><strong>Other course</strong><small>Move to income/benefit test</small></div><div class="node" data-key="essential-digital"><strong>Essential digital</strong><small>Entitlement if conditions met</small></div></div>
+            <div class="stage" data-stage="income"><h3>4 · Income / benefits</h3><div class="node" data-key="low-earnings"><strong>Low earnings</strong><small>Configured annual threshold met</small></div><div class="node" data-key="unemployed"><strong>Qualifying unemployed route</strong><small>JSA / ESA / UC test</small></div><div class="node" data-key="above-threshold"><strong>Above threshold</strong><small>Co-funding or loan may apply</small></div><div class="node" data-key="discretion"><strong>Discretion / review</strong><small>PIP, retirement or other cases</small></div></div>
+            <div class="stage" data-stage="outcome"><h3>5 · Outcome</h3><div class="node" data-key="FULL"><strong>Fully funded</strong><small>Evidence retained</small></div><div class="node" data-key="COFUNDED"><strong>Co-funded</strong><small>Learner/employer contribution</small></div><div class="node" data-key="LOAN"><strong>Loan / self-fund</strong><small>Check designated route</small></div><div class="node" data-key="MANUAL"><strong>Manual review</strong><small>Funding officer decision</small></div><div class="node" data-key="NOT_ELIGIBLE"><strong>Not automatically eligible</strong><small>Check exceptions</small></div><div class="node" data-key="SIXTEEN_NINETEEN"><strong>16-19 route</strong><small>Core study-programme funding</small></div></div>
+          </div>
+        </div>
+
+        <div class="result-grid">
+          <article class="result-card" id="result-card"><div class="result-kicker">Current demonstration outcome</div><h2 id="result-label">—</h2><p class="reason" id="result-reason"></p><span class="status-pill" id="status-pill">Decision support only</span><div class="flags" id="flags" hidden></div></article>
+          <aside class="evidence-card"><h3>Evidence checklist</h3><div class="help">What the enrolment workflow would ask staff to evidence before finalising funding.</div><ul id="evidence"></ul></aside>
+        </div>
+
+        <div class="rulebox" id="rulebox"></div>
+        <section class="sources"><h3>Why this is a demonstrator, not the rule book</h3><p>The rules are deliberately externalised and versioned so Lincoln College can update thresholds, authority rules and course eligibility without rewriting the interface. The outcome should be treated as <b>decision support</b> until CIS/funding teams confirm the production rule set.</p><ul><li><a href="https://greaterlincolnshire-cca.gov.uk/home/adult-skills-programme" target="_blank" rel="noreferrer">Greater Lincolnshire Adult Skills Programme</a></li><li><a href="https://www.gov.uk/government/publications/advice-funding-rules-for-16-to-19-provision/advice-funding-rules-for-16-to-19-provision-2026-to-2027" target="_blank" rel="noreferrer">DfE 16-19 funding rules 2026/27</a></li><li><a href="https://www.gov.uk/government/publications/advanced-learner-loans-funding-and-performance-management-rules/advanced-learner-loans-funding-and-performance-management-rules-2026-to-2027" target="_blank" rel="noreferrer">Advanced Learner Loans rules 2026/27</a></li></ul></section>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer"><b>Unofficial Lincoln College demonstration.</b> Synthetic data only. No ProSolution connection. No learner should be charged or funded from this prototype output.</footer>
+  <script type="module" src="funding-decision.js"></script>
+</body>
+</html>

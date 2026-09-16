@@ -1,11 +1,11 @@
-import { pathwayFor, payForOccupation } from './pathway-core.js';
+import { pathwayFor, bestPayForOccupation } from './pathway-core.js?v=20260916-2';
 import { renderPathway } from './pathway-graph.js';
 import { selectDemandOccupation } from './demand-panel.js';
 
-const PAGE_SIZE = 20, REFERENCE_URL = './skills-england-reference.json', PAY_URL = './ons-pay-reference.json';
-const ids = ['reference-status','reference-error','retry-reference','route-filter','occupation-search','result-count','occupation-results','previous-page','next-page','occupation-detail','back-to-results','occupation-title','occupation-content','progression-coverage','pathway-host','graph-view','list-view','pay-value','pay-summary','pay-context','jobs-link','jobs-context'];
+const PAGE_SIZE = 20, REFERENCE_URL = './skills-england-reference.json', PAY_URL = './ons-pay-reference.json', UK_PAY_URL = './ons-uk-pay-reference.json';
+const ids = ['reference-status','reference-error','retry-reference','route-filter','occupation-search','result-count','occupation-results','previous-page','next-page','occupation-detail','back-to-results','occupation-title','occupation-content','progression-coverage','pathway-host','graph-view','list-view','pay-heading','pay-value','pay-summary','pay-note','pay-quality','pay-source','pay-context','jobs-link','jobs-context'];
 const els = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
-let snapshot = null, paySnapshot = null, matches = [], page = 0, selectedId = null, selectedCard = null, view = 'graph', disposeGraph = () => {};
+let snapshot = null, paySnapshot = null, ukPaySnapshot = null, payLoading = true, payRequest = 0, matches = [], page = 0, selectedId = null, selectedCard = null, view = 'graph', disposeGraph = () => {};
 const list = value => Array.isArray(value) ? value : [];
 const value = input => input == null || String(input).trim() === '' ? 'Unavailable' : String(input).trim();
 const dateLabel = input => { const date = new Date(input); return !input || Number.isNaN(date.getTime()) ? 'unknown' : date.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }); };
@@ -53,18 +53,33 @@ function coverageText(pathway) {
   return 'The full progression for this occupation was not fetched. Any links shown are incidental to other cached pathways and coverage is partial.';
 }
 function renderPay(item) {
-  els['pay-summary'].textContent = ''; els['pay-context'].replaceChildren();
-  if (!paySnapshot) { els['pay-value'].textContent = 'Unavailable'; els['pay-context'].textContent = 'The pay reference could not be loaded; pathway information is still available.'; return; }
-  const pay = payForOccupation(paySnapshot, item), record = pay.record, meta = pay.meta ?? {};
-  if (pay.status !== 'available') { els['pay-value'].textContent = pay.status === 'suppressed' ? 'Suppressed' : 'Unavailable'; els['pay-context'].textContent = `${pay.reason} Regional pay data remains separate from the Lincoln jobs search.`; return; }
+  for (const id of ['pay-summary','pay-note','pay-quality','pay-source','pay-context']) els[id].replaceChildren();
+  els['pay-heading'].textContent = 'Annual pay';
+  if (payLoading) { els['pay-value'].textContent = 'Loading…'; return; }
+  if (!paySnapshot && !ukPaySnapshot) { els['pay-value'].textContent = 'Unavailable'; els['pay-note'].textContent = 'The ONS pay references could not be loaded. Reload the page to try again.'; return; }
+  const pay = bestPayForOccupation(paySnapshot, ukPaySnapshot, item), record = pay.record, meta = pay.meta ?? {};
+  const sourceLink = (source, label) => {
+    try { const url = new URL(String(source?.sourceUrl)); if (url.protocol === 'https:' && url.hostname === 'www.ons.gov.uk') { const link = add(els['pay-source'], 'a', label); link.href = url.href; return true; } } catch {}
+    return false;
+  };
+  if (pay.status !== 'available') {
+    const matched = /^[0-9]{4}$/u.test(String(item?.soc2020?.code ?? ''));
+    els['pay-value'].textContent = matched ? 'Not published' : 'No salary match';
+    els['pay-note'].textContent = matched ? `East Midlands: ${pay.regional.reason} UK: ${pay.uk.status === 'available' ? 'A matching edition is unavailable.' : pay.uk.reason}` : pay.reason;
+    sourceLink(paySnapshot, 'ONS East Midlands source');
+    if (paySnapshot && ukPaySnapshot) add(els['pay-source'], 'span', ' · ');
+    sourceLink(ukPaySnapshot, 'ONS UK source');
+    els['pay-context'].textContent = 'Missing or withheld salaries are not zero. Salaries are matched only by the exact SOC 2020 occupation group supplied by Skills England.';
+    return;
+  }
+  els['pay-heading'].textContent = pay.isNationalFallback ? 'UK pay reference' : 'East Midlands pay';
   els['pay-value'].textContent = new Intl.NumberFormat('en-GB', { style:'currency', currency:'GBP', maximumFractionDigits:0 }).format(record.value);
   const edition = value(meta.edition ?? meta.year), geography = value(meta.geography?.name ?? meta.geography), measure = value(meta.measure?.label ?? meta.measure ?? meta.unit);
   els['pay-summary'].textContent = `${geography} · ${edition} · ${value(record.occupationTitle)}`;
-  add(els['pay-context'], 'span', `${measure} for ${geography}; ${edition}. Broader SOC group estimate: ${value(record.occupationTitle)}. Quality note/CV: ${value(record.qualityNote ?? record.cvFlag)} `);
-  let href = null; try { const candidate = new URL(String(meta.sourceUrl)); if (candidate.protocol === 'https:' && candidate.hostname === 'www.ons.gov.uk') href = candidate.href; } catch {}
-  if (href) { const link = add(els['pay-context'], 'a', `ONS source (${dateLabel(meta.retrievedAt)})`); link.href = href; }
-  else add(els['pay-context'], 'span', `Source retrieved ${dateLabel(meta.retrievedAt)}`);
-  add(els['pay-context'], 'span', ' · This is neither advertised nor starting pay.');
+  els['pay-note'].textContent = pay.isNationalFallback ? `East Midlands: ${pay.regional.reason} Showing the published UK median.` : 'Published median for this occupation group. Individual and starting salaries vary.';
+  if (record.qualityFlag === 'cv-unavailable' || record.coefficientOfVariation > 10) els['pay-quality'].textContent = record.qualityNote;
+  sourceLink(meta, 'ONS salary source');
+  els['pay-context'].textContent = `${measure} for ${geography}; ${edition}. Full-time employee jobs on adult rates, in the same job for more than a year; tax year ended 5 April ${meta.year}. Excludes self-employment. This is not advertised or starting pay. ${record.qualityNote} Source retrieved ${dateLabel(meta.retrievedAt)}. UK figures are used only when an East Midlands median is unavailable for the same occupation group.`;
 }
 function renderMetadata(item) {
   const host = els['occupation-content']; host.replaceChildren(); add(host, 'p', value(item.overview));
@@ -107,7 +122,13 @@ export async function loadExplorer() {
       showOccupation(occupationById('OCC0116') ? 'OCC0116' : snapshot.occupations[0].id);
       history.replaceState({ occupation:selectedId }, '', `#occupation=${encodeURIComponent(selectedId)}`);
     }
-    fetchJson(PAY_URL).then(data => { paySnapshot = data; if (selectedId) renderPay(occupationById(selectedId)); }).catch(() => { paySnapshot = null; if (selectedId) renderPay(occupationById(selectedId)); });
+    const request = ++payRequest; payLoading = true; renderPay(occupationById(selectedId));
+    Promise.allSettled([fetchJson(PAY_URL), fetchJson(UK_PAY_URL)]).then(([regional, uk]) => {
+      if (request !== payRequest) return;
+      paySnapshot = regional.status === 'fulfilled' ? regional.value : null;
+      ukPaySnapshot = uk.status === 'fulfilled' ? uk.value : null;
+      payLoading = false; if (selectedId) renderPay(occupationById(selectedId));
+    });
   } catch { els['reference-error'].hidden = false; if (snapshot) { renderResults(); renderSelected(); referenceStatus(' · refresh failed; continuing with previously loaded data'); } else { els['reference-status'].textContent = 'Reference unavailable.'; els['result-count'].textContent = 'Occupations cannot be shown until the reference loads.'; } }
 }
 els['occupation-search'].addEventListener('input', () => { page = 0; renderResults(); }); els['route-filter'].addEventListener('change', () => { page = 0; renderResults(); });

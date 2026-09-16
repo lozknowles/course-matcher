@@ -91,26 +91,27 @@ function payMeta(pay) {
   };
 }
 
-function metadataIsValid(meta) {
+function metadataIsValid(meta, geographyCode) {
   const classification = typeof meta.classification === 'object' ? meta.classification?.id ?? meta.classification?.code : meta.classification;
   const suppliedUnit = meta.unit ?? meta.measure?.unit;
   const unit = typeof suppliedUnit === 'object' ? suppliedUnit?.id ?? suppliedUnit?.code : suppliedUnit;
   return Number(meta.schemaVersion) === 1
     && classification === 'SOC2020'
-    && meta.geography?.code === 'E12000004'
+    && ['E12000004', 'K02000001'].includes(geographyCode)
+    && meta.geography?.code === geographyCode
     && meta.measure?.id === 'median-gross-annual-full-time'
     && unit === 'GBP/year'
     && Number.isInteger(meta.year);
 }
 
-export function payForOccupation(pay, occupation) {
+export function payForOccupation(pay, occupation, geographyCode = 'E12000004') {
   const meta = payMeta(pay);
   const rawCode = occupation?.soc2020?.code;
   const code = typeof rawCode === 'string' || typeof rawCode === 'number' ? String(rawCode) : '';
   if (!/^[0-9]{4}$/u.test(code))
-    return { status: 'unavailable', record: null, meta, reason: 'A valid four-digit SOC 2020 code is required.' };
-  if (!metadataIsValid(meta))
-    return { status: 'unavailable', record: null, meta, reason: 'The pay data metadata is unavailable or incompatible.' };
+    return { status: 'unavailable', record: null, meta, reason: 'Skills England has not supplied a valid four-digit SOC 2020 code for this occupation.' };
+  if (!metadataIsValid(meta, geographyCode))
+    return { status: 'unavailable', record: null, meta, reason: 'The pay reference could not be loaded or has incompatible metadata.' };
 
   const matches = array(pay?.records).filter(record =>
     record && typeof record === 'object' && typeof record.soc2020 === 'string'
@@ -123,13 +124,24 @@ export function payForOccupation(pay, occupation) {
   const record = copy(matched);
   if (text(matched.status).toLowerCase() === 'suppressed') {
     record.value = null;
-    return { status: 'suppressed', record, meta, reason: 'The matching value is suppressed in the source data.' };
+    return { status: 'suppressed', record, meta, reason: 'ONS has withheld this median for reliability or disclosure reasons.' };
   }
   const cv = matched.cv ?? matched.coefficientOfVariation;
   if (text(matched.status).toLowerCase() === 'available'
       && Number.isFinite(matched.value) && matched.value >= 0
-      && Number.isFinite(cv) && cv >= 0 && cv <= 20)
+      && ((Number.isFinite(cv) && cv >= 0 && cv <= 20)
+        || (cv == null && matched.qualityFlag === 'cv-unavailable' && matched.qualityMarker === '.')))
     return { status: 'available', record, meta, reason: 'A matching published pay record is available.' };
 
-  return { status: 'unavailable', record: null, meta, reason: 'The matching record has no reliable available pay value.' };
+  return { status: 'unavailable', record: null, meta, reason: 'No usable published median is available for this occupation group.' };
+}
+
+export function bestPayForOccupation(regionalPay, ukPay, occupation) {
+  const regional = payForOccupation(regionalPay, occupation);
+  const uk = payForOccupation(ukPay, occupation, 'K02000001');
+  // Do not mix different ASHE editions when both references have loaded.
+  const sameEdition = !regionalPay || (regional.meta.year === uk.meta.year && regional.meta.edition === uk.meta.edition);
+  if (regional.status === 'available') return { ...regional, regional, uk, isNationalFallback: false };
+  if (uk.status === 'available' && sameEdition) return { ...uk, regional, uk, isNationalFallback: true };
+  return { ...regional, regional, uk, isNationalFallback: false };
 }

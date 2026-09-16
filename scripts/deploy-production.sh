@@ -68,6 +68,7 @@ PUBLIC_FILES=(
   student-hub/demand-panel.js
   student-hub/ons-demand-reference.json
   student-hub/ons-pay-reference.json
+  student-hub/ons-uk-pay-reference.json
   student-hub/pathway-core.js
   student-hub/pathway-graph.js
   student-hub/pathway-icons/*.svg

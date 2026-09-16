@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'lincoln-student-hub-shell-';
-const CACHE_NAME = `${CACHE_PREFIX}career-pathways-demo7-v12`;
+const CACHE_NAME = `${CACHE_PREFIX}career-pathways-demo7-v13`;
 const SHELL_PATHS = [
   './',
   './index.html',
@@ -14,18 +14,20 @@ const SHELL_PATHS = [
   './careers.html',
   './careers.js',
   './careers.css',
-  './careers.js?v=20260916-1',
-  './careers.css?v=20260916-1',
+  './careers.js?v=20260916-2',
+  './careers.css?v=20260916-2',
   './careers-lmi.css?v=20260916-1',
   './demand-core.js',
   './demand-panel.js',
   './ons-demand-reference.json',
   './career-core.js',
   './pathway-core.js',
+  './pathway-core.js?v=20260916-2',
   './pathway-graph.js',
   './skills-england-reference.json',
   './skills-england-logo.svg',
   './ons-pay-reference.json',
+  './ons-uk-pay-reference.json',
   './pathway-icons/person.svg',
   './pathway-icons/laptop.svg',
   './pathway-icons/gear.svg',
@@ -96,6 +98,7 @@ self.addEventListener('fetch', event => {
   const referenceURLs = new Set([
     scopedURL('./skills-england-reference.json'),
     scopedURL('./ons-pay-reference.json'),
+    scopedURL('./ons-uk-pay-reference.json'),
     scopedURL('./ons-demand-reference.json')
   ]);
   const allowed = shellURLs();

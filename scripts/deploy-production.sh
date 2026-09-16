@@ -48,6 +48,14 @@ PUBLIC_FILES=(
   retention-core.js
   courses.js
   lincoln-theme.css
+  demo-suite.css
+  enrolment-core.js
+  enrolment-dashboard.html
+  enrolment-dashboard.css
+  enrolment-dashboard.js
+  dashboard-icons/*.svg
+  dashboard-icons/LICENSE.txt
+  dashboard-icons/assets.json
   student-hub/adapter.js
   student-hub/app.js
   student-hub/bridge.js
@@ -55,6 +63,16 @@ PUBLIC_FILES=(
   student-hub/careers.css
   student-hub/careers.html
   student-hub/careers.js
+  student-hub/careers-lmi.css
+  student-hub/demand-core.js
+  student-hub/demand-panel.js
+  student-hub/ons-demand-reference.json
+  student-hub/ons-pay-reference.json
+  student-hub/pathway-core.js
+  student-hub/pathway-graph.js
+  student-hub/pathway-icons/*.svg
+  student-hub/pathway-icons/LICENSE.txt
+  student-hub/pathway-icons/assets.json
   student-hub/core.js
   student-hub/data.js
   student-hub/icon.svg
@@ -122,7 +140,9 @@ assert_public_contains "$PUBLIC_URL/matcher-core.js" 'quickMatchCourses'
 assert_public_contains "$PUBLIC_URL/retention-core.js" 'buildTransferHandoff'
 assert_public_contains "$PUBLIC_URL/" '42-Day Student Fit &amp; Retention'
 assert_public_contains "$PUBLIC_URL/" 'Why is this learner at risk of disengaging?'
-assert_public_contains "$PUBLIC_URL/" 'Five student-success journeys'
+assert_public_contains "$PUBLIC_URL/" 'Seven student-success journeys'
+assert_public_contains "$PUBLIC_URL/enrolment-dashboard.html" 'Student enrolment'
+assert_public_contains "$PUBLIC_URL/student-hub/careers.html" 'Recruitment activity'
 assert_public_contains "$PUBLIC_URL/" 'href="automated-change-request.html"'
 curl -fsS "$PUBLIC_URL/vendor/pdfjs/pdf.mjs" >/dev/null
 curl -fsS "$PUBLIC_URL/vendor/tesseract/tesseract.min.js" >/dev/null
@@ -142,7 +162,7 @@ assert_public_contains "$PUBLIC_URL/data-quality.css" '#autoemail'
 
 assert_public_contains "$PUBLIC_URL/lincoln-theme.css" 'lincoln'
 assert_public_contains "$PUBLIC_URL/student-hub/index.html" 'Student Hub'
-assert_public_contains "$PUBLIC_URL/student-hub/careers.html" 'Skills England occupation explorer'
+assert_public_contains "$PUBLIC_URL/student-hub/careers.html" 'Explore your career path'
 curl -fsS "$PUBLIC_URL/student-hub/sw.js" >/dev/null
 assert_public_contains "$PUBLIC_URL/student-hub/student-hub.webmanifest" 'Lincoln Student Hub'
 curl -fsS "$PUBLIC_URL/student-hub/skills-england-reference.json" | node -e '

@@ -1,0 +1,52 @@
+{
+  "library": "Bootstrap Icons",
+  "version": "1.13.1",
+  "licence": "MIT",
+  "files": [
+    {
+      "name": "laptop",
+      "url": "https://raw.githubusercontent.com/twbs/icons/v1.13.1/icons/laptop.svg",
+      "sha256": "2a8c04a7534cc7203934b186fb957f45d4f47031cd1db817e9887dfb10762939"
+    },
+    {
+      "name": "person",
+      "url": "https://raw.githubusercontent.com/twbs/icons/v1.13.1/icons/person.svg",
+      "sha256": "e071db1bfc90bd30bc621d14e9b1c9b5d195b932d7027d65e1e30fbd9ffbf6c9"
+    },
+    {
+      "name": "gear",
+      "url": "https://raw.githubusercontent.com/twbs/icons/v1.13.1/icons/gear.svg",
+      "sha256": "0f480fcb1400c05fe3eb44006e3effd5d4c6c35402b045f8fa5529afc033b62a"
+    },
+    {
+      "name": "shield",
+      "url": "https://raw.githubusercontent.com/twbs/icons/v1.13.1/icons/shield.svg",
+      "sha256": "0f3160aa0abcd4d4b1963ad1124467a19ca2a92b69de7bc8ec0bb1972c88410c"
+    },
+    {
+      "name": "geo-alt",
+      "url": "https://raw.githubusercontent.com/twbs/icons/v1.13.1/icons/geo-alt.svg",
+      "sha256": "04ea4a9f3df177701826a941c77119eedce03e102f0f7697d77ae10ff453cb08"
+    },
+    {
+      "name": "currency-pound",
+      "url": "https://raw.githubusercontent.com/twbs/icons/v1.13.1/icons/currency-pound.svg",
+      "sha256": "fc13bc5f2bdb6ffddc7ca48f07eb019904d1fc06182ab7fe8bf2868578418729"
+    },
+    {
+      "name": "list-ul",
+      "url": "https://raw.githubusercontent.com/twbs/icons/v1.13.1/icons/list-ul.svg",
+      "sha256": "9934cbd5cc63ece4b6536cb80e0ddf8c7e768787a4f1f6948b9e636900e9b865"
+    },
+    {
+      "name": "search",
+      "url": "https://raw.githubusercontent.com/twbs/icons/v1.13.1/icons/search.svg",
+      "sha256": "dd6f471f48724227dfde72d6253a98023d4b734d06b90a3d932cf698e3aaa1c9"
+    },
+    {
+      "name": "arrow-right",
+      "url": "https://raw.githubusercontent.com/twbs/icons/v1.13.1/icons/arrow-right.svg",
+      "sha256": "edcfe1180dcc2afb750f1cb4b45524a5cdf6622a862b2e75320b4e4f057fc28c"
+    }
+  ]
+}

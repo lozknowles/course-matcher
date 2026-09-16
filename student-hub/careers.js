@@ -1,217 +1,118 @@
-const PAGE_SIZE = 20;
-const REFERENCE_URL = './skills-england-reference.json';
-const els = {};
-let snapshot = null;
-let matches = [];
-let page = 0;
-let selectedId = null;
-let selectedCard = null;
+import { pathwayFor, payForOccupation } from './pathway-core.js';
+import { renderPathway } from './pathway-graph.js';
+import { selectDemandOccupation } from './demand-panel.js';
 
-const text = value => value == null || String(value).trim() === '' ? 'Unavailable' : String(value).trim();
+const PAGE_SIZE = 20, REFERENCE_URL = './skills-england-reference.json', PAY_URL = './ons-pay-reference.json';
+const ids = ['reference-status','reference-error','retry-reference','route-filter','occupation-search','result-count','occupation-results','previous-page','next-page','occupation-detail','back-to-results','occupation-title','occupation-content','progression-coverage','pathway-host','graph-view','list-view','pay-value','pay-summary','pay-context','jobs-link','jobs-context'];
+const els = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
+let snapshot = null, paySnapshot = null, matches = [], page = 0, selectedId = null, selectedCard = null, view = 'graph', disposeGraph = () => {};
 const list = value => Array.isArray(value) ? value : [];
-const officialUrl = value => {
-  try {
-    const url = new URL(String(value));
-    return url.protocol === 'https:' && (url.hostname === 'skillsengland.education.gov.uk' || url.hostname.endsWith('.skillsengland.education.gov.uk')) ? url.href : null;
-  } catch { return null; }
-};
-const add = (parent, tag, value, className) => {
-  const node = document.createElement(tag);
-  if (className) node.className = className;
-  node.textContent = value;
-  parent.append(node);
-  return node;
-};
-const dateLabel = value => {
-  if (!value) return 'unknown';
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? text(value) : date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-};
+const value = input => input == null || String(input).trim() === '' ? 'Unavailable' : String(input).trim();
+const dateLabel = input => { const date = new Date(input); return !input || Number.isNaN(date.getTime()) ? 'unknown' : date.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }); };
+const add = (parent, tag, content, className) => { const node = document.createElement(tag); if (className) node.className = className; node.textContent = content; parent.append(node); return node; };
+const safeHttps = input => { try { const url = new URL(String(input)); return url.protocol === 'https:' ? url.href : null; } catch { return null; } };
+const occupationById = id => list(snapshot?.occupations).find(item => String(item.id) === String(id));
+const statusName = item => value(item?.statusName ?? item?.status);
 
-function cacheElements() {
-  for (const id of ['reference-status','reference-error','retry-reference','route-filter','occupation-search','results-panel','result-count','occupation-results','previous-page','next-page','occupation-detail','back-to-results','occupation-title','occupation-content','next-steps','earlier-steps','progression-coverage']) els[id] = document.getElementById(id);
-}
-
-function setStatus(extra = '') {
+function referenceStatus(extra = '') {
   if (!snapshot) return;
   const retrieved = new Date(snapshot.retrievedAt);
   const age = Number.isNaN(retrieved.getTime()) ? null : Math.max(0, Math.floor((Date.now() - retrieved.getTime()) / 86400000));
-  const stale = age != null && age > 30 ? ` Stale reference (${age} days old).` : '';
-  const offline = navigator.onLine === false ? ' Offline: using the loaded cached reference.' : '';
-  els['reference-status'].textContent = `${text(snapshot.provider)} · retrieved ${dateLabel(snapshot.retrievedAt)} · dataset version ${text(snapshot.datasetVersion).toLowerCase() === 'unavailable' ? 'unknown' : text(snapshot.datasetVersion)}.${stale}${offline}${extra}`;
+  const stale = age != null && age > 30 ? ` · reference is ${age} days old` : '';
+  const offline = navigator.onLine === false ? ' · offline, using loaded data' : '';
+  els['reference-status'].textContent = `${value(snapshot.provider)} · snapshot retrieved ${dateLabel(snapshot.retrievedAt)}${stale}${offline}${extra}`;
 }
-
-function validSnapshot(data) {
-  return data && typeof data === 'object' && Array.isArray(data.routes) && Array.isArray(data.occupations) && data.occupations.length;
-}
-
 function populateRoutes() {
   els['route-filter'].replaceChildren(new Option('All routes', ''));
-  list(snapshot.routes).slice().sort((a, b) => text(a.name).localeCompare(text(b.name), 'en', { sensitivity: 'base' })).forEach(route => els['route-filter'].append(new Option(text(route.name), String(route.id))));
+  list(snapshot.routes).slice().sort((a,b) => value(a.name).localeCompare(value(b.name))).forEach(route => els['route-filter'].append(new Option(value(route.name), String(route.id))));
 }
-
-function statusName(item) {
-  return text(item.statusName ?? item.status);
+function filtered() {
+  const query = els['occupation-search'].value.trim().toLocaleLowerCase(), route = els['route-filter'].value;
+  const title = item => value(item.title).toLocaleLowerCase();
+  const rank = item => title(item) === query ? 0 : title(item).includes(query) ? 1 : 2;
+  return list(snapshot.occupations).filter(item => (!route || String(item.routeId) === route) && (!query || [item.title,item.overview,...list(item.typicalJobTitles)].some(part => String(part ?? '').toLocaleLowerCase().includes(query)))).sort((a,b) => (query ? rank(a) - rank(b) : 0) || value(a.title).localeCompare(value(b.title), 'en', { sensitivity:'base' }));
 }
-
-function filteredOccupations() {
-  const query = els['occupation-search'].value.trim().toLocaleLowerCase();
-  const route = els['route-filter'].value;
-  return list(snapshot.occupations).filter(item => {
-    const searchable = [item.title, item.overview, ...list(item.typicalJobTitles)].map(value => String(value ?? '').toLocaleLowerCase());
-    return (!route || String(item.routeId) === route) && (!query || searchable.some(value => value.includes(query)));
-  }).sort((a, b) => String(a.title ?? '').localeCompare(String(b.title ?? ''), 'en', { sensitivity: 'base' }) || String(a.id ?? '').localeCompare(String(b.id ?? ''), 'en'));
-}
-
-function occupationButton(item, className = 'occupation-card') {
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.className = className;
-  button.dataset.occupation = String(item.id);
-  add(button, 'strong', text(item.title));
-  if (className === 'occupation-card') {
-    add(button, 'span', `${text(item.routeName)} · Level ${text(item.level)}`);
-    add(button, 'span', `Provider status: ${statusName(item)}`, 'badge');
-  }
-  button.addEventListener('click', () => showDetail(item.id, true, button));
+function selectButton(item) {
+  const button = document.createElement('button'); button.type = 'button'; button.className = 'occupation-card'; button.dataset.occupation = String(item.id);
+  button.setAttribute('aria-pressed', String(String(item.id) === selectedId));
+  if (String(item.id) === selectedId) button.setAttribute('aria-current', 'true');
+  add(button, 'strong', value(item.title)); add(button, 'span', `${value(item.routeName)} · Level ${value(item.level)}`);
+  button.addEventListener('click', () => showOccupation(item.id, { push:true, focus:true, trigger:button }));
   return button;
 }
-
 function renderResults() {
-  matches = filteredOccupations();
-  const pages = Math.max(1, Math.ceil(matches.length / PAGE_SIZE));
-  page = Math.min(page, pages - 1);
-  const start = page * PAGE_SIZE;
-  const visible = matches.slice(start, start + PAGE_SIZE);
-  els['occupation-results'].replaceChildren(...visible.map(item => occupationButton(item)));
-  els['result-count'].textContent = matches.length ? `${matches.length} matching occupations. Showing ${start + 1}–${start + visible.length}.` : 'No occupations match your search and route filters.';
-  els['previous-page'].disabled = page === 0;
-  els['next-page'].disabled = start + PAGE_SIZE >= matches.length;
+  matches = filtered(); const pages = Math.max(1, Math.ceil(matches.length / PAGE_SIZE)); page = Math.min(page, pages - 1);
+  const start = page * PAGE_SIZE, shown = matches.slice(start, start + PAGE_SIZE);
+  els['occupation-results'].replaceChildren(...shown.map(selectButton));
+  els['result-count'].textContent = matches.length ? `${matches.length} matching occupations · showing ${start + 1}–${start + shown.length}` : 'No occupations match your search and route filters.';
+  els['previous-page'].disabled = page === 0; els['next-page'].disabled = start + PAGE_SIZE >= matches.length;
 }
-
-function definition(parent, label, value) {
-  add(parent, 'dt', label);
-  add(parent, 'dd', text(value));
+function coverageText(pathway) {
+  if (pathway.coverage.state === 'cached-links') return 'This cached pathway shows available directed links. Coverage is partial; use list view for every cached neighbour.';
+  if (pathway.coverage.state === 'cached-empty') return 'This occupation was fetched, but the bounded snapshot returned no progression links. This does not mean no pathways exist.';
+  return 'The full progression for this occupation was not fetched. Any links shown are incidental to other cached pathways and coverage is partial.';
 }
-
-function sourceLink(parent, label, value) {
-  const href = officialUrl(value);
-  if (!href) return;
-  const link = add(parent, 'a', label);
-  link.href = href;
+function renderPay(item) {
+  els['pay-summary'].textContent = ''; els['pay-context'].replaceChildren();
+  if (!paySnapshot) { els['pay-value'].textContent = 'Unavailable'; els['pay-context'].textContent = 'The pay reference could not be loaded; pathway information is still available.'; return; }
+  const pay = payForOccupation(paySnapshot, item), record = pay.record, meta = pay.meta ?? {};
+  if (pay.status !== 'available') { els['pay-value'].textContent = pay.status === 'suppressed' ? 'Suppressed' : 'Unavailable'; els['pay-context'].textContent = `${pay.reason} Regional pay data remains separate from the Lincoln jobs search.`; return; }
+  els['pay-value'].textContent = new Intl.NumberFormat('en-GB', { style:'currency', currency:'GBP', maximumFractionDigits:0 }).format(record.value);
+  const edition = value(meta.edition ?? meta.year), geography = value(meta.geography?.name ?? meta.geography), measure = value(meta.measure?.label ?? meta.measure ?? meta.unit);
+  els['pay-summary'].textContent = `${geography} · ${edition} · ${value(record.occupationTitle)}`;
+  add(els['pay-context'], 'span', `${measure} for ${geography}; ${edition}. Broader SOC group estimate: ${value(record.occupationTitle)}. Quality note/CV: ${value(record.qualityNote ?? record.cvFlag)} `);
+  let href = null; try { const candidate = new URL(String(meta.sourceUrl)); if (candidate.protocol === 'https:' && candidate.hostname === 'www.ons.gov.uk') href = candidate.href; } catch {}
+  if (href) { const link = add(els['pay-context'], 'a', `ONS source (${dateLabel(meta.retrievedAt)})`); link.href = href; }
+  else add(els['pay-context'], 'span', `Source retrieved ${dateLabel(meta.retrievedAt)}`);
+  add(els['pay-context'], 'span', ' · This is neither advertised nor starting pay.');
 }
-
-function renderSteps(container, items) {
-  container.replaceChildren();
-  const wrap = document.createElement('div');
-  wrap.className = 'step-list';
-  items.forEach(item => wrap.append(occupationButton(item, 'step-card')));
-  if (items.length) container.append(wrap);
-  else add(container, 'p', 'No links are available in this bounded snapshot.');
-}
-
-function showDetail(id, push = false, trigger = null) {
-  const item = list(snapshot.occupations).find(entry => String(entry.id) === String(id));
-  if (!item) return;
-  selectedId = String(item.id);
-  if (trigger?.classList?.contains('occupation-card')) selectedCard = trigger;
-  els['occupation-title'].textContent = text(item.title);
-  const content = els['occupation-content'];
-  content.replaceChildren();
-  add(content, 'p', text(item.overview));
+function renderMetadata(item) {
+  const host = els['occupation-content']; host.replaceChildren(); add(host, 'p', value(item.overview));
   const dl = document.createElement('dl');
-  definition(dl, 'Provider status', statusName(item));
-  definition(dl, 'Level', item.level);
-  definition(dl, 'Typical job titles', list(item.typicalJobTitles).length ? item.typicalJobTitles.join(', ') : null);
-  content.append(dl);
-  const products = list(item.products);
-  add(content, 'h3', 'Apprenticeship and technical products');
-  if (!products.length) add(content, 'p', 'Unavailable');
-  else {
-    const ul = document.createElement('ul');
-    products.forEach(product => add(ul, 'li', `${text(product.title ?? product.name)} — ${text(product.type)}; level ${text(product.level)}; status ${text(product.statusName ?? product.status)}`));
-    content.append(ul);
-  }
-  const details = document.createElement('details');
-  add(details, 'summary', 'Source details');
-  const source = document.createElement('p');
-  source.textContent = `SOC2020: ${item.soc2020 && typeof item.soc2020 === 'object' ? `${text(item.soc2020.code)} — ${text(item.soc2020.description)}` : text(item.soc2020)} · Version: ${text(item.version)} · Status updated: ${dateLabel(item.statusLastUpdated)}. `;
-  sourceLink(source, 'Official occupation source', item.sourceUrl);
-  details.append(source);
-  content.append(details);
-  const byId = new Map(list(snapshot.occupations).map(entry => [String(entry.id), entry]));
-  const uniqueDestinations = ids => [...new Set(ids.map(String))].map(id => byId.get(id)).filter(Boolean);
-  const outgoing = uniqueDestinations(list(snapshot.edges).filter(edge => String(edge.from) === selectedId).map(edge => edge.to));
-  const incoming = uniqueDestinations(list(snapshot.edges).filter(edge => String(edge.to) === selectedId).map(edge => edge.from));
-  renderSteps(els['next-steps'], outgoing);
-  renderSteps(els['earlier-steps'], incoming);
-  const covered = list(snapshot.progressionCoverage).map(String).includes(selectedId);
-  const links = outgoing.length + incoming.length;
-  els['progression-coverage'].replaceChildren();
-  add(els['progression-coverage'], 'strong', 'Pathway coverage: ');
-  els['progression-coverage'].append(document.createTextNode(covered ? (links ? 'This occupation was a cached progression seed and the available directed links are shown. This is still a bounded snapshot, not a comprehensive map of career possibilities.' : 'This occupation was a cached progression seed, but the snapshot returned zero progression links. This does not mean there are no career possibilities.') : 'The full progression for this occupation was not fetched. Any links shown come from other cached seeds and are partial.'));
-  const progressionHref = officialUrl(item.progressionUrl);
-  if (progressionHref) { els['progression-coverage'].append(document.createTextNode(' ')); sourceLink(els['progression-coverage'], 'Official pathway source', progressionHref); }
-  els['results-panel'].hidden = true;
-  els['occupation-detail'].hidden = false;
-  if (push) history.pushState({ occupation: selectedId }, '', `#occupation=${encodeURIComponent(selectedId)}`);
-  els['occupation-title'].focus();
+  [['Provider status',statusName(item)],['Level',item.level],['Route',item.routeName],['Typical job titles',list(item.typicalJobTitles).join(', ')],['SOC 2020',item.soc2020 && `${value(item.soc2020.code)} — ${value(item.soc2020.description)}`]].forEach(([label,content]) => { add(dl,'dt',label); add(dl,'dd',value(content)); }); host.append(dl);
+  add(host, 'h3', 'Apprenticeship and technical products'); const products = list(item.products);
+  if (!products.length) add(host, 'p', 'Unavailable'); else { const ul = document.createElement('ul'); products.forEach(product => add(ul,'li',`${value(product.title ?? product.name)} — ${value(product.type)}; level ${value(product.level)}; status ${value(product.statusName ?? product.status)}`)); host.append(ul); }
+  const href = safeHttps(item.sourceUrl); if (href) { const link = add(host,'a','Official occupation source'); link.href = href; }
 }
-
-function backToResults(updateHistory = true) {
-  els['occupation-detail'].hidden = true;
-  els['results-panel'].hidden = false;
-  selectedId = null;
-  if (updateHistory) history.pushState({}, '', `${location.pathname}${location.search}`);
-  if (selectedCard?.isConnected) selectedCard.focus();
+function renderSelected(focus = false) {
+  const item = occupationById(selectedId); if (!item) return; const pathway = pathwayFor(snapshot, selectedId);
+  els['occupation-detail'].hidden = false; els['occupation-title'].textContent = value(item.title);
+  disposeGraph(); disposeGraph = renderPathway(els['pathway-host'], pathway, { view, onSelect:id => showOccupation(id,{ push:true,focus:true }), onViewChange:setView });
+  els['progression-coverage'].textContent = coverageText(pathway);
+  els['graph-view'].setAttribute('aria-pressed', String(view === 'graph')); els['list-view'].setAttribute('aria-pressed', String(view === 'list'));
+  const jobs = new URL('https://www.reed.co.uk/jobs'); jobs.search = new URLSearchParams({ keywords:value(item.title), location:'Lincoln', proximity:'20' }); els['jobs-link'].href = jobs.href;
+  els['jobs-context'].textContent = `A live jobs feed is not connected. Search externally for “${value(item.title)}” near Lincoln within 20 miles.`;
+  renderPay(item); selectDemandOccupation(item); renderMetadata(item); renderResults(); referenceStatus(); if (focus) els['occupation-title'].focus();
 }
-
-function bindEvents() {
-  const refilter = () => { page = 0; renderResults(); };
-  els['occupation-search'].addEventListener('input', refilter);
-  els['route-filter'].addEventListener('change', refilter);
-  els['previous-page'].addEventListener('click', () => { page--; renderResults(); els['result-count'].focus?.(); });
-  els['next-page'].addEventListener('click', () => { page++; renderResults(); els['result-count'].focus?.(); });
-  els['back-to-results'].addEventListener('click', () => backToResults());
-  els['retry-reference'].addEventListener('click', loadExplorer);
-  const eventTarget = globalThis.window ?? globalThis;
-  eventTarget.addEventListener?.('popstate', () => {
-    const id = new URLSearchParams(location.hash.slice(1)).get('occupation');
-    if (id && snapshot) showDetail(id); else if (snapshot) backToResults(false);
-  });
-  eventTarget.addEventListener?.('offline', () => setStatus());
-  eventTarget.addEventListener?.('online', () => setStatus());
+function showOccupation(id, options = {}) {
+  const item = occupationById(id); const selectionError = document.getElementById('selection-error');
+  if (!item) { selectionError.hidden=false; selectionError.textContent=`Occupation ${value(id)} is unavailable in this packaged reference. Search and select an occupation to continue.`; els['occupation-detail'].hidden=true; return; }
+  selectionError.hidden=true;
+  selectedId = String(item.id); if (options.trigger) selectedCard = options.trigger;
+  if (options.push) history.pushState({ occupation:selectedId }, '', `#occupation=${encodeURIComponent(selectedId)}`); renderSelected(options.focus);
 }
-
+function setView(next) { view = next === 'list' ? 'list' : 'graph'; if (selectedId) renderSelected(false); els[`${view}-view`].focus(); }
+function backToResults() {
+  const target = selectedCard?.isConnected ? selectedCard : els['occupation-search']; target.focus();
+}
+function hashId() { return new URLSearchParams(location.hash.slice(1)).get('occupation'); }
+async function fetchJson(url) { const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 8000); try { const response = await fetch(url, { signal:controller.signal, cache:'no-cache' }); if (!response.ok) throw new Error('request failed'); return await response.json(); } finally { clearTimeout(timer); } }
 export async function loadExplorer() {
-  els['reference-error'].hidden = true;
-  els['reference-status'].textContent = snapshot ? 'Refreshing packaged reference…' : 'Loading reference…';
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000);
+  els['reference-error'].hidden = true; els['reference-status'].textContent = snapshot ? 'Refreshing packaged reference…' : 'Loading reference…';
   try {
-    const response = await fetch(REFERENCE_URL, { signal: controller.signal, cache: 'no-cache' });
-    if (!response.ok) throw new Error('Reference request failed');
-    const data = await response.json();
-    if (!validSnapshot(data)) throw new Error('Invalid reference');
-    snapshot = data;
-    populateRoutes();
-    els['route-filter'].disabled = false;
-    els['occupation-search'].disabled = false;
-    renderResults();
-    setStatus();
-    const id = new URLSearchParams(location.hash.slice(1)).get('occupation');
-    if (id) showDetail(id);
-  } catch {
-    els['reference-error'].hidden = false;
-    if (snapshot) { renderResults(); setStatus(' Refresh failed; continuing with the previously loaded snapshot.'); }
-    else { els['reference-status'].textContent = 'Reference unavailable.'; els['result-count'].textContent = 'Occupations cannot be shown until the reference loads.'; }
-  } finally { clearTimeout(timeout); }
+    const data = await fetchJson(REFERENCE_URL); if (!data || !Array.isArray(data.occupations) || !data.occupations.length) throw new Error('invalid reference'); snapshot = data;
+    populateRoutes(); els['route-filter'].disabled = false; els['occupation-search'].disabled = false;
+    const explicit = hashId(); if (!explicit && occupationById('OCC0116')) els['occupation-search'].value = 'software developer';
+    renderResults(); if (explicit) showOccupation(explicit); else {
+      showOccupation(occupationById('OCC0116') ? 'OCC0116' : snapshot.occupations[0].id);
+      history.replaceState({ occupation:selectedId }, '', `#occupation=${encodeURIComponent(selectedId)}`);
+    }
+    fetchJson(PAY_URL).then(data => { paySnapshot = data; if (selectedId) renderPay(occupationById(selectedId)); }).catch(() => { paySnapshot = null; if (selectedId) renderPay(occupationById(selectedId)); });
+  } catch { els['reference-error'].hidden = false; if (snapshot) { renderResults(); renderSelected(); referenceStatus(' · refresh failed; continuing with previously loaded data'); } else { els['reference-status'].textContent = 'Reference unavailable.'; els['result-count'].textContent = 'Occupations cannot be shown until the reference loads.'; } }
 }
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(() => {});
-}
-
-cacheElements();
-bindEvents();
+els['occupation-search'].addEventListener('input', () => { page = 0; renderResults(); }); els['route-filter'].addEventListener('change', () => { page = 0; renderResults(); });
+els['previous-page'].addEventListener('click', () => { page--; renderResults(); els['result-count'].focus(); }); els['next-page'].addEventListener('click', () => { page++; renderResults(); els['result-count'].focus(); });
+els['retry-reference'].addEventListener('click', loadExplorer); els['back-to-results'].addEventListener('click', backToResults); els['graph-view'].addEventListener('click', () => setView('graph')); els['list-view'].addEventListener('click', () => setView('list'));
+window.addEventListener('popstate', () => { const id = hashId(); if (id) showOccupation(id); else if (snapshot) showOccupation(occupationById('OCC0116') ? 'OCC0116' : snapshot.occupations[0].id); }); window.addEventListener('online', () => referenceStatus()); window.addEventListener('offline', () => referenceStatus());
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js', { scope:'./' }).catch(() => {});
 loadExplorer();

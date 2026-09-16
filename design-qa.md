@@ -57,3 +57,33 @@ Sources: PS-NAV-002 student list and PS-NAV-008 Personal detail capture. Uses co
 Full browser run completed all 20 records: 16 corrected, four mobile exceptions, four retained drafts, zero sent emails. Reopened SYN-004 draft correctly addressed to learner4@example.com. Pause/Resume observed working. Console error log empty. 31 tests passed. Final small visual fix: wrap AutoEmail message text rather than horizontal scrolling.
 
 final result: passed
+
+
+---
+
+# Visual and interaction QA
+
+## Visual targets and comparison
+
+Demo 6 was compared side by side in the same image inspection with the original 1672 × 941 generated enrolment dashboard (`exec-a73c4486-8a2e-40b6-b044-8146f0887c19.png`). It retains the navigation rail, four metrics, wide trend/narrow pipeline row and recent-applications/capacity row. The user-requested Lincoln look replaces the original blue neon treatment with the existing navy, cream, magenta and teal system and supplied college logo.
+
+Demo 7 was compared in the same image inspection with the recovered 1487 × 1058 selected career concept (`exec-7064057d-9374-4d02-9d61-de64b71c897f.png`). It preserves the white search rail, cream workspace, magenta selected occupation, blue neighbouring nodes, curved directed connections and pay/jobs row. The completed recruitment panel sits below the original composition.
+
+Intentional adaptations: real published occupation titles and partial graph counts replace concept copy; explicit graph/list buttons expose every cached neighbour; route filtering replaces a fictional location-based occupation search; dated ONS pay and recruitment replace placeholders. Demo 6 uses a coherent synthetic cohort rather than the image's unrelated headline numbers. Its trend definition and current-stage pipeline are explicit. These changes serve the requested functional demonstrations.
+
+## Checks and fixes
+
+- Desktop checks at 1672 × 941 and 1487 × 1058; mobile checks at 390 × 844 and 320 CSS pixels. No horizontal page overflow in either demo. Wide application tables scroll within their panel.
+- Compacted the enrolment header and capacity rows to restore the reference's dashboard density. Retained visible labels, clear hierarchy and keyboard focus rings.
+- Mobile navigation, the new-application dialog, sample review, programme-to-applications links and empty search results are usable. Career selection scrolls to the selected role; graph nodes stack without clipping. The local recruitment panel retains its area, dates and suppression label at narrow widths.
+- Complete synthetic journey verified: 240/168/120/72 starting totals; adding and enrolling one sample results in 241/169/121/72. The offer button is disabled until all three fictional checks are ticked.
+- Campus filters, intake switching, pagination, programme filtering and CSV export action checked. CSV quoting and formula protection are covered in automated tests; the in-app browser's download-event listener timed out, so it is not recorded as an independently inspected downloaded file.
+- Career search, route filtering, result pagination, graph/list views, native directed neighbours and role-specific Reed URLs checked. Fixed initial browser-history restoration and verified Software developer → DevOps engineer → Back returns to Software developer.
+- An invalid occupation ID shows an actionable message and recovers on selecting a result. 3D artist shows unfetched progression and unavailable pay rather than invented data.
+- Software developer shows £49,685 for the wider East Midlands SOC group and 388 new adverts in July 2026. Lincoln and Newark show latest-period suppression with earlier published values of 20 and 17 for October–December 2025 respectively.
+- Cached career shell, graph, pay and recruitment loaded during browser offline network emulation. Connectivity was restored afterwards. This is an emulated browser check, not physical offline/device qualification.
+- No application console errors during ordinary online interaction. Synthetic values stay local to the page. Public source attribution, dates and limitations remain visible.
+
+No unresolved P0, P1 or P2 visual/interaction findings. The small supplied logo remains the existing source asset. Local QA screenshots and the independent ONS XML audit are retained with the release evidence; public deployment is qualified separately in the delivery record.
+
+final result: passed

@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'lincoln-student-hub-shell-';
-const CACHE_NAME = `${CACHE_PREFIX}skills-england-v9`;
+const CACHE_NAME = `${CACHE_PREFIX}career-pathways-demo7-v12`;
 const SHELL_PATHS = [
   './',
   './index.html',
@@ -14,9 +14,27 @@ const SHELL_PATHS = [
   './careers.html',
   './careers.js',
   './careers.css',
+  './careers.js?v=20260916-1',
+  './careers.css?v=20260916-1',
+  './careers-lmi.css?v=20260916-1',
+  './demand-core.js',
+  './demand-panel.js',
+  './ons-demand-reference.json',
   './career-core.js',
+  './pathway-core.js',
+  './pathway-graph.js',
   './skills-england-reference.json',
-  './skills-england-logo.svg'
+  './skills-england-logo.svg',
+  './ons-pay-reference.json',
+  './pathway-icons/person.svg',
+  './pathway-icons/laptop.svg',
+  './pathway-icons/gear.svg',
+  './pathway-icons/shield.svg',
+  './pathway-icons/geo-alt.svg',
+  './pathway-icons/currency-pound.svg',
+  './pathway-icons/list-ul.svg',
+  './pathway-icons/search.svg',
+  './pathway-icons/arrow-right.svg'
 ];
 
 const scopedURL = path => new URL(path, self.registration.scope).href;
@@ -24,7 +42,7 @@ const shellURLs = () => new Set(SHELL_PATHS.map(scopedURL));
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL_PATHS))
+    caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL_PATHS.map(path => new Request(path, { cache: 'reload' })))).then(() => self.skipWaiting())
   );
 });
 
@@ -75,7 +93,11 @@ self.addEventListener('fetch', event => {
   const indexURL = scopedURL('./index.html');
   const rootURL = scopedURL('./');
   const careersURL = scopedURL('./careers.html');
-  const referenceURL = scopedURL('./skills-england-reference.json');
+  const referenceURLs = new Set([
+    scopedURL('./skills-england-reference.json'),
+    scopedURL('./ons-pay-reference.json'),
+    scopedURL('./ons-demand-reference.json')
+  ]);
   const allowed = shellURLs();
 
   if (request.mode === 'navigate') {
@@ -90,7 +112,7 @@ self.addEventListener('fetch', event => {
   }
 
   if (!allowed.has(url.href)) return;
-  event.respondWith(url.href === referenceURL
-    ? networkFirst(request, referenceURL)
+  event.respondWith(referenceURLs.has(url.href)
+    ? networkFirst(request, url.href)
     : cachedAsset(request, url.href));
 });

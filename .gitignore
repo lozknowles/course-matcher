@@ -5,3 +5,5 @@ vendor/tesseract/
 vendor/tesseract-core/
 vendor/tessdata/
 vendor/pdfjs/
+__pycache__/
+*.py[cod]

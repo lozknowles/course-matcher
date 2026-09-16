@@ -1,49 +1,46 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Career pathways | Lincoln Student Hub</title>
-  <link rel="stylesheet" href="./careers.css">
-  <script type="module" src="./careers.js"></script>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Career pathways | Lincoln College demo 7</title>
+  <link rel="stylesheet" href="./careers.css?v=20260916-1"><link rel="stylesheet" href="./careers-lmi.css?v=20260916-1"><script type="module" src="./careers.js?v=20260916-1"></script>
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="./index.html"><img src="./logo.jpg" alt="Lincoln College"><span>Student Hub</span></a>
-    <a class="back-hub" href="./index.html">Back to Student Hub</a>
-  </header>
-  <main>
-    <section class="hero" aria-labelledby="page-title">
-      <p class="eyebrow">Explore career possibilities</p>
-      <h1 id="page-title">Where could your course take you?</h1>
-      <p>Explore occupational pathways from Skills England. These are possibilities, not guaranteed outcomes or eligibility decisions. Course context is illustrative and unreviewed, and all routes remain available.</p>
-    </section>
-    <section class="explorer" aria-labelledby="explorer-title">
-      <div class="source-panel">
-        <img src="./skills-england-logo.svg" alt="Skills England">
-        <div><h2 id="explorer-title">Skills England occupation explorer</h2><p id="reference-status" role="status" aria-live="polite">Loading reference…</p></div>
-      </div>
-      <div id="reference-error" class="notice error" role="alert" hidden><p>We could not load the occupation reference. The Student Hub is still available.</p><button id="retry-reference" type="button">Try again</button></div>
-      <div class="controls">
-        <label for="route-filter">Route<select id="route-filter" disabled><option value="">All routes</option></select></label>
-        <label for="occupation-search">Search occupations<input id="occupation-search" type="search" autocomplete="off" disabled></label>
-      </div>
-      <section id="results-panel" aria-labelledby="result-count">
-        <p id="result-count" role="status" aria-live="polite" tabindex="-1">Loading occupations…</p>
-        <div id="occupation-results"></div>
-        <nav class="pagination" aria-label="Occupation results pages"><button id="previous-page" type="button" disabled>Previous</button><button id="next-page" type="button" disabled>Next</button></nav>
+<a class="skip-careers" href="#career-main">Skip to selected career</a>
+<header class="site-header"><a class="brand" href="../index.html"><img src="./logo.jpg" alt="Lincoln College"><span>Career pathways</span></a><div class="header-actions"><span class="demo-badge">Demo 07</span><a class="back-hub" href="./index.html">Student Hub</a><a class="back-hub" href="../index.html">All seven demos</a></div></header>
+<div class="app-shell">
+  <aside id="results-panel" class="sidebar" aria-labelledby="explorer-title">
+    <h2 id="explorer-title">Explore and compare</h2><p>Search occupations and compare possible career pathways.</p>
+    <label for="occupation-search">Search occupations</label><input id="occupation-search" type="search" autocomplete="off" disabled>
+    <label for="route-filter">Route</label><select id="route-filter" disabled><option value="">All routes</option></select>
+    <p class="location"><img src="./pathway-icons/geo-alt.svg" alt="">Explore Lincoln &amp; the East Midlands</p>
+    <p id="result-count" role="status" aria-live="polite" tabindex="-1">Loading occupations…</p>
+    <div id="occupation-results"></div>
+    <nav class="pagination" aria-label="Occupation results pages"><button id="previous-page" type="button" disabled>Previous</button><button id="next-page" type="button" disabled>Next</button></nav>
+  </aside>
+  <main id="career-main">
+    <section class="intro"><p class="eyebrow">Explore career possibilities</p><h1>Explore your career path</h1><p>See possible earlier and next steps around an occupation using the Skills England reference.</p><p id="example-note"><strong>Example occupation pathway.</strong> <span>Search or select an occupation to explore another pathway.</span></p></section>
+    <p id="selection-error" role="status" hidden></p>
+    <div id="reference-error" class="notice error" role="alert" hidden><p>We could not load the occupation reference. You can retry or return to the Student Hub.</p><button id="retry-reference" type="button">Try again</button></div>
+    <section id="occupation-detail" aria-labelledby="occupation-title" hidden>
+      <div class="title-row"><button id="back-to-results" type="button">Back to results</button><h2 id="occupation-title" tabindex="-1"></h2></div>
+      <div class="view-controls" aria-label="Pathway view"><button id="graph-view" type="button" aria-pressed="true">Graph view</button><button id="list-view" type="button" aria-pressed="false">List view</button></div>
+      <div id="pathway-host"></div>
+      <div class="legend" aria-label="Pathway legend"><span><i class="selected"></i>Selected</span><span><i class="earlier"></i>Earlier step</span><span><i class="next"></i>Next step</span></div>
+      <p id="reference-status" role="status" aria-live="polite">Loading reference…</p><p id="progression-coverage"></p>
+      <section id="pay-panel" aria-label="Pay and jobs">
+        <div><span class="panel-icon"><img src="./pathway-icons/currency-pound.svg" alt=""></span><h3>East Midlands pay</h3><p class="pay-measure">Median annual pay · full-time occupation group</p><p id="pay-value">Unavailable</p><p id="pay-summary"></p><details class="pay-details"><summary>Pay data details</summary><p id="pay-context"></p></details></div>
+        <div><span class="panel-icon"><img src="./pathway-icons/search.svg" alt=""></span><h3>Jobs near Lincoln</h3><p id="jobs-context">A live jobs feed is not connected.</p><a id="jobs-link" target="_blank" rel="noopener noreferrer">Search on Reed</a></div>
       </section>
-      <section id="occupation-detail" aria-labelledby="occupation-title" hidden>
-        <button id="back-to-results" type="button">Back to results</button>
-        <h2 id="occupation-title" tabindex="-1"></h2>
-        <div id="occupation-content"></div>
-        <section aria-labelledby="next-title"><h3 id="next-title">Possible next steps</h3><div id="next-steps"></div></section>
-        <section aria-labelledby="earlier-title"><h3 id="earlier-title">Possible earlier steps</h3><div id="earlier-steps"></div></section>
-        <p id="progression-coverage" class="notice"></p>
+      <section class="demand-panel" aria-labelledby="demand-heading">
+        <div class="demand-heading"><div><p class="eyebrow">PUBLISHED LABOUR-MARKET EVIDENCE</p><h2 id="demand-heading">Recruitment activity</h2></div><label for="demand-area">Area<select id="demand-area"><option value="E12000004">East Midlands</option><option value="E07000138">Lincoln</option><option value="E07000175">Newark and Sherwood</option></select></label></div>
+        <div class="demand-body"><div><p class="demand-measure">New online job adverts</p><p id="demand-value" role="status">Loading…</p><p id="demand-period"></p><p id="demand-context"></p><p class="demand-note">Published recruitment estimates. These are not a live vacancy count or a forecast.</p></div><div id="demand-history" hidden><h3>Recent published periods</h3><table><caption class="sr-only">ONS new online adverts for the selected area and occupation group</caption><thead><tr><th>Period</th><th>New adverts</th></tr></thead><tbody id="demand-history-body"></tbody></table></div></div>
+        <p class="demand-quality">ONS statistics in development. Recent source changes, imputation and suppression affect these estimates. Use caution with short-term changes; a suppressed figure is not zero. District figures are quarterly; regional figures are monthly.</p><p id="demand-source"></p>
       </section>
+      <details class="occupation-meta"><summary>Occupation and source details</summary><div id="occupation-content"></div></details>
+      <p class="course-next">Ready to explore study options? <a href="../index.html?mode=student">Open Course Match</a>. Course entry requirements and career pathways are separate checks.</p>
     </section>
-    <aside class="limitations" aria-labelledby="limits-title"><h2 id="limits-title">Planning your next step</h2><p>Salary and local demand information is unavailable in this bounded reference demo. For entry requirements, visit <a href="../?mode=student">Course Match</a>; no grades are inferred here.</p></aside>
   </main>
-  <footer><p>© Skills England 2025 · <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">Open Government Licence v3.0</a> · <a href="https://occupational-maps.skillsengland.education.gov.uk/public-api/">Skills England public API information</a></p></footer>
-</body>
-</html>
+</div>
+<footer><img src="./skills-england-logo.svg" alt="Skills England"><div><p>Unofficial Lincoln College demonstration. Pathways are possibilities, not guaranteed progression or college-approved course mappings.</p><p>© Skills England 2025 · ONS Crown copyright · ONS recruitment estimates use Textkernel data · <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">Open Government Licence v3.0</a> · <a href="https://occupational-maps.skillsengland.education.gov.uk/public-api/">Skills England API information</a></p></div></footer>
+</body></html>

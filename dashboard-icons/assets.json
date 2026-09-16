@@ -1,0 +1,67 @@
+{
+  "library": "Bootstrap Icons",
+  "version": "1.13.1",
+  "licence": "MIT",
+  "files": [
+    {
+      "name": "grid",
+      "url": "https://raw.githubusercontent.com/twbs/icons/v1.13.1/icons/grid.svg",
+      "sha256": "b37fb9dc4c05781587fc2a25281cdde502467332ada2faabb8d5f1561e0c1f44"
+    },
+    {
+      "name": "file-earmark-text",
+      "url": "https://raw.githubusercontent.com/twbs/icons/v1.13.1/icons/file-earmark-text.svg",
+      "sha256": "1c6745b3c4782b0af852b48c8ad180c9f9c635926d5c458dc333689b8c3c4831"
+    },
+    {
+      "name": "mortarboard",
+      "url": "https://raw.githubusercontent.com/twbs/icons/v1.13.1/icons/mortarboard.svg",
+      "sha256": "bfcf9ce16b6160cefeeeeca5ac59165093bc07136784ba4a110efdb203ebd559"
+    },
+    {
+      "name": "bar-chart-line",
+      "url": "https://raw.githubusercontent.com/twbs/icons/v1.13.1/icons/bar-chart-line.svg",
+      "sha256": "31c6fbadf72a55ec30e9aff705769135e92662db798b555ccebab494d8ae4b3a"
+    },
+    {
+      "name": "arrow-left",
+      "url": "https://raw.githubusercontent.com/twbs/icons/v1.13.1/icons/arrow-left.svg",
+      "sha256": "e74ee5201cde19cddb25a3902d0ff75532977e3f636fefc49b68d84b79e71dbf"
+    },
+    {
+      "name": "plus-lg",
+      "url": "https://raw.githubusercontent.com/twbs/icons/v1.13.1/icons/plus-lg.svg",
+      "sha256": "8c2ae396e9510c8ec02dcd0d3fae301e6ea93eddf87d7576bf77c1b9825b8340"
+    },
+    {
+      "name": "arrow-up-right",
+      "url": "https://raw.githubusercontent.com/twbs/icons/v1.13.1/icons/arrow-up-right.svg",
+      "sha256": "9dc30361a3c58216f02ffa3e20523651a36e34e0619d80eb785005e5bb8af8fb"
+    },
+    {
+      "name": "envelope-check",
+      "url": "https://raw.githubusercontent.com/twbs/icons/v1.13.1/icons/envelope-check.svg",
+      "sha256": "8c9fc04e4fabecf269ba7cf31ec2b06d38a19d1b757600f7ba8e3b8c0d09c3a9"
+    },
+    {
+      "name": "people",
+      "url": "https://raw.githubusercontent.com/twbs/icons/v1.13.1/icons/people.svg",
+      "sha256": "f2207fe57c114d0d80b4eb5b4986ddce211fbe806b26b89a95a59723ac9d9b9d"
+    },
+    {
+      "name": "clock",
+      "url": "https://raw.githubusercontent.com/twbs/icons/v1.13.1/icons/clock.svg",
+      "sha256": "5089328eea73934d1bf98b30e2f111c983f1455243b06095b1454a36c462e7b2"
+    },
+    {
+      "name": "check-circle",
+      "url": "https://raw.githubusercontent.com/twbs/icons/v1.13.1/icons/check-circle.svg",
+      "sha256": "ddad2cb113b8e3c21deea3ae876e7790982b246df345f8f03451218e1ea3a711"
+    },
+    {
+      "name": "download",
+      "url": "https://raw.githubusercontent.com/twbs/icons/v1.13.1/icons/download.svg",
+      "sha256": "ef82782835351c43f0e41025888b00459268a767113d33524d4f8fbfe8008c16"
+    }
+  ]
+}

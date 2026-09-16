@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#063956">
+  <title>Enrolment dashboard | Lincoln College demo 6</title>
+  <meta name="description" content="Explore a Lincoln College-inspired enrolment dashboard with synthetic applications and programme capacity.">
+  <link rel="stylesheet" href="enrolment-dashboard.css?v=20260916-1">
+  <script type="module" src="enrolment-dashboard.js?v=20260916-1"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to dashboard</a>
+<aside class="sidebar">
+  <a class="brand" href="index.html"><img src="student-hub/logo.jpg" alt="Lincoln College, Lincoln and Newark"><span>Student success<span class="brand-sub">Demonstration suite</span></span></a>
+  <p class="nav-kicker">ADMISSIONS WORKSPACE</p>
+  <nav aria-label="Dashboard navigation">
+    <button class="nav-item" data-view="overview" aria-current="page"><img src="dashboard-icons/grid.svg" alt="">Overview</button>
+    <button class="nav-item" data-view="applications"><img src="dashboard-icons/file-earmark-text.svg" alt="">Applications<span id="nav-count"></span></button>
+    <button class="nav-item" data-view="programmes"><img src="dashboard-icons/mortarboard.svg" alt="">Programmes</button>
+    <button class="nav-item" data-view="reports"><img src="dashboard-icons/bar-chart-line.svg" alt="">Reports</button>
+  </nav>
+  <p class="nav-kicker connected">CONNECTED DEMOS</p>
+  <nav aria-label="Connected demonstrations">
+    <a class="nav-item" href="student-hub/index.html"><img src="student-hub/pathway-icons/person.svg" alt="">Student Hub</a>
+    <a class="nav-item" href="student-hub/careers.html"><img src="student-hub/pathway-icons/gear.svg" alt="">Career pathways</a>
+    <a class="nav-item" href="index.html"><img src="dashboard-icons/arrow-left.svg" alt="">All seven demos</a>
+  </nav>
+  <div class="sidebar-note"><span>DEMO 06</span><strong>Room to explore.</strong><p>Try a sample application and follow its journey into enrolment.</p><button id="reset-demo">Reset sample data</button></div>
+</aside>
+<div class="workspace">
+  <div class="demo-ribbon">UNOFFICIAL LINCOLN COLLEGE DEMONSTRATION <span>Synthetic records · changes stay in this page</span></div>
+  <main id="main">
+    <header class="page-header">
+      <div><p class="eyebrow">STUDENT SUCCESS / DEMO 06</p><h1 id="page-title">Student enrolment</h1><p id="page-description">Every application. A clearer next step.</p></div>
+      <div class="header-actions"><label class="compact-label">Academic year<select id="year-filter"><option value="2026/27">2026 / 27</option><option value="2025/26">2025 / 26</option></select></label><label class="compact-label">Campus<select id="campus-filter"><option value="all">All campuses</option><option>Lincoln</option><option>Newark</option></select></label><button id="new-application" class="primary"><img src="dashboard-icons/plus-lg.svg" alt="">New application</button></div>
+    </header>
+    <div class="scope-bar"><div class="scope-context"><span class="scope-dot"></span><span>Autumn intake <b id="intake-year">2026</b></span><span class="muted">Sample data as at 16 September</span></div></div>
+    <p id="announcement" class="announcement" role="status" aria-live="polite"></p>
+
+    <section class="metrics" aria-label="Enrolment summary">
+      <button class="metric" data-status="all"><span class="metric-icon teal"><img src="dashboard-icons/file-earmark-text.svg" alt=""></span><span class="metric-content"><span>Applications</span><strong id="applications-total">—</strong><small>Across this intake</small></span><img class="metric-link" src="dashboard-icons/arrow-up-right.svg" alt="View applications"></button>
+      <button class="metric" data-status="offers"><span class="metric-icon purple"><img src="dashboard-icons/envelope-check.svg" alt=""></span><span class="metric-content"><span>Offers sent</span><strong id="offers-total">—</strong><small>Includes enrolled learners</small></span><img class="metric-link" src="dashboard-icons/arrow-up-right.svg" alt="View offers"></button>
+      <button class="metric" data-status="3"><span class="metric-icon pink"><img src="dashboard-icons/people.svg" alt=""></span><span class="metric-content"><span>Enrolled</span><strong id="enrolled-total">—</strong><small id="enrolled-share">— of applications</small></span><img class="metric-link" src="dashboard-icons/arrow-up-right.svg" alt="View enrolments"></button>
+      <button class="metric" data-status="pending"><span class="metric-icon gold"><img src="dashboard-icons/clock.svg" alt=""></span><span class="metric-content"><span>Pending review</span><strong id="pending-total">—</strong><small>Ready for a conversation</small></span><img class="metric-link" src="dashboard-icons/arrow-up-right.svg" alt="View pending applications"></button>
+    </section>
+
+    <section id="overview-view" data-panel="overview">
+      <div class="overview-grid">
+        <section class="panel trend-panel" aria-labelledby="trend-title"><div class="panel-heading"><div><p class="eyebrow">THE INTAKE SO FAR</p><h2 id="trend-title">Application trend</h2></div><div class="chart-key"><span class="applied-key">Applications</span><span class="enrolled-key">Now enrolled</span></div></div><div class="chart-wrap"><canvas id="trend-chart" role="img" aria-label="Cumulative applications by month, with the subset now enrolled"></canvas></div><details class="chart-data"><summary>View chart data and definition</summary><p>Cumulative applications by application month. “Now enrolled” counts those applications whose current status is enrolled; this is not an enrolment-event timeline.</p><table><caption class="sr-only">Application trend values</caption><thead><tr><th>Month</th><th>Applications</th><th>Now enrolled</th></tr></thead><tbody id="trend-data"></tbody></table></details></section>
+        <section class="panel pipeline-panel" aria-labelledby="pipeline-title"><div class="panel-heading"><div><p class="eyebrow">FROM INTEREST TO INTAKE</p><h2 id="pipeline-title">Application pipeline</h2></div></div><p class="muted">Current stage of each sample application</p><div id="pipeline"></div><p class="pipeline-note"><img src="dashboard-icons/check-circle.svg" alt=""><span id="pipeline-note">—</span></p></section>
+        <section class="panel recent-panel" aria-labelledby="recent-title"><div class="panel-heading"><div><p class="eyebrow">KEEP THINGS MOVING</p><h2 id="recent-title">Recent applications</h2></div><button class="text-button" data-view="applications">View all <img src="student-hub/pathway-icons/arrow-right.svg" alt=""></button></div><div class="table-scroll"><table><thead><tr><th>Sample learner</th><th>Programme</th><th>Applied</th><th>Status</th></tr></thead><tbody id="recent-rows"></tbody></table></div></section>
+        <section class="panel capacity-panel" aria-labelledby="capacity-title"><div class="panel-heading"><div><p class="eyebrow">PLACES & POSSIBILITIES</p><h2 id="capacity-title">Programme capacity</h2></div><button class="text-button" data-view="programmes">View all <img src="student-hub/pathway-icons/arrow-right.svg" alt=""></button></div><p class="muted">Illustrative places · enrolled / capacity</p><div id="capacity-list"></div></section>
+      </div>
+    </section>
+
+    <section class="panel full-panel" id="applications-view" data-panel="applications" hidden aria-labelledby="applications-heading"><div class="panel-heading"><h2 id="applications-heading">Applications</h2><button class="secondary export-records"><img src="dashboard-icons/download.svg" alt="">Export filtered CSV</button></div><div class="table-filters"><label class="search-field">Find a sample learner<input id="application-search" type="search" placeholder="Search name, reference or programme"></label><label>Programme<select id="programme-filter"><option value="all">All programmes</option></select></label><label>Status<select id="status-filter"><option value="all">All stages</option><option value="pending">Pending review</option><option value="offers">Offers sent (including enrolled)</option><option value="0">Applied</option><option value="1">In review</option><option value="2">Offered</option><option value="3">Enrolled</option></select></label></div><p id="application-result-count" role="status"></p><div class="table-scroll"><table><thead><tr><th>Sample learner</th><th>Programme</th><th>Campus</th><th>Applied</th><th>Status</th><th>Action</th></tr></thead><tbody id="application-rows"></tbody></table></div><div class="pagination"><button id="previous-applications" class="secondary">Previous</button><span id="page-label"></span><button id="next-applications" class="secondary">Next</button></div></section>
+    <section class="panel full-panel" id="programmes-view" data-panel="programmes" hidden aria-labelledby="programmes-heading"><div class="panel-heading"><div><h2 id="programmes-heading">Programme planning</h2><p class="muted">Illustrative programmes and places for this demonstration.</p></div></div><div id="programme-cards" class="programme-cards"></div></section>
+    <section class="panel full-panel" id="reports-view" data-panel="reports" hidden aria-labelledby="reports-heading"><p class="eyebrow">INTAKE REPORT</p><h2 id="reports-heading">A clear view of the next steps</h2><p id="report-summary"></p><button class="primary export-records"><img src="dashboard-icons/download.svg" alt="">Download sample applications</button><p class="muted report-note">CSV contains the selected intake, campus and application filters. Records are fictional. Reloading or resetting restores the original sample.</p><h3>Explore the next part of the journey</h3><div class="report-links"><a href="student-hub/index.html">Open Student Hub</a><a href="student-hub/careers.html">Demo 7: career pathways</a></div></section>
+    <footer class="dashboard-footer"><span>Lincoln College student-success demonstrations</span><span>Sample data only · no connection to ProSolution</span></footer>
+    <noscript>This interactive dashboard needs JavaScript. <a href="index.html">Return to the demonstration suite.</a></noscript>
+  </main>
+</div>
+<dialog id="application-dialog" aria-labelledby="dialog-title"><form id="application-form"><div class="dialog-heading"><div><p class="eyebrow">SYNTHETIC DEMONSTRATION</p><h2 id="dialog-title">New sample application</h2></div><button type="button" class="close-dialog secondary">Close</button></div><p>Create a fictional learner to try the admissions journey. No personal information is needed.</p><label>Programme<select id="sample-programme" required></select></label><label>Campus<select id="sample-campus"><option>Lincoln</option><option>Newark</option></select></label><p id="sample-intake" class="muted"></p><div class="dialog-actions"><button type="button" class="close-dialog secondary">Cancel</button><button type="submit" class="primary">Create sample application</button></div></form></dialog>
+<dialog id="review-dialog" aria-labelledby="review-title"><div class="dialog-heading"><div><p class="eyebrow">SAMPLE APPLICATION</p><h2 id="review-title"></h2></div><button type="button" class="close-dialog secondary">Close</button></div><p id="review-reference" class="muted"></p><dl id="review-details"></dl><div id="review-checklist"><h3>Sample review checklist</h3><p>Use these fictional checks to explore the workflow.</p><label><input type="checkbox" id="check-results">Sample qualifications reviewed</label><label><input type="checkbox" id="check-contact">Sample contact details reviewed</label><label><input type="checkbox" id="check-choice">Programme choice discussed</label></div><h3>Application history</h3><ol id="review-history"></ol><p id="review-feedback" role="status"></p><div class="dialog-actions"><button class="close-dialog secondary">Close</button><button id="advance-application" class="primary">Start sample review</button></div></dialog>
+</body></html>

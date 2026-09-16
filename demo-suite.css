@@ -1,0 +1,1 @@
+.launch-additions.launch-grid{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:24px}.launch-additions .launch-card{text-decoration:none}@media(max-width:760px){.launch-additions.launch-grid{grid-template-columns:1fr}}

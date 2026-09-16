@@ -1,10 +1,22 @@
-import importlib.util, tempfile, unittest
+import importlib.util, tempfile, unittest, os, stat
 from pathlib import Path
 
 spec=importlib.util.spec_from_file_location('scoped',Path(__file__).parents[1]/'scripts/deploy-scoped.py')
 scoped=importlib.util.module_from_spec(spec);spec.loader.exec_module(scoped)
 
 class ScopedReleaseTests(unittest.TestCase):
+    @unittest.skipUnless(os.name=='posix','Unix directory modes are qualified on Linux')
+    def test_new_public_directories_ignore_restrictive_host_umask(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);original_mode=stat.S_IMODE(root.stat().st_mode)
+            previous=os.umask(0o077)
+            try:scoped.atomic_write(root/'icons'/'nested'/'example.svg',b'<svg/>')
+            finally:os.umask(previous)
+            self.assertEqual(stat.S_IMODE((root/'icons').stat().st_mode),0o755)
+            self.assertEqual(stat.S_IMODE((root/'icons/nested').stat().st_mode),0o755)
+            self.assertEqual(stat.S_IMODE((root/'icons/nested/example.svg').stat().st_mode),0o644)
+            self.assertEqual(stat.S_IMODE(root.stat().st_mode),original_mode)
+
     def test_apply_preserves_unlisted_files_and_rollback_restores_original_tree(self):
         with tempfile.TemporaryDirectory() as directory:
             folder=Path(directory);root=folder/'site';payload=folder/'payload';root.mkdir();payload.mkdir()

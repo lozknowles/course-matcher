@@ -26,7 +26,13 @@ def safe_file(root,name):
     return path
 
 def atomic_write(path,body,mode=0o644):
-    path.parent.mkdir(parents=True,exist_ok=True)
+    # The host's umask can otherwise leave new public asset directories unreadable.
+    # Set modes only on directories this release creates; preserve existing ones.
+    missing=[];directory=path.parent
+    while not directory.exists():
+        missing.append(directory);directory=directory.parent
+    for directory in reversed(missing):
+        directory.mkdir();os.chmod(directory,0o755)
     temporary=path.with_name(path.name+'.scoped-release.tmp')
     with temporary.open('xb') as stream:
         stream.write(body);stream.flush();os.fsync(stream.fileno())

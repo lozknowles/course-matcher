@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#063956">
+  <meta name="description" content="Unofficial Lincoln College student portal and enrolment workspace demonstration.">
+  <title>Demo 8 · Student Portal & Enrolment Workspace</title>
+  <link rel="stylesheet" href="lincoln-theme.css?v=20260921-1">
+  <link rel="stylesheet" href="student-portal.css?v=20260921-1">
+</head>
+<body data-demo-theme="course-match">
+  <a class="skip-link" href="#workspace-main">Skip to main content</a>
+
+  <header class="portal-header">
+    <a class="portal-brand" href="index.html" aria-label="Return to Lincoln College demo suite">
+      <img src="student-hub/logo.jpg" alt="Lincoln College">
+    </a>
+    <div class="portal-title">
+      <p>DEMO 8 · UNOFFICIAL PROTOTYPE</p>
+      <h1>Student Portal &amp; Enrolment Workspace</h1>
+      <span>One focused journey from arrival to enrolment completion</span>
+    </div>
+    <a class="suite-link" href="index.html">All demos</a>
+  </header>
+
+  <div class="prototype-banner">
+    Synthetic data only · no live ProSolution or DfE connection · designed to demonstrate fewer clicks without bypassing supported controls
+  </div>
+
+  <div class="portal-shell">
+    <aside class="portal-sidebar" aria-label="Enrolment journey">
+      <div class="sidebar-heading">
+        <span class="sidebar-number">08</span>
+        <div><strong>Enrolment</strong><small>Student workspace</small></div>
+      </div>
+      <nav>
+        <button class="side-step active" type="button" data-step="welcome"><span>1</span><b>Start</b><small>Choose the quickest evidence route</small></button>
+        <button class="side-step" type="button" data-step="details"><span>2</span><b>Your details</b><small>Confirm only what changed</small></button>
+        <button class="side-step" type="button" data-step="dfe"><span>3</span><b>DfE record</b><small>Digital verified route</small></button>
+        <button class="side-step" type="button" data-step="results"><span>4</span><b>Results capture</b><small>Photo / upload fallback</small></button>
+        <button class="side-step" type="button" data-step="review"><span>5</span><b>Review</b><small>Check enrolment evidence</small></button>
+        <button class="side-step" type="button" data-step="complete"><span>6</span><b>Complete</b><small>Agreement and pass</small></button>
+      </nav>
+      <div class="sidebar-note">
+        <strong>Focused workspace</strong>
+        <p>No unrelated forms. Staff and learners see the next useful action, not the whole MIS.</p>
+      </div>
+    </aside>
+
+    <main id="workspace-main" class="portal-main">
+      <section class="portal-screen active" data-screen="welcome" aria-labelledby="welcome-title">
+        <div class="screen-hero">
+          <div>
+            <p class="eyebrow">WELCOME TO ENROLMENT</p>
+            <h2 id="welcome-title">Let’s get Alex enrolled without making Alex navigate the MIS.</h2>
+            <p class="lead">This prototype demonstrates a student-facing layer that collects or verifies the evidence staff actually need, then presents a short completion workspace.</p>
+          </div>
+          <div class="journey-score">
+            <small>Illustrative journey</small>
+            <strong>6 focused steps</strong>
+            <span>instead of hunting through unrelated menus</span>
+          </div>
+        </div>
+
+        <div class="choice-grid">
+          <button class="route-card dfe-route" type="button" data-route="dfe">
+            <span class="route-icon" aria-hidden="true">✓</span>
+            <small>Fastest when available</small>
+            <strong>Use my DfE Education Record</strong>
+            <p>Lincoln requests the record. The learner receives the request in the DfE Education Record app and chooses to share verified details and qualifications.</p>
+            <b>Show the DfE route →</b>
+          </button>
+          <button class="route-card photo-route" type="button" data-route="photo">
+            <span class="route-icon" aria-hidden="true">▣</span>
+            <small>Fallback / alternative</small>
+            <strong>Photograph my exam results</strong>
+            <p>Use the same local OCR approach as Course Match. Nothing is sent to an OCR API and every extracted grade must be checked by a person.</p>
+            <b>Show results capture →</b>
+          </button>
+        </div>
+
+        <div class="evidence-strip">
+          <article><strong>Less re-keying</strong><span>Reuse trusted data where available.</span></article>
+          <article><strong>Human check</strong><span>No qualification is silently accepted from OCR.</span></article>
+          <article><strong>Supported boundary</strong><span>Prototype stops short of unverified ProSolution write-back.</span></article>
+        </div>
+      </section>
+
+      <section class="portal-screen" data-screen="details" aria-labelledby="details-title">
+        <div class="screen-heading">
+          <div><p class="eyebrow">STEP 2</p><h2 id="details-title">Check the details we already know</h2><p>Returning learners should confirm rather than retype unchanged information.</p></div>
+          <span class="status-pill">Synthetic learner</span>
+        </div>
+        <form class="details-form" id="details-form">
+          <div class="form-card">
+            <h3>Student details</h3>
+            <div class="field-grid">
+              <label>First name<input name="firstName" value="Alex"></label>
+              <label>Last name<input name="lastName" value="Taylor"></label>
+              <label>Date of birth<input name="dob" value="14/03/2008"></label>
+              <label>Student reference<input name="studentRef" value="LC-DEMO-008" readonly></label>
+            </div>
+          </div>
+          <div class="form-card">
+            <h3>Contact details</h3>
+            <div class="field-grid">
+              <label>Mobile<input name="mobile" value="07712 345678" inputmode="tel"></label>
+              <label>Email<input name="email" value="alex.taylor@example.com" type="email"></label>
+              <label class="wide">Address<input name="address" value="123 High Street, Lincoln, LN1 1AA"></label>
+            </div>
+          </div>
+          <div class="form-card">
+            <h3>Emergency contact</h3>
+            <div class="field-grid">
+              <label>Name<input name="emergencyName" value="Sam Taylor"></label>
+              <label>Relationship<input name="relationship" value="Parent"></label>
+              <label>Mobile<input name="emergencyPhone" value="07890 123456"></label>
+            </div>
+          </div>
+        </form>
+        <div class="screen-actions"><button class="secondary-action" type="button" data-go="welcome">← Back</button><button class="primary-action" id="save-details" type="button">Confirm details →</button></div>
+      </section>
+
+      <section class="portal-screen" data-screen="dfe" aria-labelledby="dfe-title">
+        <div class="screen-heading">
+          <div><p class="eyebrow">STEP 3 · DfE EDUCATION RECORD</p><h2 id="dfe-title">Request the learner’s verified education record</h2><p>The live DfE service can be integrated through an MIS vendor API, or staff can use the DfE service to request, view and download learner records.</p></div>
+          <span class="status-pill official-pill">DfE-supported journey</span>
+        </div>
+
+        <div class="dfe-grid">
+          <div class="dfe-process">
+            <ol>
+              <li><span>1</span><div><strong>Lincoln sends a record request</strong><p>Through an integrated MIS or the DfE View Education Records service.</p></div></li>
+              <li><span>2</span><div><strong>Learner receives it in the app</strong><p>The learner reviews the request and decides whether to share.</p></div></li>
+              <li><span>3</span><div><strong>Record becomes available</strong><p>Name, DOB, address, schools, official qualifications and support information can be included.</p></div></li>
+              <li><span>4</span><div><strong>Lincoln verifies and continues enrolment</strong><p>No OCR is needed when the shared record supplies the evidence.</p></div></li>
+            </ol>
+            <div class="dfe-buttons">
+              <button class="primary-action" id="create-dfe-request" type="button">Create demo request</button>
+              <a class="secondary-link" href="https://view-education-record.education.gov.uk/" target="_blank" rel="noreferrer">Open the live DfE service ↗</a>
+            </div>
+          </div>
+
+          <div class="dfe-demo-card">
+            <div class="phone-top"><span>DfE Education Record</span><b id="dfe-phone-state">Waiting for request</b></div>
+            <div class="demo-qr" id="demo-qr" aria-label="Illustrative QR preview">
+              <span>DEMO</span>
+            </div>
+            <p class="qr-warning"><strong>Illustrative only:</strong> a real share/issue QR is generated by the DfE service. This public prototype does not mint a live DfE token.</p>
+            <button class="secondary-action" id="simulate-share" type="button" disabled>Simulate learner sharing record</button>
+          </div>
+        </div>
+
+        <div class="shared-record hidden" id="shared-record" aria-live="polite">
+          <div class="record-banner"><span>✓</span><div><strong>Education record shared</strong><small>Synthetic demonstration record · treated as DfE-origin evidence in this demo only</small></div></div>
+          <div class="record-grid">
+            <article><small>Learner</small><strong>Alex Taylor</strong><span>14/03/2008</span></article>
+            <article><small>Address</small><strong>123 High Street</strong><span>Lincoln · LN1 1AA</span></article>
+            <article><small>School</small><strong>Lincolnshire Academy</strong><span>Demo school</span></article>
+            <article><small>Support</small><strong>No support data supplied</strong><span>Review with learner</span></article>
+          </div>
+          <div class="qualification-table-wrap">
+            <table><thead><tr><th>Qualification</th><th>Level</th><th>Grade</th><th>Evidence</th></tr></thead>
+              <tbody id="dfe-results-body"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="screen-actions"><button class="secondary-action" type="button" data-go="details">← Details</button><button class="primary-action" id="accept-dfe" type="button" disabled>Use shared record →</button></div>
+      </section>
+
+      <section class="portal-screen" data-screen="results" aria-labelledby="results-title">
+        <div class="screen-heading">
+          <div><p class="eyebrow">STEP 4 · RESULTS CAPTURE</p><h2 id="results-title">Photograph or upload exam results</h2><p>Local Tesseract OCR extracts candidate subject/grade pairs. The learner or staff member must verify every line against the source image.</p></div>
+          <span class="status-pill">Browser-only OCR</span>
+        </div>
+
+        <div class="capture-grid">
+          <div class="camera-card">
+            <input id="results-photo" type="file" accept="image/*" capture="environment" hidden>
+            <input id="results-file" type="file" accept="image/*,.txt,.csv" hidden>
+            <div class="camera-frame" id="camera-frame">
+              <div class="camera-placeholder"><span aria-hidden="true">▣</span><strong>No image selected</strong><small>Take a clear, well-lit photo of the results sheet.</small></div>
+              <img id="photo-preview" alt="Preview of selected exam results" class="hidden">
+            </div>
+            <div class="capture-actions">
+              <button class="primary-action" id="take-results-photo" type="button">Take photo</button>
+              <button class="secondary-action" id="choose-results-file" type="button">Choose image/file</button>
+              <button class="ghost-action" id="load-results-demo" type="button">Load demo results</button>
+            </div>
+            <p id="ocr-status" class="ocr-status" role="status" aria-live="polite">No results selected.</p>
+          </div>
+
+          <div class="results-review-card">
+            <div class="card-heading"><div><small>HUMAN VERIFICATION</small><h3>Check extracted qualifications</h3></div><button class="ghost-action" id="add-result" type="button">+ Add row</button></div>
+            <div class="qualification-table-wrap">
+              <table><thead><tr><th>Qualification</th><th>Grade</th><th></th></tr></thead><tbody id="ocr-results-body"></tbody></table>
+            </div>
+            <details><summary>Show extracted OCR text</summary><textarea id="ocr-text" rows="8" spellcheck="false"></textarea></details>
+            <div class="verification-check"><label><input id="grades-verified" type="checkbox"> I have checked every grade against the source document.</label></div>
+          </div>
+        </div>
+        <div class="screen-actions"><button class="secondary-action" type="button" data-go="welcome">← Choose another route</button><button class="primary-action" id="accept-results" type="button" disabled>Use verified results →</button></div>
+      </section>
+
+      <section class="portal-screen" data-screen="review" aria-labelledby="review-title">
+        <div class="screen-heading">
+          <div><p class="eyebrow">STEP 5</p><h2 id="review-title">One enrolment review, not a maze of forms</h2><p>Only unresolved items stay prominent. Completed evidence collapses to concise confirmations.</p></div>
+          <span class="status-pill" id="review-source-pill">Evidence pending</span>
+        </div>
+        <div class="review-layout">
+          <div class="review-checklist">
+            <article class="review-item complete"><span>✓</span><div><strong>Student details</strong><p>Contact and emergency-contact details confirmed.</p></div><button type="button" data-go="details">Edit</button></article>
+            <article class="review-item" id="qualification-review"><span>•</span><div><strong>Qualifications</strong><p id="qualification-review-text">Choose DfE record or results capture.</p></div><button type="button" id="qualification-edit">Open</button></article>
+            <article class="review-item complete"><span>✓</span><div><strong>Course</strong><p>Level 3 Applied Science · Full time · September 2026.</p></div><button type="button">View</button></article>
+            <article class="review-item attention"><span>!</span><div><strong>Student agreement</strong><p id="agreement-status">Ready to send.</p></div><button type="button" id="send-agreement">Send</button></article>
+            <article class="review-item attention"><span>!</span><div><strong>Learner pass</strong><p id="pass-status">Ready to print / activate.</p></div><button type="button" id="print-pass">Print</button></article>
+          </div>
+          <aside class="enrolment-summary">
+            <p class="eyebrow">STAFF VIEW</p>
+            <h3>Alex Taylor</h3>
+            <dl>
+              <div><dt>Student ID</dt><dd>LC-DEMO-008</dd></div>
+              <div><dt>Course</dt><dd>Applied Science L3</dd></div>
+              <div><dt>Contact</dt><dd>Confirmed</dd></div>
+              <div><dt>Qualifications</dt><dd id="summary-evidence">Pending</dd></div>
+              <div><dt>Outstanding</dt><dd id="summary-outstanding">2 actions</dd></div>
+            </dl>
+            <div class="staff-note"><strong>Design principle</strong><p>The workspace exposes completion actions directly instead of forcing staff through unrelated menu trees.</p></div>
+          </aside>
+        </div>
+        <div class="screen-actions"><button class="secondary-action" type="button" data-go="welcome">← Start</button><button class="primary-action" id="complete-enrolment" type="button" disabled>Complete enrolment →</button></div>
+      </section>
+
+      <section class="portal-screen" data-screen="complete" aria-labelledby="complete-title">
+        <div class="completion-hero">
+          <div class="completion-tick" aria-hidden="true">✓</div>
+          <p class="eyebrow">DEMO JOURNEY COMPLETE</p>
+          <h2 id="complete-title">Alex is ready for the next stage.</h2>
+          <p>This demonstrates the shape of a low-navigation enrolment workspace: verified evidence in, unresolved actions surfaced, common completion steps one click away.</p>
+          <div class="completion-actions">
+            <button class="primary-action" type="button" id="restart-demo">Run Demo 8 again</button>
+            <a class="secondary-link" href="index.html">Return to all Lincoln demos</a>
+          </div>
+        </div>
+        <div class="impact-grid">
+          <article><strong>DfE route</strong><span>Reuse digitally shared learner data and official qualifications where supported.</span></article>
+          <article><strong>Photo route</strong><span>Fallback OCR keeps the journey moving but always requires human verification.</span></article>
+          <article><strong>Completion actions</strong><span>Agreement and pass actions sit inside the workflow instead of elsewhere in the menu.</span></article>
+          <article><strong>Integration boundary</strong><span>Any real ProSolution write-back must use a documented supported API/import or supervised approved route.</span></article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="pass-dialog">
+    <div class="pass-card">
+      <img src="student-hub/logo.jpg" alt="">
+      <div><small>LEARNER PASS · DEMONSTRATION</small><strong>Alex Taylor</strong><span>LC-DEMO-008</span><span>Applied Science L3</span></div>
+      <b>2026/27</b>
+    </div>
+    <p>This simulates the final print-card action. It does not connect to IPS or a card printer.</p>
+    <form method="dialog"><button class="primary-action">Close</button></form>
+  </dialog>
+
+  <footer class="portal-footer">
+    <strong>Independent demonstration prototype.</strong>
+    <span>No live learner data, no DfE credentials, no ProSolution write-back, no real agreement email and no pass-card activation.</span>
+  </footer>
+
+  <script type="module" src="student-portal.js?v=20260921-1"></script>
+</body>
+</html>

@@ -49,6 +49,9 @@ PUBLIC_FILES=(
   courses.js
   lincoln-theme.css
   demo-suite.css
+  student-portal.html
+  student-portal.css
+  student-portal.js
   enrolment-core.js
   enrolment-dashboard.html
   enrolment-dashboard.css
@@ -141,9 +144,13 @@ assert_public_contains "$PUBLIC_URL/matcher-core.js" 'quickMatchCourses'
 assert_public_contains "$PUBLIC_URL/retention-core.js" 'buildTransferHandoff'
 assert_public_contains "$PUBLIC_URL/" '42-Day Student Fit &amp; Retention'
 assert_public_contains "$PUBLIC_URL/" 'Why is this learner at risk of disengaging?'
-assert_public_contains "$PUBLIC_URL/" 'Seven student-success journeys'
+assert_public_contains "$PUBLIC_URL/" 'Eight student-success journeys'
 assert_public_contains "$PUBLIC_URL/enrolment-dashboard.html" 'Student enrolment'
 assert_public_contains "$PUBLIC_URL/student-hub/careers.html" 'Recruitment activity'
+assert_public_contains "$PUBLIC_URL/student-portal.html" 'Student Portal &amp; Enrolment Workspace'
+assert_public_contains "$PUBLIC_URL/student-portal.html" 'Create demo request'
+assert_public_contains "$PUBLIC_URL/student-portal.js" 'createWorker'
+assert_public_contains "$PUBLIC_URL/student-portal.js" 'parseResultsText'
 assert_public_contains "$PUBLIC_URL/" 'href="automated-change-request.html"'
 curl -fsS "$PUBLIC_URL/vendor/pdfjs/pdf.mjs" >/dev/null
 curl -fsS "$PUBLIC_URL/vendor/tesseract/tesseract.min.js" >/dev/null

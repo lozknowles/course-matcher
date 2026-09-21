@@ -1,5 +1,7 @@
 # Demo 8 — Student Portal & Enrolment Workspace
 
+The main Demo 8 launch card now opens the [Digital Student Journey](digital-student-journey.html), which extends this work into ten stages. This original workspace is preserved at its existing URL. See [DIGITAL-STUDENT-JOURNEY.md](DIGITAL-STUDENT-JOURNEY.md) for the new journey and its separate browser state.
+
 Demo 8 is an independent, synthetic Lincoln College prototype that explores a lower-navigation enrolment journey. It does not connect to ProSolution, the DfE Education Record service, email, IPS or a card printer.
 
 ## Purpose

@@ -1,5 +1,7 @@
 # Lincoln College student-success demonstrations
 
+**Demo 8: [Lincoln College Digital Student Journey](digital-student-journey.html)** connects discovery, application, results and enrolment across ten stages. Read [DIGITAL-STUDENT-JOURNEY.md](DIGITAL-STUDENT-JOURNEY.md) for the reuse audit, state model, integration boundaries, testing and evidence. The [original enrolment workspace](student-portal.html) remains available.
+
 This small static application contains Course Match, a wider 42-day learner-intervention demonstration and a visible Student Change Request automation prototype. Course matching is one capability in the suite, not the whole proposition.
 
 It has four user journeys:

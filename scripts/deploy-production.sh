@@ -52,6 +52,14 @@ PUBLIC_FILES=(
   student-portal.html
   student-portal.css
   student-portal.js
+  digital-student-journey.html
+  digital-student-journey.css
+  digital-student-journey.js
+  journey-core.js
+  journey-views.js
+  journey-capture.js
+  journey-assets/results-standard.png
+  journey-assets/results-alternatives.png
   enrolment-core.js
   enrolment-dashboard.html
   enrolment-dashboard.css
@@ -151,6 +159,9 @@ assert_public_contains "$PUBLIC_URL/student-portal.html" 'Student Portal &amp; E
 assert_public_contains "$PUBLIC_URL/student-portal.html" 'Create demo request'
 assert_public_contains "$PUBLIC_URL/student-portal.js" 'createWorker'
 assert_public_contains "$PUBLIC_URL/student-portal.js" 'parseResultsText'
+assert_public_contains "$PUBLIC_URL/digital-student-journey.html" 'Run student journey demo'
+assert_public_contains "$PUBLIC_URL/journey-core.js" 'REQUIRES VALIDATION'
+assert_public_contains "$PUBLIC_URL/journey-capture.js" 'readAllPdfPages'
 assert_public_contains "$PUBLIC_URL/" 'href="automated-change-request.html"'
 curl -fsS "$PUBLIC_URL/vendor/pdfjs/pdf.mjs" >/dev/null
 curl -fsS "$PUBLIC_URL/vendor/tesseract/tesseract.min.js" >/dev/null

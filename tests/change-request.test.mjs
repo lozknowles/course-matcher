@@ -10,7 +10,7 @@ test('home exposes the fourth Lincoln-branded journey', () => {
   assert.match(home, /Eight student-success journeys/);
   assert.match(home, /href="automated-change-request\.html"/);
   assert.match(home, /<span class="launch-number">04<\/span>/);
-  assert.match(home, /42-day Swap Not Drop<\/button>\s*<a class="tab" href="data-quality\.html">Data Quality Automation<\/a>\s*<a class="tab change-request-menu" href="automated-change-request\.html">Automated Change Requests<\/a>\s*<button class="tab" data-mode="about"/);
+  assert.match(home, /42-day Swap Not Drop<\/button>\s*<a class="tab" href="data-quality\.html">Data Quality Automation<\/a>\s*<a class="tab change-request-menu" href="automated-change-request\.html">Automated Change Requests<\/a>\s*<a class="tab" href="student-portal\.html">Student Portal<\/a>\s*<button class="tab" data-mode="about"/);
 });
 
 test('automation covers the five requested synthetic field types', () => {

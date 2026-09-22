@@ -69,7 +69,7 @@ test('digital journey uses the reconstructed Lincoln artwork language without ex
   const html=fs.readFileSync(new URL('../digital-student-journey.html',import.meta.url),'utf8');
   const css=fs.readFileSync(new URL('../digital-student-journey.css',import.meta.url),'utf8');
   const views=fs.readFileSync(new URL('../journey-views.js',import.meta.url),'utf8');
-  assert.match(html,/20260922-artwork2/);
+  assert.match(html,/20260922-yellow-red/);
   assert.match(css,/\.art-levels\{/);
   assert.match(css,/\.art-careers\{/);
   assert.match(views,/LEVELS EXPLAINED/);
@@ -77,6 +77,6 @@ test('digital journey uses the reconstructed Lincoln artwork language without ex
   assert.match(views,/journey-capacity/);
   const imageSources=[...html.matchAll(/<img[^>]+src="([^"]+)"/g)].map(match=>match[1]);
   assert.deepEqual(imageSources,['./student-hub/logo.jpg']);
-  assert.doesNotMatch(css,/url\s*\(/i);
+  assert.deepEqual([...css.matchAll(/url\(([^)]+)\)/g)].map(m=>m[1].replaceAll("'", "")), ["./journey-assets/fonts/Kalam-Bold.ttf"]);
   assert.doesNotMatch(views,/\.jpg|\.jpeg|\.webp/i);
 });

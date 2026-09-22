@@ -4,127 +4,85 @@
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.mobile-history{display:none}@media(max-width:760px){.mobile-history{display:inline-flex;min-height:44px;margin-top:12px}}
 @media(max-width:760px){.demo-banner>span{display:block}.all-steps{min-height:44px}}
 
-/* 2026-09-22 artwork refresh — coded from supplied Lincoln College print references.
-   No source photographs are shipped by this page. */
-:root{--art-teal:#79bbb5;--art-teal-dark:#0d6f69;--art-lime:#d6df2d;--art-pink:#e3477f;--art-orange:#ef9f45;--art-cream:#f7f1e7;--art-white:#fffdf9;--art-navy:#073f59;--art-ink:#132c36}
-body{background:var(--art-cream);color:var(--art-ink)}
-.topbar{position:relative;overflow:hidden;min-height:96px;padding:16px 34px;background:var(--art-navy)}
-.topbar:before{content:'';position:absolute;right:15%;top:-48px;width:170px;height:150px;border:20px solid var(--art-teal);border-radius:45% 55% 58% 42%;transform:rotate(-16deg);opacity:.32}
-.topbar:after{content:'';position:absolute;right:4%;bottom:-40px;width:130px;height:90px;background:var(--art-pink);clip-path:polygon(0 35%,100% 0,80% 62%,100% 100%,12% 74%);opacity:.9}
-.college,.header-links{position:relative;z-index:1}
-.college{font-size:22px;letter-spacing:-.02em}
-.college img{width:68px;height:58px;padding:4px;background:#fff;border-radius:0;box-shadow:7px 7px 0 var(--art-teal)}
-.college small{font-size:12px;opacity:.88}
-.demo-label{border:2px solid var(--art-lime);color:var(--art-lime);border-radius:4px}
-.demo-banner{padding:10px 34px;background:#eef5f1;border-bottom:4px solid var(--art-teal-dark)}
-.demo-banner strong{color:var(--art-navy)}
-.portal-layout{grid-template-columns:230px minmax(0,1fr) 290px;max-width:1800px}
-.journey-sidebar{background:var(--art-teal);border-right:0;padding:30px 20px}
-.sidebar-intro .eyebrow{color:var(--art-navy)}
-.sidebar-intro h2{font-family:'Arial Black','Trebuchet MS',Arial,sans-serif;font-size:31px;line-height:.98;letter-spacing:-1.5px}
-#journey-nav button{color:var(--art-navy)}
-#journey-nav .node{background:var(--art-white);border:2px solid var(--art-navy)}
-#journey-nav .current .node{background:var(--art-lime);box-shadow:4px 4px 0 var(--art-pink)}
-#journey-nav .done .node{background:var(--art-navy);border-color:var(--art-navy)}
-#journey-nav button:not(:last-child):after{background:#4c8e89}
-
-.sidebar-bottom{border-top:2px solid #4c8e89}
-.sidebar-bottom button,.sidebar-bottom a{color:var(--art-navy);font-weight:800}
-main{background:var(--art-cream)}
-.welcome-line{padding:4px 0 2px}
-.welcome-line .eyebrow{color:var(--art-teal-dark)}
-.phase{border:2px solid var(--art-navy);background:var(--art-white);border-radius:4px;box-shadow:4px 4px 0 var(--art-teal)}
-.stage-header{min-height:210px;padding:30px 34px;border:0;border-radius:3px 34px 3px 3px;background:var(--art-teal);box-shadow:9px 9px 0 #d6ebe6}
-.stage-header:before{content:'';position:absolute;right:65px;bottom:-15px;width:120px;height:80px;background:var(--art-lime);clip-path:polygon(0 45%,100% 0,76% 43%,100% 78%,13% 100%)}
-.stage-header:after{content:'↝';right:22px;top:14px;font-size:108px;color:var(--art-navy);opacity:.18}
-.stage-number{background:var(--art-pink);box-shadow:3px 3px 0 var(--art-navy)}
-.stage-header h1{font-family:'Arial Black','Trebuchet MS',Arial,sans-serif;font-size:clamp(34px,3.3vw,54px);line-height:.95;letter-spacing:-2px;color:var(--art-navy)}
-.stage-header p{font-size:16px;font-weight:700;color:#214853}
-.card{border:2px solid #d7ddd8;border-radius:5px;background:var(--art-white);box-shadow:5px 5px 0 #e2e7e1}
-.card h2,.card h3{font-family:'Trebuchet MS',Arial,sans-serif;color:var(--art-navy)}
-.card h2{font-size:23px}
-.next-label{color:var(--art-teal-dark);font-weight:900}
-button,.button{border-radius:3px;border-color:var(--art-navy);background:var(--art-navy)}
-button:hover,.button:hover{filter:none;background:var(--art-teal-dark);border-color:var(--art-teal-dark)}
-.secondary{background:var(--art-white);color:var(--art-navy);border:2px solid var(--art-navy)}
-.secondary:hover{background:var(--art-lime);color:var(--art-navy);border-color:var(--art-navy)}
-input:not([type=checkbox]),select,textarea{border:2px solid #9db6b2;border-radius:3px;background:#fff}
-input:not([type=checkbox]):focus,select:focus,textarea:focus{border-color:var(--art-pink)}
-.info{background:#e7f4f0;border-left:6px solid var(--art-teal-dark)}
-.notice{background:#fff2ca;border-left:6px solid var(--art-orange)}
-.tag{border-radius:2px}
-.course-item{border:2px solid #d4ded9;border-radius:4px;background:#fff;box-shadow:3px 3px 0 #e5ebe7}
-.course-item:hover{border-color:var(--art-teal-dark)}
-.selected-course{border:3px solid var(--art-teal-dark);box-shadow:6px 6px 0 var(--art-lime)}
+/* Lincoln prospectus treatment: yellow panels with independent red frames. */
+@font-face{font-family:RoadHand;src:url('./journey-assets/fonts/Kalam-Bold.ttf') format('truetype');font-style:normal;font-weight:700;font-display:swap}
+:root{--yellow:#ffdb45;--red:#ba2833;--paper:#fff;--ink:#201c16;--line:#d5dadd;--hand:RoadHand,'Segoe Print',cursive}
+body,main{background:var(--paper);color:var(--ink)}
+.topbar{border-bottom:5px solid var(--red)}
+.college img{border-radius:0}
+.demo-banner{background:#fff;border-bottom:2px solid var(--red)}
+.demo-label{border-color:var(--yellow);border-radius:0}
+.journey-sidebar{background:#f2f5f5;border-right:1px solid #d5dadd}
+.sidebar-intro h2{font-family:var(--hand);font-size:32px;line-height:1.1;color:var(--ink)}
+.eyebrow,.next-label,.tiny-label{color:#7e1923}
+#journey-nav .node{border:2px solid var(--red);background:#fff;color:var(--ink)}
+#journey-nav .current .node{border-color:var(--red);background:var(--yellow);box-shadow:3px 3px 0 var(--red)}
+#journey-nav .done .node{background:var(--navy);border-color:var(--navy);color:#fff}
+#journey-nav button:not(:last-child):after{background:var(--red)}
+.phase{border:2px solid var(--red);border-radius:0;background:var(--yellow);color:var(--ink)}
+.stage-header{position:relative;isolation:isolate;overflow:visible;background:var(--yellow);border:0;border-radius:0;padding:32px 30px 28px;margin:16px 9px 32px 5px}
+.stage-header:before{content:'';position:absolute;inset:-6px -7px -6px 7px;border:2px solid var(--red);transform:rotate(-.7deg);pointer-events:none;z-index:0}
+.stage-header:after{content:none}
+.stage-header>*{position:relative;z-index:1}
+.stage-header .stage-number{position:absolute;top:-51px;left:-44px;width:44px;height:44px;background:var(--red);color:#fff;font-size:24px;border-radius:50%}
+.stage-header .kicker{padding-left:8px}
+.stage-header h1{font:700 clamp(34px,3.5vw,52px)/1.13 var(--hand);letter-spacing:-.03em;color:var(--ink);max-width:100%;margin:14px 0 12px}
+.stage-header p{max-width:60ch;font-size:15px;color:var(--ink)}
+.card,.context-card,.help-card,.art-careers,.celebration{background:var(--yellow);border:2px solid var(--red);border-radius:0;box-shadow:none;color:var(--ink)}
+.card h2,.card h3,.context-card h3,.help-card h3{color:var(--ink)}
+.card h2{font-size:24px;font-weight:800;line-height:1.2}
+.card small,.muted,.context-card small,.course-meta{color:#41433c}
+button,.button{border-radius:2px}
+.secondary{background:white;border-color:var(--red);color:var(--ink)}
+button:hover,.button:hover{filter:brightness(.93)}
+input:not([type=checkbox]),select,textarea{border-radius:2px;border-color:#675a37}
+.course-item{border:2px solid var(--red);border-radius:0;background:#fff9dd;box-shadow:none}
+.selected-course{border:3px solid var(--navy)}
 .course-evidence-line{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:10px 0}
-
-.journey-capacity{display:inline-flex;align-items:center;min-height:27px;padding:4px 7px;border:1px solid #90aaa5;background:#f2f6f4;color:#47645f;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.03em}
+.journey-capacity{display:inline-flex;align-items:center;min-height:27px;padding:4px 7px;border:1px solid #90aaa5;background:#f2f6f4;color:#47645f;font-size:10px;font-weight:800;letter-spacing:.03em}
 .journey-capacity.available{background:#e2f1cd;border-color:#9abb57;color:#3d6125}
 .journey-capacity.full{background:#fff1a9;border-color:#d7b442;color:#735d00}
 .journey-capacity.check{background:#ffebdf;border-color:#d59b70;color:#7b431c}
 .journey-capacity.removed{background:#eceeed;color:#5e6a6c;text-decoration:line-through}
-.art-kicker{margin:0 0 6px;font-size:11px;letter-spacing:.13em;font-weight:1000;color:var(--art-navy)}
-.art-levels{position:relative;overflow:hidden;margin:20px 0;padding:28px 26px 24px;background:var(--art-teal);border-radius:4px}
-.art-levels-copy{position:relative;z-index:2;max-width:670px}
-.art-levels-copy h2{margin:0;font-family:'Arial Black','Trebuchet MS',Arial,sans-serif;font-size:clamp(30px,4vw,52px);line-height:.92;letter-spacing:-2px;color:var(--art-navy)}
-.art-levels-copy p:last-child{max-width:560px;margin:12px 0 22px;font-weight:700;color:#214a51}
-.art-scribble{position:absolute;pointer-events:none}
-.art-scribble-a{width:180px;height:55px;right:-28px;top:36px;background:var(--art-lime);transform:rotate(-8deg);clip-path:polygon(0 18%,100% 0,83% 42%,100% 67%,19% 100%)}
-.art-scribble-b{width:120px;height:85px;left:-35px;bottom:38px;border:15px solid var(--art-pink);border-radius:50%;transform:rotate(22deg);opacity:.92}
-.art-level-stack{position:relative;z-index:2;display:grid;grid-template-columns:repeat(7,minmax(100px,1fr));align-items:end;gap:10px}
-.art-level-card{display:flex;flex-direction:column;justify-content:flex-start;min-width:0;padding:13px 10px 10px;background:var(--art-white);border-radius:18px 18px 5px 5px;border:2px solid rgba(7,63,89,.08);box-shadow:5px 7px 0 rgba(7,63,89,.12);color:var(--art-navy)}
-.art-level-card.level-0{min-height:145px}.art-level-card.level-1{min-height:158px}.art-level-card.level-2{min-height:172px}.art-level-card.level-3{min-height:186px}.art-level-card.level-4{min-height:200px}.art-level-card.level-5{min-height:214px}.art-level-card.level-6{min-height:228px}
-.art-level-number{font-family:'Arial Black','Trebuchet MS',Arial,sans-serif;font-size:30px;line-height:.9}
-.art-level-card>strong{margin:5px 0 1px;font-size:12px}.art-level-card>small{font-size:8px;font-weight:900}
-.art-level-card ul{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:4px}
-.art-level-card li{padding:5px 4px;border:1px solid #d4dd8d;border-radius:3px;background:#fff;font-size:8px;line-height:1.15;text-align:center}
-.art-level-card p{font-size:8px;line-height:1.2;margin:7px 0 0;color:#6c5d24}
-
-.art-careers{position:relative;overflow:hidden;margin:20px 0;padding:28px;background:#f9f6ef;border:2px solid #d8ddd7;box-shadow:7px 7px 0 #dce6e0}
-.art-careers:before{content:'';position:absolute;right:2%;top:12%;width:150px;height:44px;background:var(--art-lime);transform:rotate(-4deg);clip-path:polygon(0 14%,100% 0,87% 49%,100% 100%,14% 77%)}
-.art-careers:after{content:'';position:absolute;right:11%;bottom:-12px;width:115px;height:80px;background:var(--art-pink);transform:rotate(10deg);clip-path:polygon(0 20%,100% 0,73% 49%,100% 83%,6% 100%)}
-.art-careers-heading{position:relative;z-index:2;max-width:760px}
-.art-careers-heading h2{margin:0;font-family:'Arial Black','Trebuchet MS',Arial,sans-serif;font-size:clamp(35px,5vw,68px);line-height:.83;letter-spacing:-3px;color:var(--art-navy)}
-.art-careers-heading p:last-child{max-width:620px;font-size:14px;font-weight:700;color:#425d63}
-.art-careers-grid{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:900px;margin:22px 0}
-.art-careers-grid>div{padding:13px 15px;background:white;border-top:7px solid var(--art-teal-dark)}
-.art-careers-grid>div:nth-child(2){border-top-color:var(--art-orange)}.art-careers-grid>div:nth-child(3){border-top-color:var(--art-pink)}
-.art-careers-grid strong,.art-careers-grid span{display:block}.art-careers-grid strong{font-size:13px;color:var(--art-navy)}.art-careers-grid span{margin-top:3px;font-size:11px;color:#546a70}
-.art-careers .button{position:relative;z-index:2}
-.art-arrow{position:absolute;z-index:1;font-family:'Arial Black',Arial,sans-serif;font-size:74px;color:var(--art-teal-dark);opacity:.35}
-.art-arrow-left{right:220px;top:3px;transform:rotate(-15deg)}.art-arrow-right{right:70px;top:15px;transform:rotate(10deg)}
-.context-card{border:2px solid #d6ddd8;border-radius:4px;background:var(--art-white);box-shadow:4px 4px 0 #e2e7e1}
-.avatar{border-radius:4px;background:var(--art-lime);border:2px solid var(--art-navy);color:var(--art-navy)}
-.progress-track{height:8px;background:#e7e9e4;border-radius:0}.progress-fill{background:var(--art-pink);border-radius:0}
-.help-card{position:relative;overflow:hidden;background:var(--art-teal);border-radius:4px;color:var(--art-navy)}
-.help-card:after{content:'';position:absolute;right:-15px;bottom:-18px;width:90px;height:60px;background:var(--art-lime);transform:rotate(-8deg)}
-.help-card>*{position:relative;z-index:1}.help-card h3{color:var(--art-navy)}
-.celebration{position:relative;overflow:hidden;background:var(--art-teal-dark);border-radius:4px;box-shadow:8px 8px 0 var(--art-lime)}
-.celebration:after{content:'';position:absolute;right:-20px;bottom:-20px;width:150px;height:90px;background:var(--art-pink);transform:rotate(-10deg)}
-.celebration>*{position:relative;z-index:1}
-
-@media(max-width:1150px){
-  .portal-layout{grid-template-columns:205px minmax(0,1fr)}
-  .journey-sidebar{padding:24px 15px}
-  .art-level-stack{grid-template-columns:repeat(4,minmax(100px,1fr));align-items:stretch}
-  .art-level-card,.art-level-card.level-0,.art-level-card.level-1,.art-level-card.level-2,.art-level-card.level-3,.art-level-card.level-4,.art-level-card.level-5,.art-level-card.level-6{min-height:175px}
-}
+.art-kicker{font-size:12px;font-weight:900;letter-spacing:.12em;color:#7e1923;margin:0 0 12px}
+.art-levels{margin:30px 0;padding:0;background:white}
+.art-levels-copy{padding:24px;background:var(--yellow);border:2px solid var(--red)}
+.art-levels-copy h2{font:700 clamp(29px,3vw,40px)/1.13 var(--hand);margin:0;color:var(--ink)}
+.art-levels-copy p:last-child{font-size:14px;margin-bottom:0;max-width:60ch}
+.art-level-stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding:20px 0 0;list-style:none;margin:0}
+.art-level-card{min-width:0;padding:20px;background:var(--yellow);border:2px solid var(--red);color:var(--ink)}
+.art-level-card:last-child{grid-column:1/-1}
+.art-level-number{display:inline-grid;place-items:center;min-width:40px;height:40px;padding:0 9px;margin-bottom:10px;background:var(--red);color:#fff;font-size:22px;font-weight:900}
+.art-level-card>strong{display:block;font-size:21px;font-weight:900}
+.art-level-card>small{display:block;font-size:11px;font-weight:700;margin:4px 0 12px}
+.art-level-card ul{padding-left:18px;margin:0;display:grid;gap:5px}
+.art-level-card li{font-size:13px;line-height:1.4}
+.art-level-card p{font-size:12px}
+.art-careers{position:relative;margin:26px 6px 28px 0;padding:26px}
+.art-careers:before{content:'';position:absolute;inset:5px -6px -6px 5px;border:2px solid var(--red);pointer-events:none}
+.art-careers-heading h2{font:900 clamp(28px,3.5vw,46px)/1.04 'Arial Black',Arial,sans-serif;letter-spacing:-.04em;margin:8px 0 18px;color:var(--ink)}
+.art-careers-heading p:last-child{font-size:14px;max-width:60ch}
+.art-careers-grid{display:grid;grid-template-columns:1fr;gap:12px;margin:20px 0}
+.art-careers-grid>div{border:2px solid var(--red);background:var(--yellow);padding:14px}
+.art-careers-grid strong,.art-careers-grid span{display:block}
+.art-careers-grid strong{font-size:16px}.art-careers-grid span{font-size:13px;margin-top:4px}
+.info,.notice,.upload-zone,.qr-demo{background:#fff9dd;border-color:var(--red);border-radius:0}
+.avatar{background:white;border:2px solid var(--red)}
+.progress-fill{background:var(--red)}
+.help-card{padding:20px}.help-card h3{font-size:22px}
+.celebration h2{font-family:var(--hand);color:var(--ink)}.celebration .star{color:var(--red)}
+#steps-grid button{background:var(--yellow);border:2px solid var(--red);border-radius:0;color:var(--ink)}
+#steps-grid button[aria-current=step]{border:3px solid var(--red);box-shadow:3px 3px 0 var(--red)}
+@media(min-width:1600px){.art-level-stack{grid-template-columns:repeat(3,minmax(0,1fr))}.art-careers-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:760px){
-  .topbar{min-height:78px;padding:10px 15px}.topbar:before,.topbar:after{opacity:.18}
-  .college img{width:50px;height:46px;box-shadow:4px 4px 0 var(--art-teal)}
-  .demo-banner{padding:10px 15px;border-bottom-width:3px}
-  .journey-sidebar{background:var(--art-teal)}
-  main{padding:18px 14px 28px}
-  .stage-header{min-height:170px;padding:22px;border-radius:3px 22px 3px 3px;box-shadow:6px 6px 0 #d6ebe6}
-  .stage-header h1{font-size:35px}.stage-header:after{font-size:78px}
-  .art-levels{padding:22px 14px}.art-levels-copy h2{font-size:38px}
-  .art-level-stack{display:flex;overflow-x:auto;align-items:stretch;padding-bottom:8px;scroll-snap-type:x mandatory}
-  .art-level-card,.art-level-card.level-0,.art-level-card.level-1,.art-level-card.level-2,.art-level-card.level-3,.art-level-card.level-4,.art-level-card.level-5,.art-level-card.level-6{flex:0 0 135px;min-height:190px;scroll-snap-align:start}
-  .art-careers{padding:22px 16px}.art-careers-heading h2{font-size:46px}.art-careers-grid{grid-template-columns:1fr}
-  .art-arrow{display:none}
-  .card{border-radius:4px;box-shadow:4px 4px 0 #e2e7e1}
+ .journey-sidebar{background:#f2f5f5;border-bottom:2px solid var(--red)}
+ .stage-header{padding:26px 22px 22px;margin:22px 8px 28px 7px}
+ .stage-header .stage-number{top:-44px;left:-34px;width:38px;height:38px;font-size:22px}
+ .stage-header h1{font-size:34px}.stage-header p{font-size:14px}
+ .card{border-radius:0;padding:18px}.card h2{font-size:22px}
+ .art-levels-copy{padding:20px}.art-level-stack{grid-template-columns:1fr;gap:13px}
+ .art-level-card:last-child{grid-column:auto}.art-level-card{padding:18px}
+ .art-careers{padding:20px}.art-careers-heading h2{font-size:32px;overflow-wrap:break-word}
+ .art-careers-grid{grid-template-columns:1fr}.context-card,.help-card{border-radius:0}
 }
-@media(max-width:460px){
-  .art-levels-copy h2{font-size:33px}.art-careers-heading h2{font-size:40px}
-  .course-evidence-line{align-items:stretch}.course-evidence-line>*{width:100%;justify-content:center}
-}
+@media(forced-colors:active){.stage-header:before,.art-careers:before{border-color:CanvasText}.stage-number,.art-level-number{border:1px solid CanvasText}}

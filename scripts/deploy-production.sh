@@ -55,6 +55,8 @@ PUBLIC_FILES=(
   student-portal.css
   student-portal.js
   digital-student-journey.html
+  journey-assets/fonts/Kalam-Bold.ttf
+  journey-assets/fonts/OFL-Kalam.txt
   digital-student-journey.css
   digital-student-journey.js
   journey-core.js
@@ -166,7 +168,7 @@ assert_public_contains "$PUBLIC_URL/student-portal.html" 'Create demo request'
 assert_public_contains "$PUBLIC_URL/student-portal.js" 'createWorker'
 assert_public_contains "$PUBLIC_URL/student-portal.js" 'parseResultsText'
 assert_public_contains "$PUBLIC_URL/digital-student-journey.html" 'Run student journey demo'
-assert_public_contains "$PUBLIC_URL/digital-student-journey.html" '20260922-artwork2'
+assert_public_contains "$PUBLIC_URL/digital-student-journey.html" '20260922-yellow-red'
 assert_public_contains "$PUBLIC_URL/digital-student-journey.css" '.art-levels'
 assert_public_contains "$PUBLIC_URL/digital-student-journey.css" '.art-careers'
 assert_public_contains "$PUBLIC_URL/journey-views.js" 'LEVELS EXPLAINED'

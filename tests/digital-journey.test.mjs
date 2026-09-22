@@ -63,3 +63,20 @@ test('source labels, local-only boundaries and escaping survive user-entered con
   assert.equal(esc('<script>'),'&lt;script&gt;');
   const html=fs.readFileSync(new URL('../digital-student-journey.html',import.meta.url),'utf8');assert.match(html,/id="journey-nav"/);assert.match(html,/Show all 10 steps/);assert.match(html,/role="status"/);
 });
+
+
+test('digital journey uses the reconstructed Lincoln artwork language without exposing source photographs',()=>{
+  const html=fs.readFileSync(new URL('../digital-student-journey.html',import.meta.url),'utf8');
+  const css=fs.readFileSync(new URL('../digital-student-journey.css',import.meta.url),'utf8');
+  const views=fs.readFileSync(new URL('../journey-views.js',import.meta.url),'utf8');
+  assert.match(html,/20260922-artwork2/);
+  assert.match(css,/\.art-levels\{/);
+  assert.match(css,/\.art-careers\{/);
+  assert.match(views,/LEVELS EXPLAINED/);
+  assert.match(views,/DON’T KNOW<br>WHAT TO CHOOSE\?/);
+  assert.match(views,/journey-capacity/);
+  const imageSources=[...html.matchAll(/<img[^>]+src="([^"]+)"/g)].map(match=>match[1]);
+  assert.deepEqual(imageSources,['./student-hub/logo.jpg']);
+  assert.doesNotMatch(css,/url\s*\(/i);
+  assert.doesNotMatch(views,/\.jpg|\.jpeg|\.webp/i);
+});

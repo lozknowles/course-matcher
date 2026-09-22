@@ -47,6 +47,8 @@ PUBLIC_FILES=(
   matcher-core.js
   retention-core.js
   courses.js
+  availability-data.js
+  level-guide-data.js
   lincoln-theme.css
   demo-suite.css
   student-portal.html
@@ -148,6 +150,10 @@ assert_public_contains "$PUBLIC_URL/" 'Take photo'
 assert_public_contains "$PUBLIC_URL/" 'prepared for discussion with Lincoln College'
 assert_public_contains "$PUBLIC_URL/" 'Lincoln College, Lincoln and Newark'
 assert_public_contains "$PUBLIC_URL/" 'Show courses I could apply for'
+assert_public_contains "$PUBLIC_URL/" 'Availability age group'
+assert_public_contains "$PUBLIC_URL/" 'Understanding course levels'
+assert_public_contains "$PUBLIC_URL/availability-data.js" 'SPL0310AA1'
+assert_public_contains "$PUBLIC_URL/level-guide-data.js" 'Degree Apprenticeship'
 assert_public_contains "$PUBLIC_URL/matcher-core.js" 'quickMatchCourses'
 assert_public_contains "$PUBLIC_URL/retention-core.js" 'buildTransferHandoff'
 assert_public_contains "$PUBLIC_URL/" '42-Day Student Fit &amp; Retention'

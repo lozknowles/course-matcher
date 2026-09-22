@@ -113,3 +113,28 @@ h2{font-family:"Arial Narrow",Arial,sans-serif;text-transform:uppercase}h3,h4{fo
 .mis-record .mis-footer{width:100%;min-width:0;margin:0;box-sizing:border-box}.mis-record .mis-footer .mis-controls{flex:0 1 auto;min-width:0}.mis-record .mis-footer .mis-controls button{min-width:0;padding:7px 10px}.mis-record{overflow-x:hidden}
 .mis-record .mis-footer{padding-right:24px}.mis-record .mis-footer .mis-controls{gap:3px}.mis-record .mis-footer .mis-controls button{padding:7px 7px}
 .mis-record .mis-footer{display:grid;grid-template-columns:minmax(0,1fr) 320px;justify-content:normal;padding:4px 8px 0}.mis-record .mis-footer .mis-controls{width:100%;display:flex}.mis-record .mis-footer .mis-controls button{flex:1 1 0;width:auto;max-width:none;white-space:nowrap;font-size:10px;padding:7px 3px}@media(max-width:650px){.mis-record .mis-footer{grid-template-columns:1fr}.mis-record .mis-footer .mis-controls{max-width:100%}}
+
+/* 2026-09-22: photographed course-capacity evidence + student qualification-level guide. */
+.availability-controls{display:grid;grid-template-columns:minmax(180px,.45fr) minmax(0,1.55fr);gap:12px;margin:14px 16px;padding:13px;background:#eef8f7;border:1px solid #82c9c4}
+.availability-controls label{display:grid;gap:5px;font-size:11px;color:#173f57}.availability-controls select{min-height:38px;padding:7px;border:1px solid #8dafba;background:#fff;color:#063956;font-weight:800}
+.availability-controls p{margin:0;color:#526f7d;font-size:11px;line-height:1.45}
+.match-evidence-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 12px}
+.availability-badge{display:inline-flex;align-items:center;min-height:30px;padding:5px 9px;border:1px solid #a9bbc4;background:#f5f7f8;color:#526f7d;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.03em}
+.availability-badge.available{background:#e4f7f0;border-color:#65b896;color:#17663e}.availability-badge.full{background:#fff4cc;border-color:#d7b84b;color:#725b00}
+.availability-badge.check{background:#fff0e5;border-color:#d69b6d;color:#7b431c}.availability-badge.removed{background:#eceff1;border-color:#9aa7ad;color:#56666d;text-decoration:line-through}
+.level-help-link{min-height:30px;padding:5px 9px;border:1px solid #087f78;background:#fff;color:#087f78;font-size:10px;font-weight:900;cursor:pointer}
+.level-guide-panel{margin:12px;border:1px solid #83bdb8;background:#dcefee;overflow:hidden}
+.level-guide-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:16px 18px;background:#89cbc5;color:#063956}
+.level-guide-head h3{margin:2px 0 4px;font-size:23px}.level-guide-head p:not(.step-kicker){margin:0;max-width:760px;font-size:12px;line-height:1.45}
+.level-ladder{display:grid;grid-template-columns:repeat(7,minmax(90px,1fr));align-items:end;gap:8px;padding:18px;background:#82c7c1}
+.level-step{min-height:150px;padding:12px 8px 10px;border:0;border-radius:20px 20px 8px 8px;background:#fff;color:#063956;box-shadow:0 8px 18px #0639561f;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center;cursor:pointer}
+.level-step:nth-child(1){min-height:120px}.level-step:nth-child(2){min-height:135px}.level-step:nth-child(3){min-height:150px}.level-step:nth-child(4){min-height:165px}.level-step:nth-child(5){min-height:180px}.level-step:nth-child(6){min-height:195px}.level-step:nth-child(7){min-height:210px}
+.level-step span{font-size:31px;font-weight:1000;line-height:1}.level-step strong{margin-top:5px;font-size:11px}.level-step small{margin-top:3px;font-size:8px;color:#55717c}
+.level-step.active{outline:4px solid #d8e532;outline-offset:-4px;transform:translateY(-3px)}
+
+.level-detail{padding:13px 18px;background:#fff;border-top:1px solid #83bdb8}.level-detail>div{display:flex;align-items:flex-start;gap:14px}
+.level-big{display:grid;place-items:center;min-width:62px;height:62px;border-radius:8px;background:#063956;color:#fff;font-size:25px;font-weight:1000}
+.level-detail strong{display:block;color:#063956}.level-detail p{margin:5px 0;color:#526f7d;font-size:12px;line-height:1.5}.level-detail small{display:block;color:#7a6410;font-size:10px;line-height:1.4}
+.level-guide-panel.collapsed .level-ladder,.level-guide-panel.collapsed .level-detail{display:none}
+@media(max-width:900px){.level-ladder{grid-template-columns:repeat(4,minmax(90px,1fr));align-items:stretch}.level-step,.level-step:nth-child(n){min-height:118px}.availability-controls{grid-template-columns:1fr}}
+@media(max-width:560px){.level-guide-head{display:block}.level-guide-head button{margin-top:10px;width:100%}.level-ladder{display:flex;overflow:auto;align-items:stretch}.level-step,.level-step:nth-child(n){min-width:110px;min-height:130px}.level-detail>div{display:block}.level-big{margin-bottom:10px}.match-evidence-row>*{width:100%;justify-content:center}}

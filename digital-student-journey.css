@@ -86,3 +86,15 @@ input:not([type=checkbox]),select,textarea{border-radius:2px;border-color:#675a3
  .art-careers-grid{grid-template-columns:1fr}.context-card,.help-card{border-radius:0}
 }
 @media(forced-colors:active){.stage-header:before,.art-careers:before{border-color:CanvasText}.stage-number,.art-level-number{border:1px solid CanvasText}}
+
+/* Journey navigation uses the same square-edged yellow/red card construction. */
+#journey-nav{gap:14px;padding:7px 7px 7px 0}
+#journey-nav button{isolation:isolate;min-height:82px;padding:15px 12px;background:var(--yellow);color:var(--ink);border:0;border-radius:0;gap:10px;overflow:visible}
+#journey-nav button:before{content:'';position:absolute;inset:-3px -4px -3px 4px;border:2px solid var(--red);pointer-events:none;z-index:-1}
+#journey-nav button:not(:last-child):after{content:none}
+#journey-nav button[aria-current=step]:before{border-width:3px}
+#journey-nav button[aria-current=step] strong{text-decoration:underline;text-underline-offset:4px}
+#journey-nav .node,#journey-nav .current .node,#journey-nav .done .node{background:var(--red);border-color:var(--red);color:#fff;border-radius:0;box-shadow:none;width:28px;height:28px}
+#journey-nav strong{font-size:15px}#journey-nav small{font-size:11px;margin-top:4px}
+#journey-nav .future{color:var(--ink)}
+@media(max-width:760px){#journey-nav{gap:12px;padding:5px 6px 7px 0}#journey-nav button{min-height:64px;min-width:140px;padding:10px;flex:0 0 auto}#journey-nav strong{font-size:12px}#journey-nav small{font-size:10px}#journey-nav .node{width:25px;height:25px}}

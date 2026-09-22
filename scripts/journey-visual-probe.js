@@ -4,6 +4,13 @@
   const check = (condition, message) => { if (!condition) throw new Error(message); };
   const panels = [...document.querySelectorAll('.stage-header,.card,.art-levels-copy,.art-level-card,.art-careers,.context-card,.help-card,.celebration')];
   check(panels.length > 2, 'Journey panels missing');
+  const menu = [...document.querySelectorAll('#journey-nav button')];
+  check(menu.length === 6, 'Journey navigation groups missing');
+  for (const item of menu) {
+    const style = getComputedStyle(item), outline = getComputedStyle(item, '::before');
+    check(style.backgroundColor === yellow && style.borderRadius === '0px', 'Menu must use square-edged yellow boxes');
+    check(outline.borderTopColor === red && ['2px', '3px'].includes(outline.borderTopWidth), 'Menu red outline missing');
+  }
   for (const panel of panels) {
     const style = getComputedStyle(panel);
     check(style.backgroundColor === yellow, `Yellow fill missing: ${panel.className}`);

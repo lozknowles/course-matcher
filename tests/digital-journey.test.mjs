@@ -69,7 +69,7 @@ test('digital journey uses the reconstructed Lincoln artwork language without ex
   const html=fs.readFileSync(new URL('../digital-student-journey.html',import.meta.url),'utf8');
   const css=fs.readFileSync(new URL('../digital-student-journey.css',import.meta.url),'utf8');
   const views=fs.readFileSync(new URL('../journey-views.js',import.meta.url),'utf8');
-  assert.match(html,/20260922-yellow-red/);
+  assert.match(html,/20260922-yellow-red-menu/);
   assert.match(css,/\.art-levels\{/);
   assert.match(css,/\.art-careers\{/);
   assert.match(views,/LEVELS EXPLAINED/);

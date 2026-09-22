@@ -151,6 +151,7 @@
       <section class="panel hidden" id="match-options-panel">
         <p class="step-kicker">STEP 3</p><h3>Choose how to match</h3>
         <p>Both routes use the grades you have checked. Quick Match shows only encoded courses whose grade rules are met; Guided Match lets you narrow the wider results by interests.</p>
+        <div class="availability-controls"><label for="availability-age-band"><strong>Availability age group</strong><select id="availability-age-band"><option value="16-18">16–18</option><option value="19+">19+</option></select></label><p><strong>Places snapshot:</strong> 21 September 2026, page 1 supplied by Lincoln College. Capacity is kept separate from eligibility and is shown only where a course can be confidently mapped.</p></div>
         <div class="match-route-grid">
           <button class="match-route-card quick" id="quick-match" type="button">
             <span class="route-label">Fastest option</span>
@@ -181,6 +182,7 @@
       <section class="hidden" id="matches-panel">
         <div class="results-heading"><div><p class="step-kicker">STEP 4</p><h3 id="matches-heading">Your indicative matches</h3><p id="match-summary"></p></div><div class="result-actions"><button class="secondary" id="change-match-route">Change match route</button><button class="secondary" id="edit-results">Edit results</button></div></div>
         <div class="legend" id="match-legend"><span class="badge green">Likely meets encoded grades</span><span class="badge amber">Near match / needs checking</span><span class="badge red">Does not meet encoded grades</span></div>
+        <section class="level-guide-panel" id="level-guide-panel" aria-labelledby="level-guide-heading"><div class="level-guide-head"><div><p class="step-kicker">UNDERSTANDING COURSE LEVELS</p><h3 id="level-guide-heading">Where does this course sit?</h3><p>Tap a level to see examples from the Lincoln College artwork. This explains qualifications; it does not change your match.</p></div><button class="secondary" id="toggle-level-guide" type="button" aria-expanded="true">Hide guide</button></div><div id="level-ladder" class="level-ladder"></div><div id="level-detail" class="level-detail" aria-live="polite"></div></section>
         <div id="match-list" class="match-list"></div>
         <section class="explore-panel"><h3>Explore every published subject area</h3><p>Not every Lincoln College course has been converted into a machine-readable rule in this demonstration. These links let you continue on the official subject pages without Course Match pretending it has assessed criteria it has not encoded.</p><div id="subject-links" class="subject-links"></div></section>
       </section>

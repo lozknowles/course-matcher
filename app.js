@@ -21,6 +21,8 @@
  */
 
 import { COURSES, SUBJECTS, SUBJECT_LINKS } from './courses.js';
+import { courseCapacity } from './availability-data.js';
+import { LEVEL_GUIDE, levelGuideFor } from './level-guide-data.js';
 import { hubHandoff } from './student-hub/bridge.js';
 import { normaliseGrades, parseResultsText, rankCourses, quickMatchCourses, matchCourse, validateGrades, RECOGNISED_GCSE_SUBJECTS } from './matcher-core.js';
 import { pdfTextItemsToLines, readAllPdfPages } from './document-core.js';
@@ -31,7 +33,7 @@ const $ = (sel, root=document) => root.querySelector(sel);
 const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
 
 // Transient browser state only: refreshing/closing the page clears it.
-const state = { grades: [], interests: new Set(), cohort: [] };
+const state = { grades: [], interests: new Set(), cohort: [], matchMode:'guided' };
 
 // Escape user-controlled values before placing them inside an innerHTML string.
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -286,25 +288,56 @@ $('#run-match').addEventListener('click',()=>{readVerify();if(!verifiedGradesAre
 $('#edit-results').addEventListener('click',()=>showStudentPanel('verify-panel',2));
 $('#change-match-route').addEventListener('click',()=>showStudentPanel('match-options-panel',3));
 
+function renderLevelGuide(selectedLevel=2){
+  const selected=levelGuideFor(selectedLevel);
+  $('#level-ladder').innerHTML=LEVEL_GUIDE.map(item=>`<button type="button" class="level-step ${item.level===selected.level?'active':''}" data-guide-level="${item.level}"><span>${item.level===0?'Entry':item.level}</span><strong>${escapeHtml(item.label)}</strong><small>${escapeHtml(item.sector)}</small></button>`).join('');
+  $('#level-detail').innerHTML=`<div><span class="level-big">${selected.level===0?'Entry':selected.level}</span><div><strong>${escapeHtml(selected.label)} · ${escapeHtml(selected.sector)}</strong><p>${selected.examples.map(escapeHtml).join(' · ')}</p>${selected.note?`<small>${escapeHtml(selected.note)}</small>`:''}</div></div>`;
+  $$('[data-guide-level]',$('#level-ladder')).forEach(button=>button.addEventListener('click',()=>renderLevelGuide(Number(button.dataset.guideLevel))));
+}
+function focusLevelGuide(level){
+  $('#level-guide-panel').classList.remove('collapsed');
+  $('#toggle-level-guide').textContent='Hide guide';
+  $('#toggle-level-guide').setAttribute('aria-expanded','true');
+  renderLevelGuide(level);
+  $('#level-guide-panel').scrollIntoView({behavior:'smooth',block:'center'});
+}
+$('#toggle-level-guide').addEventListener('click',()=>{
+  const collapsed=$('#level-guide-panel').classList.toggle('collapsed');
+  $('#toggle-level-guide').textContent=collapsed?'Show guide':'Hide guide';
+  $('#toggle-level-guide').setAttribute('aria-expanded',String(!collapsed));
+});
+$('#availability-age-band').addEventListener('change',()=>{
+  if($('#matches-panel').classList.contains('hidden')) return;
+  renderMatches(state.matchMode);
+});
+renderLevelGuide(2);
+
 /** Render the explainable course results produced by matcher-core.js. */
 function renderMatches(mode='guided'){
+  state.matchMode=mode;
   const quick=mode==='quick';
   const ranked=quick?quickMatchCourses(state.grades,COURSES):rankCourses(state.grades,COURSES,[...state.interests],$('#career-text').value);
+  const ageBand=$('#availability-age-band').value;
+  const mappedCapacity=ranked.filter(x=>courseCapacity(x.course.id,ageBand).mapped).length;
   const greens=ranked.filter(x=>x.status==='green').length; const ambers=ranked.filter(x=>x.status==='amber').length;
   $('#matches-heading').textContent=quick?'Your Quick Match courses':'Your indicative matches';
   $('#match-summary').textContent=quick
     ? `${ranked.length} encoded course${ranked.length===1?'':'s'} where the verified grades meet every encoded hard grade requirement.`
     : `${ranked.length} encoded course${ranked.length===1?'':'s'} shown · ${greens} likely grade match${greens===1?'':'es'} · ${ambers} need closer checking.`;
+  $('#match-summary').textContent += ` Capacity snapshot coverage for ${ageBand}: ${mappedCapacity}/${ranked.length} matched course${ranked.length===1?'':'s'} on supplied page 1.`;
   $('#match-legend').innerHTML=quick
     ? '<span class="badge green">Meets encoded grade requirements</span><span class="micro">Other entry conditions and current availability still need College confirmation.</span>'
     : '<span class="badge green">Likely meets encoded grades</span><span class="badge amber">Near match / needs checking</span><span class="badge red">Does not meet encoded grades</span>';
   const list=$('#match-list');list.innerHTML='';
   ranked.forEach(result=>{
     const c=result.course; const card=document.createElement('article');card.className=`match-card ${result.status}`;
+    const availability=courseCapacity(c.id,ageBand);
+    const level=levelGuideFor(c.level||0);
     const statusText={green:'Likely meets encoded grades',amber:'Near match / needs checking',red:'Does not meet encoded grades'}[result.status];
-    card.innerHTML=`<div class="match-top"><div><span class="badge ${result.status}">${statusText}</span><h3>${c.title}</h3><p class="course-meta">${c.subject} · Level ${c.level||'Entry'} · ${c.campus}</p></div><div class="course-meta">Criteria checked ${c.checked}</div></div><p>${c.summary}</p><div class="checks">${result.checks.map(x=>`<div class="check ${x.pass?'pass':'fail'}"><strong>${x.label}</strong> — ${x.detail}</div>`).join('')}</div>${result.warnings.length?`<div class="warning-list"><strong>Still needs a human check</strong><ul>${result.warnings.map(w=>`<li>${w}</li>`).join('')}</ul></div>`:''}<p><a class="course-link" href="${c.url}" target="_blank" rel="noreferrer">Verify on official Lincoln College page ↗</a></p>`;
+    card.innerHTML=`<div class="match-top"><div><span class="badge ${result.status}">${statusText}</span><h3>${c.title}</h3><p class="course-meta">${c.subject} · Level ${c.level||'Entry'} · ${c.campus}</p></div><div class="course-meta">Criteria checked ${c.checked}</div></div><p>${c.summary}</p><div class="match-evidence-row">${availability.mapped?`<span class="availability-badge ${availability.code}">Places ${ageBand}: ${escapeHtml(availability.label)}</span>`:`<span class="availability-badge unknown">Places ${ageBand}: not on supplied page</span>`}<button class="level-help-link" type="button" data-level-help="${level.level}">What does ${escapeHtml(level.label)} mean?</button></div><div class="checks">${result.checks.map(x=>`<div class="check ${x.pass?'pass':'fail'}"><strong>${x.label}</strong> — ${x.detail}</div>`).join('')}</div>${result.warnings.length?`<div class="warning-list"><strong>Still needs a human check</strong><ul>${result.warnings.map(w=>`<li>${w}</li>`).join('')}</ul></div>`:''}<p><a class="course-link" href="${c.url}" target="_blank" rel="noreferrer">Verify on official Lincoln College page ↗</a></p>`;
     list.appendChild(card);
   });
+  $$('[data-level-help]',list).forEach(button=>button.addEventListener('click',()=>focusLevelGuide(Number(button.dataset.levelHelp))));
   if(!ranked.length) list.innerHTML=quick
     ? '<div class="panel"><h3>No definite Quick Match yet</h3><p>No encoded course passed every hard grade check for these results. Use Guided Match to see near matches and progression routes, or speak with Lincoln College about other options.</p></div>'
     : '<div class="panel"><h3>No encoded courses matched those interests</h3><p>Try broadening the interests or use the official subject links below. This prototype deliberately does not invent eligibility rules for courses it has not encoded.</p></div>';

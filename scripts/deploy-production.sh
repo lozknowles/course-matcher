@@ -151,7 +151,7 @@ assert_public_contains "$PUBLIC_URL/" 'prepared for discussion with Lincoln Coll
 assert_public_contains "$PUBLIC_URL/" 'Lincoln College, Lincoln and Newark'
 assert_public_contains "$PUBLIC_URL/" 'Show courses I could apply for'
 assert_public_contains "$PUBLIC_URL/" 'Availability age group'
-assert_public_contains "$PUBLIC_URL/" 'Understanding course levels'
+assert_public_contains "$PUBLIC_URL/" 'UNDERSTANDING COURSE LEVELS'
 assert_public_contains "$PUBLIC_URL/availability-data.js" 'SPL0310AA1'
 assert_public_contains "$PUBLIC_URL/level-guide-data.js" 'Degree Apprenticeship'
 assert_public_contains "$PUBLIC_URL/matcher-core.js" 'quickMatchCourses'

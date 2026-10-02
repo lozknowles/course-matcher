@@ -53,6 +53,7 @@ PUBLIC_FILES=(
   demo-suite.css
   student-self-service.html
   student-self-service.css
+  student-self-service-languages.js
   student-self-service.js
   student-self-service-mockup.png
   student-portal.html

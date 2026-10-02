@@ -51,6 +51,10 @@ PUBLIC_FILES=(
   level-guide-data.js
   lincoln-theme.css
   demo-suite.css
+  student-self-service.html
+  student-self-service.css
+  student-self-service.js
+  student-self-service-mockup.png
   student-portal.html
   student-portal.css
   student-portal.js
